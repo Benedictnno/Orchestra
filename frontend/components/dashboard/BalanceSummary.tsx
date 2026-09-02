@@ -32,7 +32,7 @@ export default function BalanceSummary() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <div className="bg-[#4A90e2] rounded-3xl p-8 text-white lg:col-span-2 relative overflow-hidden flex flex-col justify-between min-h-[240px] md:min-h-[280px]">
         {/* Background circuit pattern */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
           <svg width="100%" height="100%" viewBox="0 0 400 200">
             <path d="M0 50 H100 L150 20 H250 L300 50 H400" stroke="#4F46E5" fill="none" strokeWidth="1" />
             <path d="M0 150 H120 L170 180 H280 L330 150 H400" stroke="#4F46E5" fill="none" strokeWidth="1" />

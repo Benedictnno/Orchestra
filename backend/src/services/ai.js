@@ -30,10 +30,14 @@ export async function createChatCompletion(params) {
   const primaryModel = params.model || MODELS.PREMIUM
 
   try {
-    return await groq.chat.completions.create({
+    const response = await groq.chat.completions.create({
       ...params,
       model: primaryModel,
     })
+    if (response.usage) {
+      console.log(`[AI] ${primaryModel} — prompt: ${response.usage.prompt_tokens}, completion: ${response.usage.completion_tokens}, total: ${response.usage.total_tokens} tokens`)
+    }
+    return response
   } catch (error) {
     const fallbackModel = MODELS.FAST
     const isModelNotFoundError =
@@ -44,10 +48,14 @@ export async function createChatCompletion(params) {
 
     if (isModelNotFoundError && primaryModel !== fallbackModel) {
       console.warn(`[AI Service] Model "${primaryModel}" failed. Retrying with fallback model "${fallbackModel}"...`)
-      return await groq.chat.completions.create({
+      const fallbackResponse = await groq.chat.completions.create({
         ...params,
         model: fallbackModel,
       })
+      if (fallbackResponse.usage) {
+        console.log(`[AI] ${fallbackModel} (fallback) — prompt: ${fallbackResponse.usage.prompt_tokens}, completion: ${fallbackResponse.usage.completion_tokens}, total: ${fallbackResponse.usage.total_tokens} tokens`)
+      }
+      return fallbackResponse
     }
     throw error
   }
