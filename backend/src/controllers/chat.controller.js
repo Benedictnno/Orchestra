@@ -1,4 +1,4 @@
-import { getGroqClient, MODELS } from '../services/ai.js'
+import { createChatCompletion, MODELS } from '../services/ai.js'
 import Chat from '../db/models/Chat.js'
 import { getSpendingSummary } from '../services/insights.js'
 
@@ -46,10 +46,9 @@ export async function handleChat(req, res) {
     { role: 'user', content: message }
   ]
 
-  // 5. Call Groq
-  const groq = getGroqClient()
-  const response = await groq.chat.completions.create({
-    model:    MODELS.PREMIUM,
+  // 5. Call AI Completion (with automatic fallback if primary model fails)
+  const response = await createChatCompletion({
+    model: MODELS.PREMIUM,
     messages,
   })
 

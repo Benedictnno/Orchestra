@@ -8,12 +8,48 @@ export function getGroqClient() {
     if (!process.env.GROQ_API_KEY) {
       throw new Error('GROQ_API_KEY is missing from environment variables')
     }
-    groqInstance = new Groq({ apiKey: process.env.GROQ_API_KEY })
+    const options = { apiKey: process.env.GROQ_API_KEY }
+    if (process.env.GROQ_BASE_URL) {
+      options.baseURL = process.env.GROQ_BASE_URL
+    }
+    groqInstance = new Groq(options)
   }
   return groqInstance
 }
 
 export const MODELS = {
-  PREMIUM: 'llama-3.3-70b-versatile',
-  FAST:    'openai/gpt-oss-120b',
+  PREMIUM: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+  FAST:    process.env.GROQ_FAST_MODEL || 'llama-3.1-8b-instant',
 }
+
+/**
+ * Execute chat completion with automatic fallback if primary model is unavailable.
+ */
+export async function createChatCompletion(params) {
+  const groq = getGroqClient()
+  const primaryModel = params.model || MODELS.PREMIUM
+
+  try {
+    return await groq.chat.completions.create({
+      ...params,
+      model: primaryModel,
+    })
+  } catch (error) {
+    const fallbackModel = MODELS.FAST
+    const isModelNotFoundError =
+      error?.status === 404 ||
+      error?.code === 'model_not_found' ||
+      error?.message?.includes('does not exist') ||
+      error?.error?.code === 'model_not_found'
+
+    if (isModelNotFoundError && primaryModel !== fallbackModel) {
+      console.warn(`[AI Service] Model "${primaryModel}" failed. Retrying with fallback model "${fallbackModel}"...`)
+      return await groq.chat.completions.create({
+        ...params,
+        model: fallbackModel,
+      })
+    }
+    throw error
+  }
+}
+
