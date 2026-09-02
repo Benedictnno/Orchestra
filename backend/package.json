@@ -4,6 +4,7 @@
   "description": "Programmable ATM Card Orchestration Platform API",
   "main": "src/server.js",
   "scripts": {
+    "build": "echo 'No build step required'",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/db/seed.js",
