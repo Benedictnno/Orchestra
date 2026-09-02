@@ -23,13 +23,13 @@ export default function AnomalyBadge() {
 
   return (
     <>
-      <button
+      {/* <button
         onClick={() => setOpen(true)}
         className="relative flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-3 py-1.5 rounded-full text-sm font-medium"
       >
         ⚠ {anomalies.length} suspicious transaction{anomalies.length > 1 ? 's' : ''}
         <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-      </button>
+      </button> */}
 
       {open && (
         <div

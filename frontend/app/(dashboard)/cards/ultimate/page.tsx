@@ -141,7 +141,7 @@ export default function UltimateCardPage() {
                           {card.bank?.slice(0, 3)}
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-bold text-[#1A1A2E]">{card.label}</p>
+                          <p className="text-sm font-bold text-[#4A90e2]">{card.label}</p>
                           <p className="text-[10px] text-gray-500">{card.bank}</p>
                         </div>
                       </div>

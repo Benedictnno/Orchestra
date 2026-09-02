@@ -57,7 +57,7 @@ export default function CardWidget({
   
   const isBlocked = card.cardStatus === '2'
   const bgColor = card.isUltimate 
-    ? 'linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #1A1A2E 100%)'
+    ? 'linear-gradient(135deg, #4A90e2 0%, #16213E 50%, #4A90e2 100%)'
     : (card.color?.startsWith('#') ? `linear-gradient(135deg, ${card.color} 0%, ${adjustColor(card.color, -20)} 100%)` : (card.color || 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)'))
 
   const toggleFlip = (e: React.MouseEvent) => {

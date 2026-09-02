@@ -34,19 +34,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Don't render dashboard at all until we've confirmed auth
   if (!authChecked) {
     return (
-      <div className="flex h-screen bg-gray-50 items-center justify-center">
+      <div className="flex h-screen bg-background items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#E94560] flex items-center justify-center animate-pulse">
+          <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center animate-pulse">
             <span className="text-white font-bold">O</span>
           </div>
-          <p className="text-gray-400 text-sm">Loading…</p>
+          <p className="text-muted-foreground text-sm">Loading…</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Navbar />

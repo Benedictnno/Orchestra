@@ -80,7 +80,7 @@ export default function TransfersPage() {
   return (
     <div className="max-w-2xl mx-auto pb-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#1A1A2E] tracking-tight">Send Money</h1>
+        <h1 className="text-3xl font-extrabold text-[#4A90e2] tracking-tight">Send Money</h1>
         <p className="text-gray-500 font-medium text-sm mt-1">
           Transfer funds instantly to any bank account in Nigeria.
         </p>
@@ -117,7 +117,7 @@ export default function TransfersPage() {
                         </div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase">{card.bank}</span>
                       </div>
-                      <p className="font-bold text-[#1A1A2E] text-sm mb-0.5">{card.label}</p>
+                      <p className="font-bold text-[#4A90e2] text-sm mb-0.5">{card.label}</p>
                       <p className="text-xs text-gray-500 font-medium mb-3">**** {card.pan.slice(-4)}</p>
                       <p className="text-sm font-black text-[#E94560]">{toNaira(card.availableBalance)}</p>
                     </button>
@@ -133,14 +133,14 @@ export default function TransfersPage() {
             <div className="space-y-4">
               <div className="relative group">
                 <label className="absolute left-5 top-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider transition-all group-focus-within:text-[#E94560]">Amount to Send</label>
-                <span className="absolute left-5 bottom-4 text-2xl font-black text-[#1A1A2E]">₦</span>
+                <span className="absolute left-5 bottom-4 text-2xl font-black text-[#4A90e2]">₦</span>
                 <input 
                   type="number"
                   required
                   placeholder="0.00"
                   value={form.amount}
                   onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 pl-10 pr-6 text-2xl font-black text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 pl-10 pr-6 text-2xl font-black text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function TransfersPage() {
                   required
                   value={form.recipientBank}
                   onChange={e => setForm(f => ({ ...f, recipientBank: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all appearance-none"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all appearance-none"
                 >
                   <option value="">Select Bank</option>
                   {BANKS.map(b => <option key={b.code} value={b.name}>{b.name}</option>)}
@@ -171,7 +171,7 @@ export default function TransfersPage() {
                   placeholder="0123456789"
                   value={form.recipientAccount}
                   onChange={e => setForm(f => ({ ...f, recipientAccount: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
                 />
               </div>
             </div>
@@ -184,7 +184,7 @@ export default function TransfersPage() {
                 placeholder="RECIPIENT NAME"
                 value={form.recipientName}
                 onChange={e => setForm(f => ({ ...f, recipientName: e.target.value.toUpperCase() }))}
-                className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 px-5 text-sm font-bold text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 px-5 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
               />
               <div className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-1.5 opacity-0 group-focus-within:opacity-100 transition-opacity">
                 <ShieldCheck size={16} />
@@ -196,7 +196,7 @@ export default function TransfersPage() {
           <button
             type="submit"
             disabled={submitting || !form.amount || !form.recipientAccount || !form.recipientBank}
-            className="w-full bg-[#1A1A2E] text-white py-5 rounded-2xl font-black text-lg hover:bg-[#252545] transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-gray-200"
+            className="w-full bg-[#4A90e2] text-white py-5 rounded-2xl font-black text-lg hover:bg-[#252545] transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-gray-200"
           >
             {submitting ? 'Processing Transfer...' : 'Confirm Transfer'}
             <ArrowRight size={20} />

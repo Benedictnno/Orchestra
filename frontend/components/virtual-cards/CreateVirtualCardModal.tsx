@@ -87,7 +87,7 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-lg font-bold text-[#1A1A2E]">Create Virtual Card</h2>
+            <h2 className="text-lg font-bold text-[#4A90e2]">Create Virtual Card</h2>
             <p className="text-xs text-gray-500 mt-0.5">Set up in under 30 seconds</p>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition">

@@ -43,7 +43,7 @@ export default function VirtualCardsPage() {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A2E]">Virtual Cards</h1>
+          <h1 className="text-2xl font-bold text-[#4A90e2]">Virtual Cards</h1>
           <p className="text-gray-500 text-sm mt-1">Isolated cards for subscriptions and online spending</p>
         </div>
         <button

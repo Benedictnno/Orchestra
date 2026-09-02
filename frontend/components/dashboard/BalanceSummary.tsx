@@ -30,7 +30,7 @@ export default function BalanceSummary() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <div className="bg-[#1A1A2E] rounded-3xl p-8 text-white lg:col-span-2 relative overflow-hidden flex flex-col justify-between min-h-[240px] md:min-h-[280px]">
+      <div className="bg-[#4A90e2] rounded-3xl p-8 text-white lg:col-span-2 relative overflow-hidden flex flex-col justify-between min-h-[240px] md:min-h-[280px]">
         {/* Background circuit pattern */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg width="100%" height="100%" viewBox="0 0 400 200">
@@ -96,7 +96,7 @@ export default function BalanceSummary() {
                   </div>
                 </div>
                 <div className="text-right shrink-0 ml-2">
-                  <p className="text-xs font-black text-[#E94560]">{toNaira(card.availableBalance)}</p>
+                  <p className="text-xs font-black text-green-500">{toNaira(card.availableBalance)}</p>
                   <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Live</p>
                 </div>
               </div>
@@ -124,7 +124,7 @@ export default function BalanceSummary() {
                 ).then(() => refetch())
               }
             }}
-            className="w-full py-2.5 rounded-xl bg-[#1A1A2E] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#252545] transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-xl bg-[#4A90e2] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#252545] transition-all flex items-center justify-center gap-2"
           >
             <RefreshCw size={12} />
             Check All Card Balances

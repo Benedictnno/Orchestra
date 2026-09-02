@@ -8,9 +8,9 @@
 
 @theme inline {
   --font-sans: var(--font-sans);
-  --color-brand: #E94560;
-  --color-dark: #1A1A2E;
-  --color-dark-2: #16213E;
+  --color-brand: #FFFFFF;
+  --color-dark: #4A90e2;
+  --color-dark-2: #3B78C4;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -50,6 +50,29 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Glassmorphism button utility */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  box-shadow: 0 4px 16px 0 rgba(74, 144, 226, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 6px 20px 0 rgba(74, 144, 226, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-glass:active {
+  transform: translateY(0px);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Scrollbar hide utility */
@@ -94,20 +117,21 @@ body {
 
 /* Focus ring */
 *:focus-visible {
-  outline: 2px solid #E94560;
+  outline: 2px solid #4A90e2;
   outline-offset: 2px;
   border-radius: 8px;
 }
 
 /* Range input accent */
 input[type="range"] {
-  accent-color: #E94560;
+  accent-color: #4A90e2;
   height: 6px;
   border-radius: 4px;
 }
 
-:root {
-  --background: oklch(1 0 0);
+:root,
+.light {
+  --background: oklch(0.985 0.002 247.858);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -115,15 +139,15 @@ input[type="range"] {
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.96 0.005 247.858);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.96 0.005 247.858);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.96 0.005 247.858);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.91 0.005 247.858);
+  --input: oklch(0.91 0.005 247.858);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);

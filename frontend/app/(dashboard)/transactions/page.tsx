@@ -46,7 +46,7 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pt-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-[#1A1A2E] tracking-tight">Transaction History</h1>
+          <h1 className="text-3xl font-extrabold text-[#4A90e2] tracking-tight">Transaction History</h1>
           <p className="text-gray-500 font-medium text-sm mt-1">
             Analyze and manage your spending across all connected cards.
           </p>
@@ -64,7 +64,7 @@ export default function TransactionsPage() {
 
       {/* Insight chips */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-        <div className="bg-[#1A1A2E] text-white p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+        <div className="bg-[#4A90e2] text-white p-6 rounded-2xl shadow-xl relative overflow-hidden group">
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-all duration-700" />
           <h3 className="text-lg font-bold mb-2">Smart Categorization</h3>
           <p className="text-white/60 text-sm leading-relaxed">

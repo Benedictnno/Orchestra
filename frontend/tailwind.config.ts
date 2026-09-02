@@ -11,9 +11,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: '#E94560',
-        dark: '#1A1A2E',
-        'dark-2': '#16213E',
+        brand: '#FFFFFF',
+        dark: '#4A90e2',
+        'dark-2': '#3B78C4',
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",

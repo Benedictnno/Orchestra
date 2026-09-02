@@ -163,8 +163,8 @@ export default function ModernVirtualCard({ card, isSelected, onClick, onPause, 
 
         {/* BACK SIDE */}
         <div 
-          className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl rotate-y-180 bg-[#1A1A2E]"
-          style={{ background: `linear-gradient(135deg, #1A1A2E 0%, ${bgColor} 100%)` }}
+          className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl rotate-y-180 bg-[#4A90e2]"
+          style={{ background: `linear-gradient(135deg, #4A90e2 0%, ${bgColor} 100%)` }}
         >
           <div className="relative h-full w-full p-8 flex flex-col justify-between text-white">
             <div className="flex justify-between items-center">
@@ -215,7 +215,7 @@ export default function ModernVirtualCard({ card, isSelected, onClick, onPause, 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="absolute inset-0 bg-[#1A1A2E]/95 backdrop-blur-md rounded-3xl z-30 p-8 flex flex-col justify-between"
+                className="absolute inset-0 bg-[#4A90e2]/95 backdrop-blur-md rounded-3xl z-30 p-8 flex flex-col justify-between"
                 onClick={e => e.stopPropagation()}
               >
                 <div>
@@ -235,7 +235,7 @@ export default function ModernVirtualCard({ card, isSelected, onClick, onPause, 
                           <option value="">No cards connected</option>
                         ) : (
                           physicalCards.map(c => (
-                            <option key={c._id} value={c._id} className="bg-[#1A1A2E]">{c.label} ({c.bank})</option>
+                            <option key={c._id} value={c._id} className="bg-[#4A90e2]">{c.label} ({c.bank})</option>
                           ))
                         )}
                       </select>

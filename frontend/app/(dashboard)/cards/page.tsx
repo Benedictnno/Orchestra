@@ -42,7 +42,7 @@ export default function CardsPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A2E]">My Cards</h1>
+        <h1 className="text-2xl font-bold text-[#4A90e2]">My Cards</h1>
         <p className="text-gray-500 text-sm mt-1">Manage your physical ATM cards across all banks</p>
       </div>
 

@@ -35,7 +35,7 @@ export default function RoutingModeSelector({ selected, onChange, onSave }: Rout
           <div className="flex items-center gap-3">
             <span className="text-xl">{m.emoji}</span>
             <div className="flex-1">
-              <p className={`font-semibold text-sm ${selected === m.value ? 'text-[#E94560]' : 'text-[#1A1A2E]'}`}>
+              <p className={`font-semibold text-sm ${selected === m.value ? 'text-[#E94560]' : 'text-[#4A90e2]'}`}>
                 {m.label}
               </p>
               <p className="text-xs text-gray-500 mt-0.5">{m.desc}</p>

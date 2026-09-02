@@ -55,7 +55,7 @@ export default function DashboardPage() {
         <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
       )}
       <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#1A1A2E]">Welcome {user?.name || 'User'} 👋</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#4A90e2]">Welcome {user?.name || 'User'} </h1>
         <p className="text-gray-500 text-sm mt-1">Here's your financial overview for today</p>
       </div>
 
@@ -67,21 +67,21 @@ export default function DashboardPage() {
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Send size={20} className="md:w-6 md:h-6" />
           </div>
-          <span className="text-xs md:text-sm font-bold text-[#1A1A2E]">Send Money</span>
+          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">Send Money</span>
         </Link>
         <Link href="/bills" className="bg-white border-2 border-gray-50 hover:border-[#E94560]/20 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all group">
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Zap size={20} className="md:w-6 md:h-6" />
           </div>
-          <span className="text-xs md:text-sm font-bold text-[#1A1A2E]">Pay Bills</span>
+          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">Pay Bills</span>
         </Link>
         <Link href="/transactions" className="bg-white border-2 border-gray-50 hover:border-[#E94560]/20 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all group">
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
             <ArrowUpRight size={20} className="md:w-6 md:h-6" />
           </div>
-          <span className="text-xs md:text-sm font-bold text-[#1A1A2E]">History</span>
+          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">History</span>
         </Link>
-        <Link href="/chat" className="bg-[#1A1A2E] p-4 rounded-2xl flex flex-col items-center gap-2 transition-all hover:scale-[1.02] group">
+        <Link href="/chat" className="bg-[#4A90e2] p-4 rounded-2xl flex flex-col items-center gap-2 transition-all hover:scale-[1.02] group">
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#E94560] text-white flex items-center justify-center shadow-lg shadow-[#E94560]/20">
             <span className="text-lg md:text-xl">✦</span>
           </div>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         <SpendingChart />
 
         <div className="bg-white rounded-2xl border p-5 md:p-6">
-          <h3 className="font-bold text-[#1A1A2E] mb-4">Recent Transactions</h3>
+          <h3 className="font-bold text-[#4A90e2] mb-4">Recent Transactions</h3>
           {txLoading ? (
             <div className="space-y-3 animate-pulse">
               {[1,2,3,4].map(i => (
@@ -119,7 +119,7 @@ export default function DashboardPage() {
                     {tx.merchant?.[0] ?? '?'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-[#1A1A2E] truncate">{tx.merchant}</p>
+                    <p className="font-medium text-sm text-[#4A90e2] truncate">{tx.merchant}</p>
                     <p className="text-[10px] md:text-xs text-gray-400 capitalize truncate">{tx.category} · {timeAgo(tx.transactionDate)}</p>
                   </div>
                   <p className={`font-semibold text-xs md:text-sm shrink-0 ${tx.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>

@@ -14,7 +14,7 @@ export default function ErrorState({
       <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
         ⚠️
       </div>
-      <h3 className="font-bold text-[#1A1A2E] text-lg mb-2">{title}</h3>
+      <h3 className="font-bold text-[#4A90e2] text-lg mb-2">{title}</h3>
       <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">{description}</p>
       {onRetry && (
         <button

@@ -74,7 +74,7 @@ export default function TransactionSimulator() {
         <div className="w-8 h-8 bg-[#E94560]/10 rounded-lg flex items-center justify-center">
           <span className="text-[#E94560] text-base">⚡</span>
         </div>
-        <h2 className="text-xl font-bold text-[#1A1A2E]">Simulate a Transaction</h2>
+        <h2 className="text-xl font-bold text-[#4A90e2]">Simulate a Transaction</h2>
       </div>
 
       {/* Inputs */}
@@ -137,7 +137,7 @@ export default function TransactionSimulator() {
       {result?.success && (
         <div className="space-y-3">
           <p className="text-sm text-gray-500 font-medium">
-            Routing mode: <span className="font-bold text-[#1A1A2E] capitalize">{result.mode}</span>
+            Routing mode: <span className="font-bold text-[#4A90e2] capitalize">{result.mode}</span>
           </p>
 
           <AnimatePresence>
@@ -154,12 +154,12 @@ export default function TransactionSimulator() {
                     {s.step}
                   </div>
                   <div>
-                    <p className="font-semibold text-sm text-[#1A1A2E]">{s.cardLabel}</p>
+                    <p className="font-semibold text-sm text-[#4A90e2]">{s.cardLabel}</p>
                     <p className="text-xs text-gray-500">{s.bank} · {s.cardProgram}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-[#1A1A2E]">{toNaira(s.charged)}</p>
+                  <p className="font-bold text-[#4A90e2]">{toNaira(s.charged)}</p>
                   <p className="text-xs text-gray-400">Bal: {toNaira(s.remaining)}</p>
                 </div>
               </motion.div>

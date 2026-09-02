@@ -76,7 +76,7 @@ export default function BillsPage() {
   return (
     <div className="max-w-2xl mx-auto pb-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#1A1A2E] tracking-tight">Pay Bills</h1>
+        <h1 className="text-3xl font-extrabold text-[#4A90e2] tracking-tight">Pay Bills</h1>
         <p className="text-gray-500 font-medium text-sm mt-1">
           Settled utilities and services instantly using your connected cards.
         </p>
@@ -101,7 +101,7 @@ export default function BillsPage() {
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cat.color}`}>
                     <cat.icon size={20} />
                   </div>
-                  <span className="text-[10px] font-bold text-[#1A1A2E] uppercase">{cat.label}</span>
+                  <span className="text-[10px] font-bold text-[#4A90e2] uppercase">{cat.label}</span>
                 </button>
               ))}
             </div>
@@ -124,7 +124,7 @@ export default function BillsPage() {
                         ? 'border-[#E94560] bg-[#E94560]/5' 
                         : 'border-gray-50 hover:border-gray-100 bg-gray-50/50'}`}
                   >
-                    <p className="font-bold text-[#1A1A2E] text-sm mb-0.5">{card.label}</p>
+                    <p className="font-bold text-[#4A90e2] text-sm mb-0.5">{card.label}</p>
                     <p className="text-xs text-gray-500 font-medium mb-3">**** {card.pan.slice(-4)}</p>
                     <p className="text-sm font-black text-[#E94560]">{toNaira(card.availableBalance)}</p>
                   </button>
@@ -143,7 +143,7 @@ export default function BillsPage() {
                   required
                   value={form.billerCode}
                   onChange={e => setForm(f => ({ ...f, billerCode: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
                 >
                   <option value="">Select Biller</option>
                   {selectedCat.billers.map(b => <option key={b} value={b}>{b}</option>)}
@@ -157,21 +157,21 @@ export default function BillsPage() {
                   placeholder="ID Number"
                   value={form.customerId}
                   onChange={e => setForm(f => ({ ...f, customerId: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
                 />
               </div>
             </div>
             
             <div className="relative group">
               <label className="absolute left-5 top-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider transition-all group-focus-within:text-[#E94560]">Amount to Pay</label>
-              <span className="absolute left-5 bottom-4 text-2xl font-black text-[#1A1A2E]">₦</span>
+              <span className="absolute left-5 bottom-4 text-2xl font-black text-[#4A90e2]">₦</span>
               <input 
                 type="number"
                 required
                 placeholder="0.00"
                 value={form.amount}
                 onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 pl-10 pr-6 text-2xl font-black text-[#1A1A2E] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 pl-10 pr-6 text-2xl font-black text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
               />
             </div>
           </section>

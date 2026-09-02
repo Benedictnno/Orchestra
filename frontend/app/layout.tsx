@@ -3,6 +3,7 @@ import { Inter, Geist } from 'next/font/google'
 import './globals.css'
 import ToastProvider from '@/components/shared/ToastProvider'
 import QueryProvider from '@/components/shared/QueryProvider'
+import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -17,14 +18,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}>
-      <body className="min-h-full bg-gray-50 text-gray-900">
-        <QueryProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </QueryProvider>
+    <html lang="en" suppressHydrationWarning className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}>
+      <body className="min-h-full bg-background text-foreground transition-colors duration-200">
+        <ThemeProvider defaultTheme="system">
+          <QueryProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
 }
+

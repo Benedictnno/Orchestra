@@ -162,7 +162,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                             {t.amount >= 0 ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
                           </div>
                           <div>
-                            <p className="font-bold text-[#1A1A2E] text-sm group-hover:text-[#E94560] transition-colors">
+                            <p className="font-bold text-[#4A90e2] text-sm group-hover:text-[#E94560] transition-colors">
                               {t.merchant}
                             </p>
                             <div className="flex items-center gap-1.5 mt-0.5">

@@ -74,7 +74,7 @@ export default function BusinessPage() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A2E]">Business Cards</h1>
+          <h1 className="text-2xl font-bold text-[#4A90e2]">Business Cards</h1>
           <p className="text-gray-500 text-sm mt-1">Manage team cards, budgets, and approval workflows</p>
         </div>
         <button className="flex items-center gap-2 bg-[#E94560] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#d63850] transition">
@@ -101,10 +101,10 @@ export default function BusinessPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Business</span>
-                      <h3 className="font-bold text-[#1A1A2E] mt-2">{card.label}</h3>
+                      <h3 className="font-bold text-[#4A90e2] mt-2">{card.label}</h3>
                       <p className="text-xs text-gray-400">{card.department} · {card.cardHolder}</p>
                     </div>
-                    <p className="font-bold text-[#1A1A2E]">{toNaira(card.availableBalance)}</p>
+                    <p className="font-bold text-[#4A90e2]">{toNaira(card.availableBalance)}</p>
                   </div>
                   <div>
                     <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -126,7 +126,7 @@ export default function BusinessPage() {
           {/* Approval queue */}
           <div className="bg-white rounded-2xl border p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-[#1A1A2E]">Approval Queue</h2>
+              <h2 className="font-bold text-[#4A90e2]">Approval Queue</h2>
               {requests.length > 0 && (
                 <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">
                   {requests.length} pending

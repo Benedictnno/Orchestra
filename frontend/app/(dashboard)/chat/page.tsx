@@ -103,9 +103,9 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto h-[calc(100vh-12rem)] flex flex-col bg-white rounded-3xl border shadow-sm overflow-hidden">
+    <div className="max-w-4xl mx-auto h-full flex flex-col bg-white rounded-3xl border shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b flex items-center justify-between bg-[#1A1A2E] text-white">
+      <div className="p-6 border-b flex items-center justify-between bg-[#4A90e2] text-white">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#E94560] flex items-center justify-center shadow-lg shadow-[#E94560]/20">
             <Sparkles size={20} className="text-white" />
@@ -145,7 +145,7 @@ export default function ChatPage() {
           messages.map((m, i) => (
             <div key={i} className={`flex gap-4 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border
-                ${m.role === 'user' ? 'bg-white text-gray-600' : 'bg-[#1A1A2E] text-white'}`}>
+                ${m.role === 'user' ? 'bg-white text-gray-600' : 'bg-[#4A90e2] text-white'}`}>
                 {m.role === 'user' ? <User size={18} /> : <Bot size={18} />}
               </div>
               <div className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed shadow-sm
@@ -159,7 +159,7 @@ export default function ChatPage() {
         )}
         {loading && (
           <div className="flex gap-4">
-            <div className="w-9 h-9 rounded-xl bg-[#1A1A2E] text-white flex items-center justify-center shrink-0 shadow-sm border">
+            <div className="w-9 h-9 rounded-xl bg-[#4A90e2] text-white flex items-center justify-center shrink-0 shadow-sm border">
               <Bot size={18} />
             </div>
             <div className="bg-white border rounded-2xl rounded-tl-none p-4 flex gap-1 items-center shadow-sm">

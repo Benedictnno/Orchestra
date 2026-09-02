@@ -161,7 +161,7 @@ export default function LandingPage() {
           to { opacity: 1; }
         }
         .hero-gradient {
-          background: linear-gradient(135deg, #1A1A2E 0%, #16213E 40%, #0F3460 70%, #1A1A2E 100%);
+          background: linear-gradient(135deg, #4A90e2 0%, #16213E 40%, #0F3460 70%, #4A90e2 100%);
           background-size: 400% 400%;
           animation: gradientShift 12s ease infinite;
         }
@@ -179,7 +179,7 @@ export default function LandingPage() {
 
       {/* ── NAV ─────────────────────────────────────────── */}
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-[#1A1A2E]/95 backdrop-blur-md shadow-xl' : 'bg-transparent'
+        scrolled ? 'bg-[#4A90e2]/95 backdrop-blur-md shadow-xl' : 'bg-transparent'
       }`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -281,7 +281,7 @@ export default function LandingPage() {
           {/* Right — floating cards */}
           <div className="relative h-96 lg:h-[450px] hidden lg:block">
             <div style={{ '--rot': '-8deg' } as React.CSSProperties} className="absolute top-0 left-24 z-30">
-              <CardChip color="linear-gradient(135deg,#1A1A2E,#E94560)" label="Master Orchestrator" bank="Ultimate Card" pan="5399 •••• •••• 8888" delay="0s" />
+              <CardChip color="linear-gradient(135deg,#4A90e2,#E94560)" label="Master Orchestrator" bank="Ultimate Card" pan="5399 •••• •••• 8888" delay="0s" />
             </div>
             <div style={{ '--rot': '4deg' } as React.CSSProperties} className="absolute top-32 left-52 z-20">
               <CardChip color="linear-gradient(135deg,#0F3460,#533483)" label="Primary Debit" bank="Physical Card" pan="4111 •••• •••• 1234" delay="0.8s" />
@@ -317,7 +317,7 @@ export default function LandingPage() {
       </section> */}
 
       {/* ── FEATURES ─────────────────────────────────────── */}
-      <section id="features" className="bg-[#1A1A2E] py-24">
+      <section id="features" className="bg-[#4A90e2] py-24">
         <div className="max-w-6xl mx-auto px-6">
           <div
             ref={featuresRef.ref}
@@ -383,7 +383,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="bg-[#1A1A2E] border-t border-white/10 py-10">
+      <footer className="bg-[#4A90e2] border-t border-white/10 py-10">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#E94560] flex items-center justify-center">

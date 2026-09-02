@@ -3,7 +3,7 @@ import LoginForm from '@/components/auth/LoginForm'
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[#1A1A2E] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#4A90e2] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center gap-2 justify-center mb-8">
@@ -14,7 +14,7 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-2xl">
-          <h1 className="text-2xl font-bold text-[#1A1A2E] mb-1">Welcome back</h1>
+          <h1 className="text-2xl font-bold text-[#4A90e2] mb-1">Welcome back</h1>
           <p className="text-gray-500 text-sm mb-6">Sign in to your financial OS</p>
 
           <LoginForm />
