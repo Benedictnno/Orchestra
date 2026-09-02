@@ -74,10 +74,6 @@ export default function Sidebar() {
             <LogOut size={18} />
             Logout
           </button>
-          <div className="bg-white/5 rounded-xl p-3">
-            <p className="text-white/40 text-xs">Hackathon Demo</p>
-            <p className="text-white/70 text-xs mt-0.5">Interswitch × Enyata 2025</p>
-          </div>
         </div>
       </aside>
 
