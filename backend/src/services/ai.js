@@ -15,5 +15,5 @@ export function getGroqClient() {
 
 export const MODELS = {
   PREMIUM: 'llama-3.3-70b-versatile',
-  FAST:    'llama-3.1-8b-instant',
+  FAST:    'openai/gpt-oss-120b',
 }
