@@ -7,7 +7,7 @@ import { BadRequestError } from '../../shared/errors/httpErrors.js'
  * Get routing rule for a user.
  */
 export async function getRoutingRule(userId) {
-  return RoutingRule.findOne({ userId }).populate('primaryCardId cardOrder')
+  return RoutingRule.findOne({ userId }).populate('primaryCardId cardOrder').lean()
 }
 
 /**
@@ -18,14 +18,14 @@ export async function updateRoutingRule(userId, { mode, primaryCardId, cardOrder
     { userId },
     { mode, primaryCardId, cardOrder },
     { upsert: true, new: true, runValidators: true }
-  )
+  ).lean()
 }
 
 /**
  * Calculate multi-card payment allocations against available balances.
  */
 export async function resolvePayment(userId, amountKobo) {
-  const rule = await RoutingRule.findOne({ userId }).populate('primaryCardId cardOrder')
+  const rule = await RoutingRule.findOne({ userId }).populate('primaryCardId cardOrder').lean()
   const withBalances = await cardsService.getUserCardsWithBalances(userId, rule?.cardOrder || [])
   const mode = rule?.mode ?? 'auto-split'
 

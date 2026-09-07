@@ -7,7 +7,7 @@ import { transactionsService } from '../transactions/index.js'
  */
 export async function getInsights(userId) {
   // Return cached insights if less than 24 hours old
-  const cached = await Insight.findOne({ userId }).sort({ generatedAt: -1 })
+  const cached = await Insight.findOne({ userId }).sort({ generatedAt: -1 }).lean()
   if (cached && Date.now() - new Date(cached.generatedAt).getTime() < 24 * 60 * 60 * 1000) {
     return { insights: cached, fromCache: true }
   }

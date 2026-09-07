@@ -8,7 +8,7 @@ import { NotFoundError } from '../../shared/errors/httpErrors.js'
  * Fetch all virtual cards for a user.
  */
 export async function getVirtualCards(userId) {
-  return VirtualCard.find({ userId }).populate('parentCardId', 'label bank color')
+  return VirtualCard.find({ userId }).populate('parentCardId', 'label bank color').lean()
 }
 
 /**

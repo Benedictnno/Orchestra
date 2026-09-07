@@ -13,5 +13,6 @@ const approvalSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 approvalSchema.index({ businessCardId: 1, status: 1 })
+approvalSchema.index({ businessCardId: 1, createdAt: -1 })
 
 export default mongoose.model('ApprovalRequest', approvalSchema)

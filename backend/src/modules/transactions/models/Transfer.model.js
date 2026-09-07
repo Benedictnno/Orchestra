@@ -17,5 +17,6 @@ const transferSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 transferSchema.index({ userId: 1, createdAt: -1 })
+transferSchema.index({ userId: 1, status: 1 })
 
 export default mongoose.model('Transfer', transferSchema)

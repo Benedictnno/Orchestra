@@ -30,9 +30,11 @@ describe('resolvePayment — auto-split mode', () => {
     const c1 = fakeCard('card1', 5000_00)
     const c2 = fakeCard('card2', 3000_00)
     RoutingRule.findOne.mockReturnValue({
-      populate: jest.fn().mockResolvedValue({
-        mode: 'auto-split',
-        cardOrder: [c1, c2],
+      populate: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({
+          mode: 'auto-split',
+          cardOrder: [c1, c2],
+        })
       })
     })
     cardsService.getUserCardsWithBalances.mockResolvedValue([c1, c2])

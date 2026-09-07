@@ -15,5 +15,6 @@ const businessCardSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 businessCardSchema.index({ businessUserId: 1 })
+businessCardSchema.index({ businessUserId: 1, status: 1 })
 
 export default mongoose.model('BusinessCard', businessCardSchema)

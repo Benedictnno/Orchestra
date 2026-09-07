@@ -4,6 +4,7 @@ import { cardsService } from '../cards/index.js'
 import { routingService } from '../routing/index.js'
 import { maskPan } from '../../shared/utils/formatters.js'
 import { NotFoundError, BadRequestError } from '../../shared/errors/httpErrors.js'
+import { withTransaction } from '../../shared/database/transaction.js'
 
 /**
  * Query paginated transactions with flexible filtering.
@@ -21,12 +22,12 @@ export async function getTransactions(userId, { cardId, category, from, to, limi
 
   const skip = (Number(page) - 1) * Number(limit)
   const [transactions, total] = await Promise.all([
-    Transaction.find(filter).sort({ transactionDate: -1 }).skip(skip).limit(Number(limit)),
+    Transaction.find(filter).sort({ transactionDate: -1 }).skip(skip).limit(Number(limit)).lean(),
     Transaction.countDocuments(filter),
   ])
 
   const masked = transactions.map(t => {
-    const obj = t.toObject()
+    const obj = t.toObject ? t.toObject() : t
     return { ...obj, pan: maskPan(obj.pan) }
   })
 
@@ -37,9 +38,9 @@ export async function getTransactions(userId, { cardId, category, from, to, limi
  * Get a specific transaction by ID.
  */
 export async function getTransactionById(userId, transactionId) {
-  const tx = await Transaction.findOne({ _id: transactionId, userId })
+  const tx = await Transaction.findOne({ _id: transactionId, userId }).lean()
   if (!tx) throw new NotFoundError('Transaction not found')
-  const txObj = tx.toObject()
+  const txObj = tx.toObject ? tx.toObject() : tx
   return { ...txObj, pan: maskPan(txObj.pan) }
 }
 
@@ -77,40 +78,46 @@ export async function createTransaction(userId, data) {
     // If anomaly service not yet available, skip
   }
 
-  // 3. Save the transaction record
+  // 3. Save the transaction record & deduct balances within a transaction boundary
   const splitData = resolvedSplits.map(s => ({ cardId: s.card._id, amount: s.charge || s.amount }))
   
-  const transaction = await Transaction.create({
-    pan: resolvedPrimary.pan,
-    cardId: resolvedPrimary._id,
-    userId,
-    amount,
-    currency: 'NGN',
-    merchant,
-    merchantCategory,
-    category,
-    narration,
-    transactionDate: transactionDate || new Date(),
-    reference: randomUUID(),
-    isAnomaly,
-    anomalyReason,
-    simulatedSplit: splitData,
+  return withTransaction(async (session) => {
+    const [transaction] = await Transaction.create([{
+      pan: resolvedPrimary.pan,
+      cardId: resolvedPrimary._id,
+      userId,
+      amount,
+      currency: 'NGN',
+      merchant,
+      merchantCategory,
+      category,
+      narration,
+      transactionDate: transactionDate || new Date(),
+      reference: randomUUID(),
+      isAnomaly,
+      anomalyReason,
+      simulatedSplit: splitData,
+    }], session ? { session } : {})
+
+    // 4. Update balance cache to reflect deduction
+    await Promise.all(resolvedSplits.map(s => {
+      const chargeAmt = s.charge || s.amount
+      return cardsService.deductBalanceByPan(s.card.pan, chargeAmt)
+    }))
+
+    const txObj = transaction.toObject ? transaction.toObject() : transaction
+    return { ...txObj, pan: maskPan(txObj.pan) }
   })
-
-  // 4. Update balance cache to reflect deduction
-  await Promise.all(resolvedSplits.map(s => {
-    const chargeAmt = s.charge || s.amount
-    return cardsService.deductBalanceByPan(s.card.pan, chargeAmt)
-  }))
-
-  const txObj = transaction.toObject()
-  return { ...txObj, pan: maskPan(txObj.pan) }
 }
 
 /**
  * Record an immutable transaction (called by other services like transfers, bills, virtual-cards).
  */
-export async function recordTransaction(txData) {
+export async function recordTransaction(txData, session = null) {
+  if (session) {
+    const [tx] = await Transaction.create([txData], { session })
+    return tx
+  }
   return Transaction.create(txData)
 }
 
@@ -119,7 +126,7 @@ export async function recordTransaction(txData) {
  */
 export async function getSpendingSummary(userId, days = 30) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-  const txns  = await Transaction.find({ userId, transactionDate: { $gte: since } })
+  const txns  = await Transaction.find({ userId, transactionDate: { $gte: since } }).lean()
 
   const byCategory = txns.reduce((acc, t) => {
     const cat = t.category || 'other'
@@ -140,7 +147,7 @@ export async function getSpendingSummary(userId, days = 30) {
 
   // Calculate daily spending for charts
   const dailySpend = txns.reduce((acc, t) => {
-    const date = t.transactionDate.toISOString().split('T')[0]
+    const date = new Date(t.transactionDate).toISOString().split('T')[0]
     acc[date] = (acc[date] || 0) + t.amount
     return acc
   }, {})
@@ -168,6 +175,7 @@ export async function getAnomalyTransactions(userId, limit = 50) {
   return Transaction.find({ userId, isAnomaly: true })
     .sort({ transactionDate: -1 })
     .limit(limit)
+    .lean()
 }
 
 /**
@@ -178,5 +186,6 @@ export async function flagTransactionAnomaly(transactionId, reason) {
     transactionId,
     { isAnomaly: true, anomalyReason: reason },
     { new: true }
-  )
+  ).lean()
 }
+

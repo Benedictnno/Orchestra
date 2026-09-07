@@ -8,7 +8,7 @@ import { NotFoundError, BadRequestError, ConflictError } from '../../shared/erro
  * Fetch all cards owned by a user with cached or live balances attached.
  */
 export async function getUserCards(userId) {
-  const cards = await Card.find({ userId })
+  const cards = await Card.find({ userId }).lean()
   if (!cards.length) return []
 
   const pans = cards.map(c => c.pan)
@@ -18,7 +18,7 @@ export async function getUserCards(userId) {
   const cachedBalances = await CardBalance.find({
     pan: { $in: pans },
     fetchedAt: { $gte: fiveMinsAgo }
-  }).sort({ fetchedAt: -1 })
+  }).sort({ fetchedAt: -1 }).lean()
 
   const cachedMap = new Map()
   for (const cb of cachedBalances) {
@@ -53,8 +53,9 @@ export async function getUserCards(userId) {
       return res
     })
 
+    const cardData = typeof card.toObject === 'function' ? card.toObject() : card
     return {
-      ...card.toObject(),
+      ...cardData,
       pan:              maskPan(card.pan),
       availableBalance: bal.availableBalance ?? 0,
       ledgerBalance:    bal.ledgerBalance ?? 0,
@@ -73,7 +74,8 @@ export async function getUserCardsWithBalances(userId, cardOrder = []) {
 
   return Promise.all(cards.map(async (card) => {
     const bal = await card360.getBalance(card.pan, card.cardType)
-    return { ...card.toObject(), available: bal.availableBalance ?? 0 }
+    const cardData = typeof card.toObject === 'function' ? card.toObject() : card
+    return { ...cardData, available: bal.availableBalance ?? 0 }
   }))
 }
 
@@ -81,10 +83,10 @@ export async function getUserCardsWithBalances(userId, cardOrder = []) {
  * Get a specific card by ID.
  */
 export async function getCardById(userId, cardId) {
-  const card = await Card.findOne({ _id: cardId, userId })
+  const card = await Card.findOne({ _id: cardId, userId }).lean()
   if (!card) throw new NotFoundError('Card not found')
   return {
-    ...card.toObject(),
+    ...card,
     pan: maskPan(card.pan),
   }
 }

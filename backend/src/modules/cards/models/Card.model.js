@@ -27,5 +27,7 @@ const cardSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 cardSchema.index({ userId: 1 })
+cardSchema.index({ userId: 1, cardStatus: 1 })
+cardSchema.index({ userId: 1, isDefault: 1 })
 
 export default mongoose.model('Card', cardSchema)

@@ -98,7 +98,7 @@ Important rules:
  * Retrieve chat history for a user.
  */
 export async function getChatHistory(userId) {
-  const chat = await Chat.findOne({ userId })
+  const chat = await Chat.findOne({ userId }).lean()
   return { history: chat ? chat.messages : [] }
 }
 

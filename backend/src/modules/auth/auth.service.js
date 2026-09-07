@@ -11,7 +11,7 @@ function signToken(id) {
 }
 
 export async function registerUser({ name, email, password, role, businessName }) {
-  const exists = await User.findOne({ email })
+  const exists = await User.findOne({ email }).select('_id').lean()
   if (exists) {
     throw new ConflictError('Email already registered')
   }
@@ -64,7 +64,7 @@ export async function verifyAndResolveUser(token) {
     throw new UnauthorizedError('Token has been revoked — please log in again')
   }
 
-  const user = await User.findById(decoded.id).select('-password')
+  const user = await User.findById(decoded.id).select('-password').lean()
   if (!user) {
     throw new UnauthorizedError('User not found')
   }
@@ -73,5 +73,5 @@ export async function verifyAndResolveUser(token) {
 }
 
 export async function findUserById(userId) {
-  return User.findById(userId).select('-password')
+  return User.findById(userId).select('-password').lean()
 }

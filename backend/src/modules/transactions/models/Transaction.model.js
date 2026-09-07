@@ -29,6 +29,8 @@ const txSchema = new mongoose.Schema({
 
 txSchema.index({ userId: 1, transactionDate: -1 })
 txSchema.index({ userId: 1, category: 1 })
+txSchema.index({ userId: 1, merchant: 1, transactionDate: -1 })
+txSchema.index({ isAnomaly: 1, createdAt: -1 })
 txSchema.index({ reference: 1 }, { unique: true, sparse: true })
 
 export default mongoose.model('Transaction', txSchema)

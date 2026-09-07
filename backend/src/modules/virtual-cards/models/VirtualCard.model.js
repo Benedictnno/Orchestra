@@ -15,5 +15,7 @@ const virtualCardSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 virtualCardSchema.index({ userId: 1 })
+virtualCardSchema.index({ userId: 1, cardStatus: 1 })
+virtualCardSchema.index({ parentCardId: 1 })
 
 export default mongoose.model('VirtualCard', virtualCardSchema)

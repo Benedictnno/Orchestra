@@ -16,5 +16,6 @@ const billPaymentSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 billPaymentSchema.index({ userId: 1, createdAt: -1 })
+billPaymentSchema.index({ userId: 1, status: 1 })
 
 export default mongoose.model('BillPayment', billPaymentSchema)
