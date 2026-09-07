@@ -1,11 +1,11 @@
 import { tokenStorage } from '@/utils/tokenStorage';
 
-const BASE_URL = 'https://orchestra-y8vf.onrender.com';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://orchestra-y8vf.onrender.com';
 
 export async function apiClient<T>(
   path: string,
   method: string,
-  body?: any,
+  body?: unknown,
   headers: Record<string, string> = {}
 ): Promise<T> {
   const token = tokenStorage.getToken();
@@ -22,7 +22,6 @@ export async function apiClient<T>(
 
   if (res.status === 401) {
     tokenStorage.clearToken();
-    // window.location.href = '/login'; // Optional: Redirect to login
   }
 
   const data = await res.json();
