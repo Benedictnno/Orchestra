@@ -3,15 +3,15 @@
  */
 import { jest } from '@jest/globals'
 
-jest.mock('../../transactions/index.js', () => ({
+jest.unstable_mockModule('../../transactions/index.js', () => ({
   transactionsService: {
     getTransactions: jest.fn(),
     flagTransactionAnomaly: jest.fn(),
   }
 }))
 
-import { transactionsService } from '../../transactions/index.js'
-import { detectAnomalies } from '../services/anomaly.service.js'
+const { transactionsService } = await import('../../transactions/index.js')
+const { detectAnomalies } = await import('../services/anomaly.service.js')
 
 const tx = (overrides = {}) => ({
   category: 'food',

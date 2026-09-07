@@ -66,8 +66,8 @@ export default function AddCardModal({ open, onClose, onAdded }: AddCardModalPro
       toast.success('Card added successfully!')
       onAdded()
       onClose()
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to add card')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to add card')
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback, useSyncExternalStore } from 'react'
 
 export type Theme = 'light' | 'dark' | 'system'
 export type ResolvedTheme = 'light' | 'dark'
@@ -15,10 +15,32 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 const STORAGE_KEY = 'orchestra_theme'
+const emptySubscribe = () => () => {}
+
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
+}
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'dark'
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyThemeToDOM(targetResolved: ResolvedTheme) {
+  const root = document.documentElement
+  if (targetResolved === 'dark') {
+    root.classList.add('dark')
+    root.classList.remove('light')
+    root.style.colorScheme = 'dark'
+  } else {
+    root.classList.add('light')
+    root.classList.remove('dark')
+    root.style.colorScheme = 'light'
+  }
 }
 
 export function ThemeProvider({
@@ -28,57 +50,43 @@ export function ThemeProvider({
   children: React.ReactNode
   defaultTheme?: Theme
 }) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme)
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('dark')
-  const [mounted, setMounted] = useState(false)
-
-  // Initialize theme from storage on mount
-  useEffect(() => {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return defaultTheme
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
-      const initialTheme = stored || defaultTheme
-      setThemeState(initialTheme)
-
-      const resolved = initialTheme === 'system' ? getSystemTheme() : initialTheme
-      setResolvedTheme(resolved)
-      applyTheme(resolved)
+      return stored || defaultTheme
     } catch {
-      // Ignore localStorage errors in restricted environments
+      return defaultTheme
     }
-    setMounted(true)
-  }, [defaultTheme])
+  })
+  const mounted = useIsMounted()
 
-  const applyTheme = (targetResolved: ResolvedTheme) => {
-    const root = document.documentElement
-    if (targetResolved === 'dark') {
-      root.classList.add('dark')
-      root.classList.remove('light')
-      root.style.colorScheme = 'dark'
-    } else {
-      root.classList.add('light')
-      root.classList.remove('dark')
-      root.style.colorScheme = 'light'
-    }
-  }
+  const resolvedTheme: ResolvedTheme = theme === 'system' 
+    ? (mounted ? getSystemTheme() : 'dark') 
+    : theme
 
-  const setTheme = (newTheme: Theme) => {
+  // Synchronize theme to DOM on mount and change
+  useEffect(() => {
+    applyThemeToDOM(theme === 'system' ? getSystemTheme() : theme)
+  }, [theme])
+
+  const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme)
     try {
       localStorage.setItem(STORAGE_KEY, newTheme)
     } catch {}
 
     const resolved = newTheme === 'system' ? getSystemTheme() : newTheme
-    setResolvedTheme(resolved)
-    applyTheme(resolved)
-  }
+    applyThemeToDOM(resolved)
+  }, [])
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     if (resolvedTheme === 'dark') {
       setTheme('light')
     } else {
       setTheme('dark')
     }
-  }
+  }, [resolvedTheme, setTheme])
 
   // Listen to system preference changes when in 'system' mode
   useEffect(() => {
@@ -88,8 +96,7 @@ export function ThemeProvider({
     const handleChange = () => {
       if (theme === 'system') {
         const resolved = getSystemTheme()
-        setResolvedTheme(resolved)
-        applyTheme(resolved)
+        applyThemeToDOM(resolved)
       }
     }
 
@@ -104,8 +111,7 @@ export function ThemeProvider({
         const newTheme = e.newValue as Theme
         setThemeState(newTheme)
         const resolved = newTheme === 'system' ? getSystemTheme() : newTheme
-        setResolvedTheme(resolved)
-        applyTheme(resolved)
+        applyThemeToDOM(resolved)
       }
     }
 

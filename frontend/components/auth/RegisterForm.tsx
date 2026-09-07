@@ -34,7 +34,7 @@ export default function RegisterForm() {
         toast.success('Account created! Welcome to Orchestra.')
         router.push('/dashboard')
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
         setError(extractErrorMessage(err))
       }
     })

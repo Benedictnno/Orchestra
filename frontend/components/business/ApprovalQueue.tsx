@@ -1,14 +1,6 @@
 'use client'
 import { toNaira } from '@/utils/format'
-import toast from 'react-hot-toast'
-
-interface ApprovalRequest {
-  _id: string
-  amount: number
-  merchant: string
-  requestedBy: string
-  reason?: string
-}
+import { ApprovalRequest } from '@/api-client/types'
 
 interface ApprovalQueueProps {
   requests: ApprovalRequest[]

@@ -49,7 +49,7 @@ export default function SpendingChart() {
           />
           <Tooltip 
             labelFormatter={(label, payload) => payload[0]?.payload?.date || label}
-            formatter={(v: any) => [toNaira(v / 100), 'Spent']} 
+            formatter={(v: unknown) => [toNaira((Number(v) || 0) / 100), 'Spent']} 
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }} 
           />
           <Bar dataKey="amount" fill="#E94560" radius={[4, 4, 0, 0]} />

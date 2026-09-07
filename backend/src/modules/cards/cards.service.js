@@ -9,12 +9,26 @@ import { NotFoundError, BadRequestError, ConflictError } from '../../shared/erro
  */
 export async function getUserCards(userId) {
   const cards = await Card.find({ userId })
+  if (!cards.length) return []
+
+  const pans = cards.map(c => c.pan)
+  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000)
+
+  // Batch query cached balances within the 5-minute validity window
+  const cachedBalances = await CardBalance.find({
+    pan: { $in: pans },
+    fetchedAt: { $gte: fiveMinsAgo }
+  }).sort({ fetchedAt: -1 })
+
+  const cachedMap = new Map()
+  for (const cb of cachedBalances) {
+    if (!cachedMap.has(cb.pan)) {
+      cachedMap.set(cb.pan, cb)
+    }
+  }
 
   return Promise.all(cards.map(async (card) => {
-    const cached = await CardBalance.findOne({
-      pan: card.pan,
-      fetchedAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) }
-    }).sort({ fetchedAt: -1 })
+    const cached = cachedMap.get(card.pan)
 
     const bal = cached ? {
       availableBalance: cached.availableBalance,

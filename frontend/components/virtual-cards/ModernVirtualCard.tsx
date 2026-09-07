@@ -6,6 +6,12 @@ import { Eye, EyeOff, Settings, Pause, Play, Trash2, ArrowLeft, Plus } from 'luc
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import toast from 'react-hot-toast'
 
+interface PhysicalCardOption {
+  _id: string
+  label: string
+  bank: string
+}
+
 interface ModernVirtualCardProps {
   card: {
     _id: string
@@ -25,10 +31,10 @@ interface ModernVirtualCardProps {
   onResume?: (id: string) => void
   onDelete?: (id: string) => void
   onTopUp?: () => void
-  physicalCards?: any[]
+  physicalCards?: PhysicalCardOption[]
 }
 
-export default function ModernVirtualCard({ card, isSelected, onClick, onPause, onResume, onDelete, onTopUp, physicalCards = [] }: ModernVirtualCardProps) {
+export default function ModernVirtualCard({ card, onPause, onResume, onDelete, onTopUp, physicalCards = [] }: ModernVirtualCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [reveal, setReveal] = useState(false)
   const [showTopUp, setShowTopUp] = useState(false)
@@ -187,7 +193,14 @@ export default function ModernVirtualCard({ card, isSelected, onClick, onPause, 
 
             <div className="flex gap-3">
               <button
-                onClick={(e) => { e.stopPropagation(); isPaused ? onResume?.(card._id) : onPause?.(card._id) }}
+                onClick={(e) => { 
+                  e.stopPropagation()
+                  if (isPaused) {
+                    onResume?.(card._id)
+                  } else {
+                    onPause?.(card._id)
+                  }
+                }}
                 className="flex-1 flex items-center justify-center gap-2 bg-white text-black py-3 rounded-2xl font-bold transition-all hover:bg-white/90"
               >
                 {isPaused ? <Play size={18} /> : <Pause size={18} />}

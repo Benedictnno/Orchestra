@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { toNaira } from '@/utils/format'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 
 interface Anomaly {

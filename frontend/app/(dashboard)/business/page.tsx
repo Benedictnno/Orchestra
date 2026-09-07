@@ -1,73 +1,38 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
 import ApprovalQueue from '@/components/business/ApprovalQueue'
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 import EmptyState from '@/components/shared/EmptyState'
 import toast from 'react-hot-toast'
 import { Plus, Briefcase } from 'lucide-react'
 import { toNaira } from '@/utils/format'
-import { fetchWithAuth } from '@/lib/fetch-utils'
-
-interface BusinessCard {
-  _id: string
-  label: string
-  department?: string
-  cardHolder?: string
-  availableBalance: number
-  spendLimit: number
-  amountSpent: number
-  cardStatus: string
-}
-
-interface ApprovalRequest {
-  _id: string
-  amount: number
-  merchant: string
-  requestedBy: string
-  reason?: string
-}
+import { useBusinessCards, useApproveExpense } from '@/hooks/useBusiness'
+import { BusinessCard, ApprovalRequest } from '@/api-client/types'
 
 export default function BusinessPage() {
-  const [cards, setCards] = useState<BusinessCard[]>([])
-  const [requests, setRequests] = useState<ApprovalRequest[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data, isLoading: loading } = useBusinessCards()
+  const { mutate: approveExpenseMutation } = useApproveExpense()
 
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await fetchWithAuth('/api/business')
-      const data = await res.json()
-      // The API returns { cards, pendingActions } in a single call
-      setCards(Array.isArray(data?.cards) ? data.cards : [])
-      setRequests(Array.isArray(data?.pendingActions) ? data.pendingActions : [])
-    } catch {}
-    setLoading(false)
-  }, [])
+  const cards: BusinessCard[] = data?.cards || []
+  const requests: ApprovalRequest[] = data?.pendingActions || []
 
-  useEffect(() => { fetchData() }, [fetchData])
-
-  async function handleApprove(id: string) {
-    try {
-      await fetchWithAuth('/api/business/approve', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId: id, action: 'approve' })
-      })
-      setRequests(rs => rs.filter(r => r._id !== id))
-      toast.success('Request approved')
-    } catch { toast.error('Failed to approve') }
+  function handleApprove(id: string) {
+    approveExpenseMutation(
+      { requestId: id, action: 'approve' },
+      {
+        onSuccess: () => toast.success('Request approved'),
+        onError: () => toast.error('Failed to approve'),
+      }
+    )
   }
 
-  async function handleReject(id: string) {
-    try {
-      await fetchWithAuth('/api/business/approve', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId: id, action: 'reject' })
-      })
-      setRequests(rs => rs.filter(r => r._id !== id))
-      toast.success('Request rejected')
-    } catch { toast.error('Failed to reject') }
+  function handleReject(id: string) {
+    approveExpenseMutation(
+      { requestId: id, action: 'reject' },
+      {
+        onSuccess: () => toast.success('Request rejected'),
+        onError: () => toast.error('Failed to reject'),
+      }
+    )
   }
 
   return (
@@ -95,21 +60,22 @@ export default function BusinessPage() {
                 action={{ label: 'Create Card', icon: <Briefcase size={20} />, onClick: () => {} }}
               />
             ) : cards.map(card => {
-              const pct = Math.min(100, Math.round((card.amountSpent / card.spendLimit) * 100))
+              const limit = card.spendLimit || card.budget || 0
+              const pct = limit > 0 ? Math.min(100, Math.round((card.amountSpent / limit) * 100)) : 0
               return (
                 <div key={card._id} className="bg-white rounded-2xl border p-5">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Business</span>
-                      <h3 className="font-bold text-[#4A90e2] mt-2">{card.label}</h3>
-                      <p className="text-xs text-gray-400">{card.department} · {card.cardHolder}</p>
+                      <h3 className="font-bold text-[#4A90e2] mt-2">{card.label || card.purpose || 'Expense Card'}</h3>
+                      <p className="text-xs text-gray-400">{card.department || 'General'} · {card.cardHolder || card.assignedTo}</p>
                     </div>
-                    <p className="font-bold text-[#4A90e2]">{toNaira(card.availableBalance)}</p>
+                    <p className="font-bold text-[#4A90e2]">{toNaira(card.availableBalance || (limit - card.amountSpent))}</p>
                   </div>
                   <div>
                     <div className="flex justify-between text-xs text-gray-500 mb-1">
                       <span>{toNaira(card.amountSpent)} spent</span>
-                      <span>Limit: {toNaira(card.spendLimit)}</span>
+                      <span>Limit: {toNaira(limit)}</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div

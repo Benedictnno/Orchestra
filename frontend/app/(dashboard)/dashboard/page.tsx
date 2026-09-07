@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import BalanceSummary from '@/components/dashboard/BalanceSummary'
 import QuickStats from '@/components/dashboard/QuickStats'
 import SpendingChart from '@/components/dashboard/SpendingChart'
@@ -11,6 +11,21 @@ import { useTransactions, useTransactionSummary } from '@/hooks/useTransactions'
 import { useCards } from '@/hooks/useCards'
 import { useVirtualCards } from '@/hooks/useVirtualCards'
 
+function timeAgo(dateStr?: string) {
+  if (!dateStr) return 'Recently'
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const h = Math.floor(diff / 3600000)
+  if (h < 24) return `${h}h ago`
+  const d = Math.floor(h / 24)
+  return `${d}d ago`
+}
+
+function formatTxAmount(amount: number) {
+  const abs = Math.abs(amount / 100)
+  const sign = amount >= 0 ? '+' : '-'
+  return `${sign}₦${abs.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`
+}
+
 export default function DashboardPage() {
   const { data: user } = useCurrentUser()
   const { data: cardsData } = useCards()
@@ -18,12 +33,10 @@ export default function DashboardPage() {
   const { data: summaryData } = useTransactionSummary()
   const { data: txData, isLoading: txLoading } = useTransactions({ limit: 5 })
 
-  const [showOnboarding, setShowOnboarding] = useState(false)
-
-  useEffect(() => {
-    const done = localStorage.getItem('orchestra_onboarded')
-    if (!done) setShowOnboarding(true)
-  }, [])
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return !localStorage.getItem('orchestra_onboarded')
+  })
 
   const stats = {
     totalCards: cardsData?.length || 0,
@@ -34,21 +47,6 @@ export default function DashboardPage() {
 
   const recentTx = txData?.transactions || []
 
-  function formatTxAmount(amount: number) {
-    const abs = Math.abs(amount / 100)
-    const sign = amount >= 0 ? '+' : '-'
-    return `${sign}₦${abs.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`
-  }
-
-  function timeAgo(dateStr?: string) {
-    if (!dateStr) return 'Recently'
-    const diff = Date.now() - new Date(dateStr).getTime()
-    const h = Math.floor(diff / 3600000)
-    if (h < 24) return `${h}h ago`
-    const d = Math.floor(h / 24)
-    return `${d}d ago`
-  }
-
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-0 pb-10">
       {showOnboarding && (
@@ -56,7 +54,7 @@ export default function DashboardPage() {
       )}
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-[#4A90e2]">Welcome {user?.name || 'User'} </h1>
-        <p className="text-gray-500 text-sm mt-1">Here's your financial overview for today</p>
+        <p className="text-gray-500 text-sm mt-1">Here&apos;s your financial overview for today</p>
       </div>
 
       <BalanceSummary />

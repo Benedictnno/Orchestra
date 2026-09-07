@@ -83,7 +83,7 @@ export default function CardWidget({
         {/* FRONT SIDE */}
         <div 
           className={`absolute inset-0 rounded-[24px] p-8 shadow-2xl flex flex-col justify-between overflow-hidden
-            ${card.isUltimate ? 'ring-2 ring-blue-500/50' : ''}`}
+            ${card.isUltimate ? 'ring-2 ring-blue-500/50' : (isSelected ? 'ring-2 ring-[#E94560]' : '')}`}
           style={{ 
             background: bgColor,
             backfaceVisibility: 'hidden',
@@ -229,7 +229,14 @@ export default function CardWidget({
           {/* Actions */}
           <div className="flex gap-2 mt-auto">
             <button
-              onClick={(e) => { e.stopPropagation(); isBlocked ? onUnblock?.(card._id) : onBlock?.(card._id) }}
+              onClick={(e) => { 
+                e.stopPropagation()
+                if (isBlocked) {
+                  onUnblock?.(card._id)
+                } else {
+                  onBlock?.(card._id)
+                }
+              }}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all
                 ${isBlocked 
                   ? 'bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-green-600 hover:text-white' 

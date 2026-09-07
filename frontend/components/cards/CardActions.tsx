@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { Shield, ShieldOff, Trash2, Eye, EyeOff } from 'lucide-react'
+import { Shield, ShieldOff, Eye, EyeOff } from 'lucide-react'
 import { cardStatusLabel, cardStatusColor } from '@/utils/format'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 

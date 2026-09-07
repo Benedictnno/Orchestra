@@ -25,7 +25,7 @@ export default function LoginForm() {
         toast.success('Welcome back!')
         router.push('/dashboard')
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
         setError(extractErrorMessage(err))
       }
     })

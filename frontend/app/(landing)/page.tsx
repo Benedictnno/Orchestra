@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 /* ─── tiny hook for intersection observer fade-in ─────────── */
-function useFadeIn(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null)
+function useFadeIn<T extends HTMLElement = HTMLDivElement>(threshold = 0.15) {
+  const ref = useRef<T>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
     const el = ref.current
@@ -16,25 +16,7 @@ function useFadeIn(threshold = 0.15) {
     ob.observe(el)
     return () => ob.disconnect()
   }, [threshold])
-  return { ref, visible }
-}
-
-/* ─── animated counter ────────────────────────────────────── */
-function Counter({ to, suffix = '' }: { to: number; suffix?: string }) {
-  const [val, setVal] = useState(0)
-  const { ref, visible } = useFadeIn(0.3)
-  useEffect(() => {
-    if (!visible) return
-    let start = 0
-    const step = to / 60
-    const t = setInterval(() => {
-      start += step
-      if (start >= to) { setVal(to); clearInterval(t) }
-      else setVal(Math.floor(start))
-    }, 16)
-    return () => clearInterval(t)
-  }, [visible, to])
-  return <span ref={ref}>{val.toLocaleString()}{suffix}</span>
+  return [ref, visible] as const
 }
 
 /* ─── floating card chip ──────────────────────────────────── */
@@ -67,7 +49,7 @@ function CardChip({ color, label, bank, pan, delay = '0s' }: {
 function FeatureCard({ icon, title, desc, delay }: {
   icon: string; title: string; desc: string; delay: string
 }) {
-  const { ref, visible } = useFadeIn()
+  const [ref, visible] = useFadeIn()
   return (
     <div
       ref={ref}
@@ -87,23 +69,11 @@ function FeatureCard({ icon, title, desc, delay }: {
   )
 }
 
-/* ─── stat item ───────────────────────────────────────────── */
-function Stat({ value, to, suffix, label }: { value?: string; to?: number; suffix?: string; label: string }) {
-  return (
-    <div className="text-center">
-      <p className="text-4xl font-black text-white mb-1">
-        {to !== undefined ? <Counter to={to} suffix={suffix} /> : value}
-      </p>
-      <p className="text-white/50 text-sm">{label}</p>
-    </div>
-  )
-}
-
 /* ─── step card (for "how it works") ─────────────────────── */
 function StepCard({ n, title, desc, delay }: {
   n: string; title: string; desc: string; delay: number
 }) {
-  const { ref, visible } = useFadeIn()
+  const [ref, visible] = useFadeIn(0.15)
   return (
     <div
       ref={ref}
@@ -134,7 +104,7 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  const featuresRef = useFadeIn()
+  const [featuresRef, featuresVisible] = useFadeIn()
 
   return (
     <>
@@ -320,11 +290,11 @@ export default function LandingPage() {
       <section id="features" className="bg-[#4A90e2] py-24">
         <div className="max-w-6xl mx-auto px-6">
           <div
-            ref={featuresRef.ref}
+            ref={featuresRef}
             className="text-center mb-16"
             style={{
-              opacity: featuresRef.visible ? 1 : 0,
-              transform: featuresRef.visible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: featuresVisible ? 1 : 0,
+              transform: featuresVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.7s ease',
             }}
           >

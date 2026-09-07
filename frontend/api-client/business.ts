@@ -1,7 +1,7 @@
 import axiosInstance from './axios';
-import { BusinessCard } from './types';
+import { BusinessCard, ApprovalRequest } from './types';
 
-export const getBusinessCards = async (): Promise<{ cards: BusinessCard[]; pendingActions: any[] }> => {
+export const getBusinessCards = async (): Promise<{ cards: BusinessCard[]; pendingActions: ApprovalRequest[] }> => {
   return axiosInstance.get('/api/business');
 };
 

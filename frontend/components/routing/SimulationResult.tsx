@@ -1,7 +1,7 @@
 'use client'
-import { toNaira, formatPAN } from '@/utils/format'
+import { toNaira } from '@/utils/format'
 import { motion } from 'framer-motion'
-import { Check, Info, AlertTriangle } from 'lucide-react'
+import { Check, AlertTriangle } from 'lucide-react'
 
 interface Step {
   step: number

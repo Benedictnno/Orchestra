@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Send, Search, Building2, User, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Building2, ArrowRight, ShieldCheck } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import { toNaira } from '@/utils/format'
 import { extractErrorMessage } from '@/lib/utils'
@@ -74,8 +74,6 @@ export default function TransfersPage() {
       setSubloading(false)
     }
   }
-
-  const selectedClick = cards.find(c => c._id === form.sourceCardId)
 
   return (
     <div className="max-w-2xl mx-auto pb-12">

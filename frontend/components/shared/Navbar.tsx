@@ -2,14 +2,13 @@
 import { Bell } from 'lucide-react'
 import AnomalyBadge from '@/components/dashboard/AnomalyBadge'
 import ThemeToggle from '@/components/shared/ThemeToggle'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { tokenStorage } from '@/utils/tokenStorage'
 
 function parseInitial(): string {
   try {
     const token = tokenStorage.getToken()
     if (!token) return 'U'
-    // Our token is a base64-encoded JSON object, not a 3-part JWT.
     const payload = JSON.parse(atob(token))
     const name: string = payload?.name || payload?.email || 'User'
     return name.charAt(0).toUpperCase()
@@ -18,12 +17,10 @@ function parseInitial(): string {
   }
 }
 
-export default function Navbar() {
-  const [initial, setInitial] = useState('U')
+const emptySubscribe = () => () => {}
 
-  useEffect(() => {
-    setInitial(parseInitial())
-  }, [])
+export default function Navbar() {
+  const initial = useSyncExternalStore(emptySubscribe, parseInitial, () => 'U')
 
   return (
     <header className="h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center px-6 gap-4 flex-shrink-0 transition-colors duration-200">
@@ -44,4 +41,3 @@ export default function Navbar() {
     </header>
   )
 }
-

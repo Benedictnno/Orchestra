@@ -1,11 +1,10 @@
 'use client'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import { extractErrorMessage } from '@/lib/utils'
 import CardWidget from './CardWidget'
 import CardActions from './CardActions'
-import EmptyState from '@/components/shared/EmptyState'
 import AddCardModal from './AddCardModal'
 import {
   DndContext,
@@ -39,7 +38,18 @@ interface Card {
   isUltimate?: boolean
 }
 
-function SortableCard({ id, card, balance, isSelected, onClick, onBlock, onUnblock, onDelete }: any) {
+interface SortableCardProps {
+  id: string
+  card: Card
+  balance?: number
+  isSelected?: boolean
+  onClick?: () => void
+  onBlock?: (id: string) => void
+  onUnblock?: (id: string) => void
+  onDelete?: (id: string) => void
+}
+
+function SortableCard({ id, card, balance, isSelected, onClick, onBlock, onUnblock, onDelete }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id,
     disabled: card.isUltimate // Disable dragging for Ultimate card
@@ -74,7 +84,7 @@ interface CardGridProps {
 
 export default function CardGrid({ cards, onRefresh }: CardGridProps) {
   // Ensure cards is an array to avoid map errors
-  const safeCards = Array.isArray(cards) ? cards : [];
+  const safeCards = useMemo(() => Array.isArray(cards) ? cards : [], [cards])
 
   // Split localCards into ultimate and physical
   const ultimateCardData: Card = useMemo(() => {
@@ -89,12 +99,8 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
     }
   }, [safeCards])
 
-  const [physicalCards, setPhysicalCards] = useState<Card[]>(safeCards)
-  
-  // Update local state when prop changes
-  useEffect(() => {
-    setPhysicalCards(Array.isArray(cards) ? cards : []);
-  }, [cards]);
+  const [overrideCards, setOverrideCards] = useState<Card[] | null>(null)
+  const physicalCards = overrideCards ?? safeCards
 
   const [selectedId, setSelectedId] = useState<string | null>(ultimateCardData._id)
   const [showAdd, setShowAdd] = useState(false)
@@ -110,7 +116,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
 
   async function handleStatusChange(cardId: string, newStatus: string) {
     if (cardId === 'ultimate_card_001') return // Manage ultimate status separately if needed
-    setPhysicalCards(cs => cs.map(c => c._id === cardId ? { ...c, cardStatus: newStatus } : c))
+    setOverrideCards(cs => (cs ?? safeCards).map(c => c._id === cardId ? { ...c, cardStatus: newStatus } : c))
   }
 
   async function handleBlock(id: string) {
@@ -158,7 +164,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
         method: 'DELETE',
       })
       if (res.ok) {
-        setPhysicalCards(cs => cs.filter(c => c._id !== id))
+        setOverrideCards(cs => (cs ?? safeCards).filter(c => c._id !== id))
         if (selectedId === id) setSelectedId(ultimateCardData._id)
         toast.success('Card removed')
       } else {
@@ -173,10 +179,11 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (over && active.id !== over.id) {
-      setPhysicalCards((items) => {
-        const oldIndex = items.findIndex(i => i._id === active.id)
-        const newIndex = items.findIndex(i => i._id === over.id)
-        return arrayMove(items, oldIndex, newIndex)
+      setOverrideCards(() => {
+        const current = overrideCards ?? safeCards
+        const oldIndex = current.findIndex(i => i._id === active.id)
+        const newIndex = current.findIndex(i => i._id === over.id)
+        return arrayMove(current, oldIndex, newIndex)
       })
     }
   }
@@ -244,8 +251,8 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
         <div className="bg-white rounded-2xl border p-5">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h3 className="font-bold text-[#1A1A2E]">{(selectedCard as any).label || (selectedCard as any).nameOnCard}</h3>
-              <p className="text-gray-500 text-sm">{selectedCard.isUltimate ? 'Master Card' : `${(selectedCard as any).bank} · ${(selectedCard as any).cardProgram}`}</p>
+              <h3 className="font-bold text-[#1A1A2E]">{selectedCard.label || selectedCard.nameOnCard}</h3>
+              <p className="text-gray-500 text-sm">{selectedCard.isUltimate ? 'Master Card' : `${selectedCard.bank || ''} · ${selectedCard.cardProgram || ''}`}</p>
             </div>
           </div>
           {!selectedCard.isUltimate && (

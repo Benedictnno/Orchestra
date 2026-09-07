@@ -9,11 +9,18 @@ import { NotFoundError, ForbiddenError } from '../../shared/errors/httpErrors.js
  */
 export async function getBusinessCards(businessUserId) {
   const cards = await BusinessCard.find({ businessUserId })
-  return Promise.all(cards.map(async (card) => {
-    const pending = await ApprovalRequest.countDocuments({
-      businessCardId: card._id, status: 'pending'
-    })
-    return { ...card.toObject(), pendingApprovals: pending }
+  if (!cards.length) return []
+
+  const cardIds = cards.map(c => c._id)
+  const pendingCounts = await ApprovalRequest.aggregate([
+    { $match: { businessCardId: { $in: cardIds }, status: 'pending' } },
+    { $group: { _id: '$businessCardId', count: { $sum: 1 } } }
+  ])
+
+  const countMap = new Map(pendingCounts.map(p => [p._id.toString(), p.count]))
+  return cards.map(card => ({
+    ...card.toObject(),
+    pendingApprovals: countMap.get(card._id.toString()) || 0
   }))
 }
 

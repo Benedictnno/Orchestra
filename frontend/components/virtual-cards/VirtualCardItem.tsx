@@ -12,13 +12,19 @@ interface VirtualCard {
   color?: string
 }
 
+interface PhysicalCardOption {
+  _id: string
+  label: string
+  bank: string
+}
+
 interface VirtualCardItemProps {
   card: VirtualCard
   onPause: (id: string) => void
   onResume: (id: string) => void
   onDelete: (id: string) => void
   onRefresh: () => void
-  physicalCards: any[]
+  physicalCards: PhysicalCardOption[]
 }
 
 export default function VirtualCardItem({ card, onPause, onResume, onDelete, onRefresh, physicalCards }: VirtualCardItemProps) {

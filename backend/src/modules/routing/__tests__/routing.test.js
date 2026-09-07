@@ -3,16 +3,16 @@
  */
 import { jest } from '@jest/globals'
 
-jest.mock('../models/RoutingRule.model.js', () => ({
+jest.unstable_mockModule('../models/RoutingRule.model.js', () => ({
   default: { findOne: jest.fn() }
 }))
-jest.mock('../../cards/index.js', () => ({
+jest.unstable_mockModule('../../cards/index.js', () => ({
   cardsService: { getUserCardsWithBalances: jest.fn() }
 }))
 
-import RoutingRule from '../models/RoutingRule.model.js'
-import { cardsService } from '../../cards/index.js'
-import { resolvePayment } from '../routing.service.js'
+const { default: RoutingRule } = await import('../models/RoutingRule.model.js')
+const { cardsService } = await import('../../cards/index.js')
+const { resolvePayment } = await import('../routing.service.js')
 
 const fakeCard = (id, available) => ({
   _id:      { toString: () => id },

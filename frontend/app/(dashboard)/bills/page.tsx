@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Building2, Zap, Wifi, Tv, Droplets, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Zap, Wifi, Tv, Droplets, ArrowRight } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import { toNaira } from '@/utils/format'
 import { extractErrorMessage } from '@/lib/utils'

@@ -12,11 +12,14 @@ export interface Card {
   _id: string;
   pan: string;
   expiryDate: string;
-  issuerNr: string;
+  issuerNr?: string;
   cardStatus: string;
   cardType: 'debit' | 'prepaid' | 'virtual';
   label: string;
-  isDefault: boolean;
+  isDefault?: boolean;
+  isUltimate?: boolean;
+  nameOnCard?: string;
+  cardProgram?: string;
   spendLimit?: number;
   availableBalance?: number;
   ledgerBalance?: number;
@@ -54,6 +57,12 @@ export interface BusinessCard {
   approvalThreshold?: number;
   pan: string;
   pendingApprovals?: number;
+  label?: string;
+  department?: string;
+  cardHolder?: string;
+  availableBalance?: number;
+  spendLimit?: number;
+  cardStatus?: string;
 }
 
 export interface ApprovalRequest {

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import TransactionSimulator from '@/components/routing/TransactionSimulator'
 import RoutingModeSelector from '@/components/routing/RoutingModeSelector'
 import CardPriorityList from '@/components/routing/CardPriorityList'
@@ -21,46 +21,50 @@ export default function UltimateCardPage() {
   const [mode, setMode] = useState('auto-split')
   const [primaryCardId, setPrimaryCardId] = useState<string>('')
   const [orderedCards, setOrderedCards] = useState<Card[]>([])
-  const [loading, setLoading] = useState(true)
 
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    try {
-      const [cardsRes, routingRes] = await Promise.all([
-        fetchWithAuth('/api/cards'),
-        fetchWithAuth('/api/routing')
-      ])
-      
-      const cardsData = await cardsRes.json()
-      const routingData = await routingRes.json()
-      
-      const active = (cardsData.cards || []).filter((c: { cardStatus: string }) => c.cardStatus === '1')
-      setCards(active)
-      
-      if (routingData) {
-        setMode(routingData.mode || 'auto-split')
-        setPrimaryCardId(routingData.primaryCardId || (active[0]?._id || ''))
-        
-        if (routingData.cardOrder && routingData.cardOrder.length > 0) {
-          const sorted = [...active].sort((a, b) => {
-            const idxA = routingData.cardOrder.indexOf(a._id)
-            const idxB = routingData.cardOrder.indexOf(b._id)
-            if (idxA === -1) return 1
-            if (idxB === -1) return -1
-            return idxA - idxB
-          })
-          setOrderedCards(sorted)
+  useEffect(() => {
+    let activeEffect = true
+
+    async function load() {
+      try {
+        const [cardsRes, routingRes] = await Promise.all([
+          fetchWithAuth('/api/cards'),
+          fetchWithAuth('/api/routing')
+        ])
+
+        const cardsData = await cardsRes.json()
+        const routingData = await routingRes.json()
+
+        if (!activeEffect) return
+
+        const active = (cardsData?.cards || []).filter((c: { cardStatus: string }) => c.cardStatus === '1')
+        setCards(active)
+
+        if (routingData) {
+          setMode(routingData.mode || 'auto-split')
+          setPrimaryCardId(routingData.primaryCardId || (active[0]?._id || ''))
+
+          if (routingData.cardOrder && routingData.cardOrder.length > 0) {
+            const sorted = [...active].sort((a, b) => {
+              const idxA = routingData.cardOrder.indexOf(a._id)
+              const idxB = routingData.cardOrder.indexOf(b._id)
+              if (idxA === -1) return 1
+              if (idxB === -1) return -1
+              return idxA - idxB
+            })
+            setOrderedCards(sorted)
+          } else {
+            setOrderedCards(active)
+          }
         } else {
           setOrderedCards(active)
         }
-      } else {
-        setOrderedCards(active)
-      }
-    } catch {}
-    setLoading(false)
-  }, [])
+      } catch {}
+    }
 
-  useEffect(() => { fetchData() }, [fetchData])
+    load()
+    return () => { activeEffect = false }
+  }, [])
 
   async function saveRouting(updates: { mode?: string, primaryCardId?: string, cardIds?: string[] }) {
     const payload = {

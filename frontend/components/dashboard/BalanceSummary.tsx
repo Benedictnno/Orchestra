@@ -5,12 +5,10 @@ import { Plus, Copy, Check, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { toNaira } from '@/utils/format'
 import { fetchWithAuth } from '@/lib/fetch-utils'
-import { useCurrentUser } from '@/hooks/useAuth'
 import { useCards } from '@/hooks/useCards'
 import { Card } from '@/api-client/types'
 
 export default function BalanceSummary() {
-  const { data: user } = useCurrentUser()
   const { data: cardsData, isLoading: loading, refetch } = useCards()
   const [copying, setCopying] = useState<string | null>(null)
 

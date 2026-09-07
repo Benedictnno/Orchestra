@@ -17,6 +17,12 @@ interface VirtualCard {
   autoRenew?: boolean
 }
 
+interface PhysicalCardOption {
+  _id: string
+  label: string
+  bank: string
+}
+
 interface VirtualCardListProps {
   cards: VirtualCard[]
   onRefresh: () => void
@@ -24,17 +30,15 @@ interface VirtualCardListProps {
 
 export default function VirtualCardList({ cards, onRefresh }: VirtualCardListProps) {
   const [showCreate, setShowCreate] = useState(false)
-  const [localCards, setLocalCards] = useState(Array.isArray(cards) ? cards : [])
-  const [physicalCards, setPhysicalCards] = useState<any[]>([])
-
-  useEffect(() => {
-    setLocalCards(Array.isArray(cards) ? cards : [])
-  }, [cards])
+  const safeCards = Array.isArray(cards) ? cards : []
+  const [overrideCards, setOverrideCards] = useState<VirtualCard[] | null>(null)
+  const displayCards = overrideCards ?? safeCards
+  const [physicalCards, setPhysicalCards] = useState<PhysicalCardOption[]>([])
 
   useEffect(() => {
     fetchWithAuth('/api/cards')
       .then(r => r.json())
-      .then(data => setPhysicalCards(Array.isArray(data.cards) ? data.cards : []))
+      .then(data => setPhysicalCards(Array.isArray(data?.cards) ? data.cards : []))
       .catch(() => {})
   }, [])
 
@@ -45,7 +49,7 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
       body: JSON.stringify({ action: 'pause' }),
     })
     if (res.ok) {
-      setLocalCards(cs => cs.map(c => c._id === id ? { ...c, paused: true } : c))
+      setOverrideCards(cs => (cs ?? safeCards).map(c => c._id === id ? { ...c, paused: true } : c))
       toast.success('Card paused')
     } else toast.error('Failed to pause card')
   }
@@ -57,7 +61,7 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
       body: JSON.stringify({ action: 'resume' }),
     })
     if (res.ok) {
-      setLocalCards(cs => cs.map(c => c._id === id ? { ...c, paused: false } : c))
+      setOverrideCards(cs => (cs ?? safeCards).map(c => c._id === id ? { ...c, paused: false } : c))
       toast.success('Card resumed')
     } else toast.error('Failed to resume card')
   }
@@ -70,12 +74,12 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
       body: JSON.stringify({ action: 'delete' }),
     })
     if (res.ok) {
-      setLocalCards(cs => cs.filter(c => c._id !== id))
+      setOverrideCards(cs => (cs ?? safeCards).filter(c => c._id !== id))
       toast.success('Card deleted')
     } else toast.error('Failed to delete card')
   }
 
-  if (localCards.length === 0) {
+  if (displayCards.length === 0) {
     return (
       <>
         <EmptyState
@@ -91,7 +95,7 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {localCards.map(c => (
+        {displayCards.map(c => (
           <VirtualCardItem
             key={c._id}
             card={c}
