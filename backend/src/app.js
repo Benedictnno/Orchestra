@@ -8,24 +8,23 @@ import swaggerUi from 'swagger-ui-express'
 import YAML from 'yamljs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-
-import authRoutes         from './routes/auth.routes.js'
-import cardsRoutes        from './routes/cards.routes.js'
-import routingRoutes      from './routes/routing.routes.js'
-import virtualCardsRoutes from './routes/virtualCards.routes.js'
-import businessRoutes     from './routes/business.routes.js'
-import insightsRoutes     from './routes/insights.routes.js'
-import transactionsRoutes from './routes/transactions.routes.js'
-import anomaliesRoutes    from './routes/anomalies.routes.js'
-import reportRoutes       from './routes/report.routes.js'
-import transfersRoutes    from './routes/transfers.routes.js'
-import billsRoutes        from './routes/bills.routes.js'
-import chatRoutes         from './routes/chat.routes.js'
 import rateLimit from 'express-rate-limit'
-import { errorHandler }   from './middleware/error.middleware.js'
+
+import { config } from './shared/config/env.js'
+import { errorHandler } from './shared/middleware/error.middleware.js'
+
+// Domain Module Routes
+import { authRoutes } from './modules/auth/index.js'
+import { cardsRoutes } from './modules/cards/index.js'
+import { routingRoutes } from './modules/routing/index.js'
+import { virtualCardsRoutes } from './modules/virtual-cards/index.js'
+import { businessRoutes } from './modules/business/index.js'
+import { transactionsRoutes, transfersRoutes, billsRoutes } from './modules/transactions/index.js'
+import { insightsRoutes, chatRoutes, anomaliesRoutes, reportRoutes } from './modules/insights/index.js'
 
 const app = express()
 
+// Rate limiting
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 100,
@@ -33,14 +32,14 @@ const limiter = rateLimit({
 })
 app.use('/api/', limiter)
 
+// Swagger UI API documentation
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-let swaggerDocument
 try {
-  swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'))
+  const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'))
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-} catch (err) {
+} catch {
   console.warn('⚠️  swagger.yaml not found — /api-docs disabled')
 }
 
@@ -50,39 +49,36 @@ app.use(helmet())
 // Structured request logging with correlation ID
 app.use(pinoHttp({
   genReqId: () => randomUUID(),
-  redact:   ['req.headers.authorization'],   // don't log JWTs
+  redact:   ['req.headers.authorization'], // don't log JWTs
   serializers: {
     req(req) { return { id: req.id, method: req.method, url: req.url } },
     res(res) { return { statusCode: res.statusCode } },
   },
 }))
 
-// CORS setup — supports multiple URLs as a comma-separated list in .env
-const allowedOrigins = process.env.CLIENT_URL 
-  ? process.env.CLIENT_URL.split(',').map(o => o.trim()) 
-  : ['http://localhost:3000']
-
+// CORS setup
 app.use(cors({ 
-  origin:      allowedOrigins,
+  origin:      config.clientUrls,
   credentials: true 
 }))
 app.use(express.json())
 
-// Health check (public)
+// Health check endpoint
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }))
 
+// Mount Domain Modules
 app.use('/api/auth',          authRoutes)
 app.use('/api/cards',         cardsRoutes)
 app.use('/api/routing',       routingRoutes)
 app.use('/api/virtual-cards', virtualCardsRoutes)
 app.use('/api/business',      businessRoutes)
-app.use('/api/insights',      insightsRoutes)
 app.use('/api/transactions',  transactionsRoutes)
-app.use('/api/anomalies',     anomaliesRoutes)
-app.use('/api/report',        reportRoutes)
 app.use('/api/transfers',     transfersRoutes)
 app.use('/api/bills',         billsRoutes)
+app.use('/api/insights',      insightsRoutes)
 app.use('/api/chat',          chatRoutes)
+app.use('/api/anomalies',     anomaliesRoutes)
+app.use('/api/report',        reportRoutes)
 
 // 404 handler
 app.use((req, res) => {

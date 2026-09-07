@@ -1,11 +1,9 @@
-import 'dotenv/config'
 import app from './app.js'
-import connectDB from './db/connect.js'
-
-const PORT = process.env.PORT || 5000
+import connectDB from './shared/database/connect.js'
+import { config } from './shared/config/env.js'
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🎼 Orchestra API running on port ${PORT}`)
+  app.listen(config.port, () => {
+    console.log(`🎼 Orchestra API running on port ${config.port}`)
   })
 })
