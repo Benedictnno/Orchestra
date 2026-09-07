@@ -157,6 +157,19 @@ export async function addCard(userId, cardData) {
     throw err
   }
 
+  // Ensure balance record exists for demo/mock mode
+  const existingBal = await CardBalance.findOne({ pan: card.pan })
+  if (!existingBal) {
+    await CardBalance.create({
+      cardId: card._id,
+      pan: card.pan,
+      availableBalance: 850_000_00, // NGN 850,000 demo balance
+      ledgerBalance: 850_000_00,
+      currency: 'NGN',
+      fetchedAt: new Date()
+    })
+  }
+
   const cardObj = card.toObject()
   return { ...cardObj, pan: maskPan(cardObj.pan) }
 }

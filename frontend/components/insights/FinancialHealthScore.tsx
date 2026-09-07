@@ -37,15 +37,22 @@ export default function FinancialHealthScore() {
         const r = await fetchWithAuth('/api/insights')
         const d = await r.json()
         if (r.ok && d.insights) {
-          const score = d.insights?.financialScore ?? 72
+          const rawScore = d.insights?.financialScore
+          const numericScore = typeof rawScore === 'object' && rawScore !== null
+            ? (rawScore.score ?? 72)
+            : (typeof rawScore === 'number' ? rawScore : 72)
+          const label = typeof rawScore === 'object' && rawScore !== null
+            ? (rawScore.label ?? 'Good')
+            : (d.insights?.scoreLabel ?? 'Good')
+
           setData({
-            financialScore: score,
-            scoreLabel: d.insights?.scoreLabel ?? '',
+            financialScore: numericScore,
+            scoreLabel: label,
             summary: d.insights?.summary ?? '',
-            observations: d.insights?.insights ?? [],
+            observations: Array.isArray(d.insights?.insights) ? d.insights.insights : [],
           })
           setLoading(false)
-          return animate(score)
+          return animate(numericScore)
         }
       } catch { /* fallthrough */ }
 

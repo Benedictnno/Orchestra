@@ -2,8 +2,8 @@ import axiosInstance from './axios';
 import { Card } from './types';
 
 export const getCards = async (): Promise<Card[]> => {
-  const res: { cards: Card[] } = await axiosInstance.get('/api/cards');
-  return res.cards;
+  const res: { cards?: Card[] } = await axiosInstance.get('/api/cards');
+  return res?.cards ?? [];
 };
 
 export const createCard = async (cardData: Partial<Card>): Promise<Card> => {

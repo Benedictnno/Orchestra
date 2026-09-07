@@ -10,9 +10,10 @@ interface AddCardModalProps {
   onAdded: () => void
 }
 
-const BANKS = ['GTBank', 'Access Bank', 'UBA', 'First Bank', 'Zenith Bank', 'Stanbic IBTC', 'Polaris Bank']
+const BANKS = ['GTBank', 'Access Bank', 'UBA', 'First Bank', 'Zenith Bank', 'Stanbic IBTC', 'Polaris Bank', 'Union Bank']
 const PROGRAMS = ['VERVE', 'VISA', 'MASTERCARD']
 const CARD_COLORS = [
+  '#4A90e2',
   '#1A1A2E',
   '#E94560',
   '#0f3460',

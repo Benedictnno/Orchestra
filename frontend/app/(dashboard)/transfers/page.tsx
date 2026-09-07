@@ -22,6 +22,7 @@ const BANKS = [
   { name: 'Zenith Bank', code: '057' },
   { name: 'UBA', code: '033' },
   { name: 'Stanbic IBTC', code: '221' },
+  { name: 'Union Bank', code: '032' },
 ]
 
 export default function TransfersPage() {

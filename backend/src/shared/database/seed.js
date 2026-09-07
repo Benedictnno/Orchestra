@@ -53,7 +53,7 @@ const [alice, bob] = await User.create([
 console.log('👤  Users created:', alice.email, bob.email)
 
 // ── Cards ────────────────────────────────────────────────────────────────────
-const [aliceDebit, alicePrepaid] = await Card.create([
+const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
   {
     pan: '5061123456789012', expiryDate: '2612', issuerNr: '000001',
     firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
@@ -70,12 +70,21 @@ const [aliceDebit, alicePrepaid] = await Card.create([
     bank: 'Access Bank', color: '#4ECDC4', isDefault: false,
     accountNumber: '0987654321',
   },
+  {
+    pan: '5399123456789012', expiryDate: '2804', issuerNr: '000003',
+    firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
+    cardProgram: 'MASTERCARD', customerId: 'CUST001', cardStatus: '1', seqNr: '03',
+    userId: alice._id, cardType: 'debit', label: 'Union Bank Platinum',
+    bank: 'Union Bank', color: '#4A90e2', isDefault: false,
+    accountNumber: '0112233445',
+  },
 ])
 
 // ── Card Balances ────────────────────────────────────────────────────────────
 await CardBalance.create([
-  { pan: aliceDebit.pan,   availableBalance: 500_000_00, ledgerBalance: 500_000_00, cardId: aliceDebit._id },
-  { pan: alicePrepaid.pan, availableBalance: 500_000_00, ledgerBalance: 500_000_00, cardId: alicePrepaid._id },
+  { pan: aliceDebit.pan,   availableBalance: 500_000_00,   ledgerBalance: 500_000_00,   cardId: aliceDebit._id },
+  { pan: alicePrepaid.pan, availableBalance: 500_000_00,   ledgerBalance: 500_000_00,   cardId: alicePrepaid._id },
+  { pan: aliceUnion.pan,   availableBalance: 1_250_000_00, ledgerBalance: 1_250_000_00, cardId: aliceUnion._id },
 ])
 
 // ── Routing Rule ─────────────────────────────────────────────────────────────
@@ -83,7 +92,7 @@ await RoutingRule.create({
   userId: alice._id,
   mode: 'primary',
   primaryCardId: aliceDebit._id,
-  cardOrder: [aliceDebit._id, alicePrepaid._id],
+  cardOrder: [aliceDebit._id, aliceUnion._id, alicePrepaid._id],
 })
 
 // ── Transactions ─────────────────────────────────────────────────────────────

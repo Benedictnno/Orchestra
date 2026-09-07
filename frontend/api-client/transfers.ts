@@ -2,8 +2,8 @@ import axiosInstance from './axios';
 import { Transfer } from './types';
 
 export const getTransfers = async (): Promise<Transfer[]> => {
-  const res: { transfers: Transfer[] } = await axiosInstance.get('/api/transfers');
-  return res.transfers;
+  const res: { transfers?: Transfer[] } = await axiosInstance.get('/api/transfers');
+  return res?.transfers ?? [];
 };
 
 export const createTransfer = async (data: {

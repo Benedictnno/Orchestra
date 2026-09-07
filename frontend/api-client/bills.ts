@@ -2,8 +2,8 @@ import axiosInstance from './axios';
 import { BillPayment } from './types';
 
 export const getBillPayments = async (): Promise<BillPayment[]> => {
-  const res: { payments: BillPayment[] } = await axiosInstance.get('/api/bills');
-  return res.payments;
+  const res: { payments?: BillPayment[] } = await axiosInstance.get('/api/bills');
+  return res?.payments ?? [];
 };
 
 export const createBillPayment = async (data: {

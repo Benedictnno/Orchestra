@@ -118,8 +118,8 @@ export default function CardWidget({
                 </div>
               ) : (
                 <>
-                  {card.bank && <p className="text-white/50 text-[10px] uppercase tracking-widest leading-none mb-1">{card.bank}</p>}
-                  <div className="text-white font-bold text-sm opacity-80 uppercase leading-none">
+                  {card.bank && <p className="text-white/60 text-[10px] uppercase tracking-widest leading-none mb-1">{card.bank}</p>}
+                  <div className="text-white font-bold text-sm opacity-90 uppercase leading-none">
                     {card.cardProgram ? (NETWORK_LOGOS[card.cardProgram] ?? card.cardProgram) : 'VERVE'}
                   </div>
                 </>
@@ -127,55 +127,62 @@ export default function CardWidget({
             </div>
             
             {(showRevealOnly || !hideActions) && (
-              <div className="flex gap-2">
-                {card.isUltimate && !hideActions && <span className="text-white/50 text-[10px] font-bold uppercase tracking-widest mt-1 mr-2">Ultimate Card</span>}
+              <div className="flex items-center gap-2">
+                {card.isUltimate && !hideActions && <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest mr-1">Ultimate Card</span>}
                 <button 
                   onClick={toggleReveal} 
                   className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all text-white/80"
+                  aria-label={reveal ? "Hide card details" : "Reveal card details"}
                 >
-                  {reveal ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {reveal ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
                 {!hideActions && (
                   <button 
                     onClick={toggleFlip} 
                     className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all text-white/80"
+                    aria-label="Card settings"
                   >
-                    <Settings size={18} />
+                    <Settings size={16} />
                   </button>
                 )}
               </div>
             )}
           </div>
 
-          {/* Chip and PAN */}
-          <div className="z-10">
-            {!card.isUltimate && <div className="w-12 h-8 bg-yellow-400/60 rounded-md mb-6 flex-shrink-0" />}
-            <p className={`text-white font-mono tracking-[0.2em] ${card.isUltimate ? 'text-3xl mt-12' : 'text-xl'}`}>
-              {reveal ? (card.pan || (card.isUltimate ? '4000 1234 5678 9010' : '0000 0000 0000 0000')) : (maskPAN(card.pan) ?? '**** **** **** ****')}
+          {/* Middle Row: Chip & Available Balance */}
+          <div className="flex justify-between items-center z-10 my-auto">
+            {!card.isUltimate ? (
+              <div className="w-11 h-7 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 rounded-md shadow-sm border border-yellow-200/40 flex-shrink-0" />
+            ) : <div />}
+
+            {balance !== undefined && !isFlipped && !hideBalance && (
+              <div className="text-right">
+                <p className="text-white/50 text-[10px] uppercase tracking-wider leading-none mb-1">Available</p>
+                <p className="text-white font-bold text-lg sm:text-xl tracking-tight">{toNaira(balance)}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Card Number (PAN) */}
+          <div className="z-10 my-1">
+            <p className={`text-white font-mono tracking-[0.16em] sm:tracking-[0.2em] font-medium select-all ${card.isUltimate ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'}`}>
+              {reveal ? (card.pan || (card.isUltimate ? '4000 1234 5678 9010' : '0000 0000 0000 0000')) : (maskPAN(card.pan) ?? '•••• •••• •••• ••••')}
             </p>
           </div>
 
           {/* Footer Info */}
           <div className="flex justify-between items-end z-10">
-            <div className="space-y-1">
-              <p className="text-white/40 text-[10px] uppercase tracking-[0.15em]">Card Holder</p>
-              <p className="text-white font-semibold text-base truncate max-w-[200px] uppercase">
+            <div className="space-y-0.5">
+              <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Card Holder</p>
+              <p className="text-white font-semibold text-sm sm:text-base truncate max-w-[200px] uppercase">
                 {card.isUltimate ? 'Orchestra Master' : (card.nameOnCard || card.label || 'YOUR NAME')}
               </p>
             </div>
-            <div className="text-right space-y-1">
-              <p className="text-white/40 text-[10px] uppercase tracking-[0.15em]">Expires</p>
-              <p className="text-white font-semibold text-base">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
+            <div className="text-right space-y-0.5">
+              <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Expires</p>
+              <p className="text-white font-semibold text-sm sm:text-base font-mono">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
             </div>
           </div>
-
-          {/* Balance Overlay */}
-          {balance !== undefined && !isFlipped && !hideBalance && (
-            <div className="absolute top-32 right-8 text-right">
-              <p className="text-white/30 text-[10px] uppercase tracking-wider">Available</p>
-              <p className="text-white font-bold text-xl">{toNaira(balance)}</p>
-            </div>
-          )}
 
           {/* Status Badge */}
           {isBlocked && (

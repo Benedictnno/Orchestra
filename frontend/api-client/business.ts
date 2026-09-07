@@ -2,7 +2,14 @@ import axiosInstance from './axios';
 import { BusinessCard, ApprovalRequest } from './types';
 
 export const getBusinessCards = async (): Promise<{ cards: BusinessCard[]; pendingActions: ApprovalRequest[] }> => {
-  return axiosInstance.get('/api/business');
+  const [cardsRes, approvalsRes] = await Promise.all([
+    axiosInstance.get<{ cards?: BusinessCard[] }>('/api/business').catch(() => ({ cards: [] })),
+    axiosInstance.get<{ approvalQueue?: ApprovalRequest[] }>('/api/business/approvals').catch(() => ({ approvalQueue: [] })),
+  ]);
+  return {
+    cards: (cardsRes as { cards?: BusinessCard[] })?.cards ?? [],
+    pendingActions: (approvalsRes as { approvalQueue?: ApprovalRequest[] })?.approvalQueue ?? [],
+  };
 };
 
 export const createBusinessCard = async (data: Partial<BusinessCard>): Promise<BusinessCard> => {
