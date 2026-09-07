@@ -2,25 +2,11 @@
 import { Bell } from 'lucide-react'
 import AnomalyBadge from '@/components/dashboard/AnomalyBadge'
 import ThemeToggle from '@/components/shared/ThemeToggle'
-import { useSyncExternalStore } from 'react'
-import { tokenStorage } from '@/utils/tokenStorage'
-
-function parseInitial(): string {
-  try {
-    const token = tokenStorage.getToken()
-    if (!token) return 'U'
-    const payload = JSON.parse(atob(token))
-    const name: string = payload?.name || payload?.email || 'User'
-    return name.charAt(0).toUpperCase()
-  } catch {
-    return 'U'
-  }
-}
-
-const emptySubscribe = () => () => {}
+import { useCurrentUser } from '@/hooks/useAuth'
 
 export default function Navbar() {
-  const initial = useSyncExternalStore(emptySubscribe, parseInitial, () => 'U')
+  const { data: user } = useCurrentUser()
+  const initial = user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'
 
   return (
     <header className="h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center px-6 gap-4 flex-shrink-0 transition-colors duration-200">

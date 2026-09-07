@@ -10,5 +10,6 @@ export const loginUser = async (credentials: { email?: string; password?: string
 };
 
 export const getCurrentUser = async (): Promise<User> => {
-  return axiosInstance.get('/api/auth/me');
+  const res: { user?: User } | User = await axiosInstance.get('/api/auth/me');
+  return (res as { user?: User })?.user ?? (res as User);
 };
