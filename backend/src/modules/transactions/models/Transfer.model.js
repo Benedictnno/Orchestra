@@ -7,6 +7,7 @@ const transferSchema = new mongoose.Schema({
   amount:           { type: Number, required: true },  // kobo
   currency:         { type: String, default: 'NGN' },
   narration:        String,
+  category:         { type: String, default: 'transfer' },
   reference:        { type: String, unique: true },
   recipientName:    { type: String, required: true },
   recipientAccount: { type: String, required: true },  // 10-digit NUBAN

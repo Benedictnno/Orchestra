@@ -13,8 +13,8 @@ export default function RegisterPage() {
           <span className="text-white font-bold text-2xl tracking-tight">Orchestra</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-2xl">
-          <h1 className="text-2xl font-bold text-[#4A90e2] mb-1">Create your account</h1>
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#4A90e2] mb-1">Create your account</h1>
           <p className="text-gray-500 text-sm mb-6">Start unifying your cards in minutes</p>
 
           <RegisterForm />

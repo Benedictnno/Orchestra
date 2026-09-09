@@ -2,11 +2,34 @@
 import { useEffect, useState } from 'react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 
+interface ObservationItem {
+  title?: string
+  detail?: string
+}
+
+type ObservationEntry = string | ObservationItem
+
 interface HealthData {
   financialScore: number
   scoreLabel: string
   summary: string
-  observations?: string[]
+  observations?: ObservationEntry[]
+}
+
+function renderObservationText(item: ObservationEntry): React.ReactNode {
+  if (typeof item === 'string') return item
+  if (item && typeof item === 'object') {
+    if (item.title && item.detail) {
+      return (
+        <span>
+          <strong className="font-semibold text-gray-800">{item.title}: </strong>
+          {item.detail}
+        </span>
+      )
+    }
+    return item.detail || item.title || JSON.stringify(item)
+  }
+  return String(item ?? '')
 }
 
 function getScoreColor(score: number) {
@@ -165,7 +188,7 @@ export default function FinancialHealthScore() {
           {data.observations.slice(0, 3).map((obs, i) => (
             <div key={i} className="flex gap-2 text-xs text-gray-600">
               <span className={`mt-0.5 shrink-0 ${color.text}`}>●</span>
-              {obs}
+              <span>{renderObservationText(obs)}</span>
             </div>
           ))}
         </div>

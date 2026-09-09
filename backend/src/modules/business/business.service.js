@@ -42,17 +42,19 @@ export async function getApprovalQueue(businessUserId) {
  * Create a new business expense card.
  */
 export async function createBusinessCard(businessUserId, {
-  assignedTo, purpose, budget, merchantCategories, expiresAt, approvalThreshold
+  assignedTo, department, label, purpose, budget, merchantCategories, expiresAt, approvalThreshold
 }) {
   return BusinessCard.create({
     businessUserId,
-    assignedTo,
-    purpose,
+    assignedTo: assignedTo || 'Employee',
+    department: department || 'General',
+    label: label || purpose || 'Corporate Card',
+    purpose: purpose || label || 'General Expenses',
     budget: nairaToKobo(budget),
-    merchantCategories,
+    merchantCategories: merchantCategories || [],
     expiresAt: expiresAt ? new Date(expiresAt) : null,
     approvalThreshold: approvalThreshold ? nairaToKobo(approvalThreshold) : null,
-    pan: `BIZ${Date.now()}`,
+    pan: `BIZ${Date.now().toString().slice(-12)}`,
   })
 }
 

@@ -217,7 +217,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
         </div>
         
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide">
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             <SortableContext items={physicalCards.map(c => c._id)} strategy={horizontalListSortingStrategy}>
               {physicalCards.map(card => (
                 <SortableCard
@@ -236,11 +236,10 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
 
             <button
               onClick={() => setShowAdd(true)}
-              className="flex-shrink-0 snap-center rounded-[24px] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#E94560] hover:text-[#E94560] transition bg-gray-50/50"
-              style={{ height: '215px', width: '215px' }}
+              className="flex-shrink-0 snap-center rounded-[24px] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#E94560] hover:text-[#E94560] transition bg-gray-50/50 w-[180px] sm:w-[215px] min-h-[180px] sm:min-h-[215px]"
             >
-              <div className="w-14 h-14 rounded-full bg-gray-200/50 flex items-center justify-center text-3xl font-light">+</div>
-              <p className="text-sm font-bold tracking-tight">Add New Card</p>
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gray-200/50 flex items-center justify-center text-2xl sm:text-3xl font-light">+</div>
+              <p className="text-xs sm:text-sm font-bold tracking-tight">Add New Card</p>
             </button>
           </div>
         </DndContext>

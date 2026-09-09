@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}>
-      <body className="min-h-full bg-background text-foreground transition-colors duration-200">
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}>
+      <body suppressHydrationWarning className="min-h-full bg-background text-foreground transition-colors duration-200">
         <ThemeProvider defaultTheme="system">
           <QueryProvider>
             <ToastProvider>

@@ -54,7 +54,7 @@ export interface BusinessCard {
   merchantCategories?: string[];
   expiresAt?: string;
   status: 'active' | 'suspended' | 'exhausted';
-  approvalThreshold?: number;
+  approvalThreshold?: number | null;
   pan: string;
   pendingApprovals?: number;
   label?: string;

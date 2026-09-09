@@ -204,29 +204,28 @@ export default function LandingPage() {
             </div> */}
 
             <h1
-              className="text-5xl md:text-6xl font-black text-white leading-tight mb-6"
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-6 tracking-tight"
               style={{ animation: 'slideUp 0.9s ease 0.1s both' }}
             >
-              
               One card to{' '}
               <span className="text-gradient">orchestrate</span>
               {' '}them all
             </h1>
 
             <p
-              className="text-white/60 text-lg leading-relaxed mb-8 max-w-lg"
+              className="text-white/70 text-base sm:text-lg leading-relaxed mb-8 max-w-lg"
               style={{ animation: 'slideUp 0.9s ease 0.25s both' }}
             >
               Orchestra is an AI-powered ATM card orchestration platform that unifies all your bank cards into a single programmable payment layer — routing every naira intelligently.
             </p>
 
             <div
-              className="flex flex-wrap gap-3"
+              className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
               style={{ animation: 'slideUp 0.9s ease 0.4s both' }}
             >
               <Link
                 href="/register"
-                className="group relative bg-[#E94560] text-white font-bold px-8 py-4 rounded-2xl text-base hover:bg-[#d63850] transition-all duration-200 hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-0.5"
+                className="group relative bg-[#E94560] text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-center text-sm sm:text-base hover:bg-[#d63850] transition-all duration-200 hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-0.5"
               >
                 <span className="relative z-10">Start for free</span>
                 {/* pulse ring */}
@@ -234,7 +233,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/login"
-                className="bg-white/10 border border-white/20 text-white font-semibold px-8 py-4 rounded-2xl text-base hover:bg-white/20 transition backdrop-blur-sm"
+                className="bg-white/10 border border-white/20 text-white font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-center text-sm sm:text-base hover:bg-white/20 transition backdrop-blur-sm"
               >
                 Sign in →
               </Link>
@@ -338,13 +337,13 @@ export default function LandingPage() {
         }} />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#E94560]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-2xl mx-auto px-6 text-center relative">
-          <h2 className="text-5xl font-black text-white mb-4 leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-white mb-4 leading-tight">
             Ready to <span className="text-gradient">orchestrate</span> your money?
           </h2>
-          <p className="text-white/50 text-lg mb-10">Join thousands of Nigerians making every naira work harder.</p>
+          <p className="text-white/60 text-base sm:text-lg mb-8 sm:mb-10">Join thousands of Nigerians making every naira work harder.</p>
           <Link
             href="/register"
-            className="inline-block bg-[#E94560] text-white font-bold text-lg px-12 py-5 rounded-2xl hover:bg-[#d63850] transition-all hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-1"
+            className="inline-block bg-[#E94560] text-white font-bold text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-5 rounded-2xl hover:bg-[#d63850] transition-all hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-1"
           >
             Create your free account →
           </Link>

@@ -85,14 +85,14 @@ export default function InsightsPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-dark">AI Insights</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#4A90e2]">AI Insights</h1>
           <p className="text-gray-500 text-sm mt-1">Smart analysis of your spending patterns</p>
         </div>
         <button
           onClick={downloadReport}
-          className="bg-dark text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-dark-2 transition flex items-center gap-2"
+          className="self-start sm:self-auto bg-[#4A90e2] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#3B78C4] transition flex items-center gap-2 shadow-sm"
         >
           ↓ Export Report
         </button>

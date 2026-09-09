@@ -41,14 +41,14 @@ export default function VirtualCardsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#4A90e2]">Virtual Cards</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#4A90e2]">Virtual Cards</h1>
           <p className="text-gray-500 text-sm mt-1">Isolated cards for subscriptions and online spending</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 bg-[#E94560] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#d63850] transition"
+          className="self-start sm:self-auto flex items-center gap-2 bg-[#E94560] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#d63850] transition shadow-md shadow-[#E94560]/20"
         >
           <Plus size={16} />
           New Card

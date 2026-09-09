@@ -8,8 +8,9 @@ import { withTransaction } from '../../shared/database/transaction.js'
 /**
  * Perform a bank transfer using a source card.
  */
-export async function createTransfer(userId, { amount, sourceCardId, recipientBank, recipientAccount, recipientName, narration }) {
+export async function createTransfer(userId, { amount, sourceCardId, recipientBank, recipientAccount, recipientName, narration, category }) {
   const amountKobo = nairaToKobo(amount)
+  const selectedCategory = category || 'transfer'
 
   return withTransaction(async (session) => {
     // 1. Check card balance & deduct via cards service
@@ -23,7 +24,7 @@ export async function createTransfer(userId, { amount, sourceCardId, recipientBa
       pan: sourceCard.pan,
       amount: amountKobo,
       type: 'transfer',
-      category: 'transfer',
+      category: selectedCategory,
       merchant: recipientBank,
       narration: narration || `Transfer to ${recipientName}`,
       reference,
@@ -39,6 +40,7 @@ export async function createTransfer(userId, { amount, sourceCardId, recipientBa
       recipientAccount,
       recipientName,
       narration,
+      category: selectedCategory,
       reference,
       transactionId: tx._id,
       status: 'success',

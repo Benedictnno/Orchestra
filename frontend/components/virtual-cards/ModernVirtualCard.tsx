@@ -106,11 +106,11 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
           {/* Grid Pattern */}
           <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
 
-          <div className="relative h-full w-full p-8 flex flex-col justify-between text-white">
+          <div className="relative h-full w-full p-5 sm:p-7 md:p-8 flex flex-col justify-between text-white">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-bold tracking-[0.2em] opacity-80 uppercase mb-1">Virtual Subscription</p>
-                <h3 className="text-2xl font-bold tracking-tight">{card.label || 'New Card'}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight truncate max-w-[180px] xs:max-w-[220px] sm:max-w-[260px]">{card.label || 'New Card'}</h3>
               </div>
               <div className="flex gap-2">
                 <button onClick={toggleReveal} className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all">
@@ -122,38 +122,38 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
               </div>
             </div>
 
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-3 sm:gap-6 items-center flex-wrap">
               <div className="flex gap-2">
                 {[1, 2, 3].map(group => (
-                  <div key={group} className="flex gap-1.5">
+                  <div key={group} className="flex gap-1">
                     {reveal ? (
-                      <span className="text-2xl font-mono tracking-wider opacity-90">0000</span>
+                      <span className="text-lg sm:text-2xl font-mono tracking-wider opacity-90">0000</span>
                     ) : (
                       <div className="flex gap-1.5 py-2">
-                        {[1, 2, 3, 4].map(dot => <div key={dot} className="w-2 h-2 rounded-full bg-white opacity-90" />)}
+                        {[1, 2, 3, 4].map(dot => <div key={dot} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white opacity-90" />)}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
-              <span className="text-2xl font-mono tracking-wider text-white/90">{card.last4 || '1234'}</span>
+              <span className="text-lg sm:text-2xl font-mono tracking-wider text-white/90">{card.last4 || '1234'}</span>
             </div>
 
             <div className="flex justify-between items-end">
-              <div className="flex gap-8">
-                <div className="space-y-1">
+              <div className="flex gap-5 sm:gap-8">
+                <div className="space-y-0.5">
                   <p className="text-[9px] font-bold tracking-widest opacity-60 uppercase">Expiry</p>
-                  <p className="text-sm font-bold font-mono tracking-wider">{card.expiry || '12/28'}</p>
+                  <p className="text-xs sm:text-sm font-bold font-mono tracking-wider">{card.expiry || '12/28'}</p>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <p className="text-[9px] font-bold tracking-widest opacity-60 uppercase">CVV</p>
-                  <p className="text-sm font-bold font-mono tracking-wider">{reveal ? '123' : '***'}</p>
+                  <p className="text-xs sm:text-sm font-bold font-mono tracking-wider">{reveal ? '123' : '***'}</p>
                 </div>
               </div>
-              <div className="relative w-12 h-8 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
+              <div className="relative w-10 sm:w-12 h-7 sm:h-8 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
                 <div className="relative flex -space-x-4">
-                  <div className="w-6 h-6 rounded-full bg-[#EB001B] opacity-90" />
-                  <div className="w-6 h-6 rounded-full bg-[#F79E1B] mix-blend-screen" />
+                  <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-[#EB001B] opacity-90" />
+                  <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-[#F79E1B] mix-blend-screen" />
                 </div>
               </div>
             </div>
@@ -172,9 +172,9 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
           className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl rotate-y-180 bg-[#4A90e2]"
           style={{ background: `linear-gradient(135deg, #4A90e2 0%, ${bgColor} 100%)` }}
         >
-          <div className="relative h-full w-full p-8 flex flex-col justify-between text-white">
+          <div className="relative h-full w-full p-5 sm:p-7 md:p-8 flex flex-col justify-between text-white">
             <div className="flex justify-between items-center">
-              <h4 className="font-bold text-lg">Card Settings</h4>
+              <h4 className="font-bold text-base sm:text-lg">Card Settings</h4>
               <button onClick={toggleFlip} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all">
                 <ArrowLeft size={16} />
               </button>

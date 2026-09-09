@@ -3,6 +3,8 @@ import mongoose from 'mongoose'
 const businessCardSchema = new mongoose.Schema({
   businessUserId:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedTo:         String,
+  department:         { type: String, default: 'General' },
+  label:              String,
   purpose:            String,
   budget:             { type: Number, required: true },   // kobo
   amountSpent:        { type: Number, default: 0 },

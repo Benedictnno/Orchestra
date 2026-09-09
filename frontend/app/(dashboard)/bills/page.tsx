@@ -83,23 +83,23 @@ export default function BillsPage() {
       </div>
 
       <div className="bg-white rounded-3xl border shadow-sm overflow-hidden">
-        <form onSubmit={handlePayment} className="p-8 space-y-8">
+        <form onSubmit={handlePayment} className="p-5 sm:p-8 space-y-6 sm:space-y-8">
           {/* Categories */}
-          <section className="space-y-4">
+          <section className="space-y-3 sm:space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Select Category</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
               {BILL_CATEGORIES.map(cat => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => { setSelectedCat(cat); setForm(f => ({ ...f, billerCode: '' })) }}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all
+                  className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-2xl border-2 transition-all
                     ${selectedCat.id === cat.id 
                       ? 'border-[#E94560] bg-[#E94560]/5' 
                       : 'border-gray-50 hover:border-gray-100 bg-gray-50/50'}`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <cat.icon size={20} />
+                  <div className={`w-9 sm:w-10 h-9 sm:h-10 rounded-xl flex items-center justify-center ${cat.color}`}>
+                    <cat.icon size={18} className="sm:w-5 sm:h-5" />
                   </div>
                   <span className="text-[10px] font-bold text-[#4A90e2] uppercase">{cat.label}</span>
                 </button>
@@ -108,9 +108,9 @@ export default function BillsPage() {
           </section>
 
           {/* Source Card */}
-          <section className="space-y-4">
+          <section className="space-y-3 sm:space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Payment Method</h3>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
               {loading ? (
                 <div className="h-24 bg-gray-50 animate-pulse rounded-2xl w-full" />
               ) : (
@@ -119,13 +119,13 @@ export default function BillsPage() {
                     key={card._id}
                     type="button"
                     onClick={() => setForm(f => ({ ...f, sourceCardId: card._id }))}
-                    className={`flex-shrink-0 w-64 p-5 rounded-2xl border-2 transition-all text-left
+                    className={`flex-shrink-0 w-56 sm:w-64 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left
                       ${form.sourceCardId === card._id 
                         ? 'border-[#E94560] bg-[#E94560]/5' 
                         : 'border-gray-50 hover:border-gray-100 bg-gray-50/50'}`}
                   >
-                    <p className="font-bold text-[#4A90e2] text-sm mb-0.5">{card.label}</p>
-                    <p className="text-xs text-gray-500 font-medium mb-3">**** {card.pan.slice(-4)}</p>
+                    <p className="font-bold text-[#4A90e2] text-sm mb-0.5 truncate">{card.label}</p>
+                    <p className="text-xs text-gray-500 font-medium mb-2 sm:mb-3">**** {card.pan.slice(-4)}</p>
                     <p className="text-sm font-black text-[#E94560]">{toNaira(card.availableBalance)}</p>
                   </button>
                 ))

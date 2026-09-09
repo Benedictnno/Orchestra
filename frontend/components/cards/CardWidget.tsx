@@ -72,7 +72,7 @@ export default function CardWidget({
   }
 
   return (
-    <div className={`relative ${hideActions && !showRevealOnly ? 'min-w-0' : 'min-w-[340px] max-w-[440px]'} w-full aspect-[1.58/1] perspective-1000 ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}>
+    <div className={`relative ${hideActions && !showRevealOnly ? 'min-w-0' : 'min-w-[280px] xs:min-w-[320px] sm:min-w-[340px] max-w-[440px]'} w-full aspect-[1.58/1] perspective-1000 ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}>
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
@@ -82,7 +82,7 @@ export default function CardWidget({
       >
         {/* FRONT SIDE */}
         <div 
-          className={`absolute inset-0 rounded-[24px] p-8 shadow-2xl flex flex-col justify-between overflow-hidden
+          className={`absolute inset-0 rounded-[24px] p-5 sm:p-7 md:p-8 shadow-2xl flex flex-col justify-between overflow-hidden
             ${card.isUltimate ? 'ring-2 ring-blue-500/50' : (isSelected ? 'ring-2 ring-[#E94560]' : '')}`}
           style={{ 
             background: bgColor,
@@ -165,7 +165,7 @@ export default function CardWidget({
 
           {/* Card Number (PAN) */}
           <div className="z-10 my-1">
-            <p className={`text-white font-mono tracking-[0.16em] sm:tracking-[0.2em] font-medium select-all ${card.isUltimate ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'}`}>
+            <p className={`text-white font-mono tracking-[0.12em] xs:tracking-[0.16em] sm:tracking-[0.2em] font-medium select-all ${card.isUltimate ? 'text-lg xs:text-xl sm:text-2xl md:text-3xl' : 'text-base xs:text-lg sm:text-xl'}`}>
               {reveal ? (card.pan || (card.isUltimate ? '4000 1234 5678 9010' : '0000 0000 0000 0000')) : (maskPAN(card.pan) ?? '•••• •••• •••• ••••')}
             </p>
           </div>
@@ -174,13 +174,13 @@ export default function CardWidget({
           <div className="flex justify-between items-end z-10">
             <div className="space-y-0.5">
               <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Card Holder</p>
-              <p className="text-white font-semibold text-sm sm:text-base truncate max-w-[200px] uppercase">
+              <p className="text-white font-semibold text-xs sm:text-sm md:text-base truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] uppercase">
                 {card.isUltimate ? 'Orchestra Master' : (card.nameOnCard || card.label || 'YOUR NAME')}
               </p>
             </div>
             <div className="text-right space-y-0.5">
               <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Expires</p>
-              <p className="text-white font-semibold text-sm sm:text-base font-mono">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
+              <p className="text-white font-semibold text-xs sm:text-sm md:text-base font-mono">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
             </div>
           </div>
 
@@ -196,7 +196,7 @@ export default function CardWidget({
 
         {/* BACK SIDE */}
         <div 
-          className="absolute inset-0 rounded-[24px] p-8 shadow-2xl flex flex-col justify-between"
+          className="absolute inset-0 rounded-[24px] p-5 sm:p-7 md:p-8 shadow-2xl flex flex-col justify-between"
           style={{ 
             background: '#1A1A2E',
             backfaceVisibility: 'hidden',

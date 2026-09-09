@@ -2,12 +2,16 @@
 import Sidebar from '@/components/shared/Sidebar'
 import Navbar from '@/components/shared/Navbar'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { tokenStorage } from '@/utils/tokenStorage'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const pathname = usePathname()
   const [authChecked, setAuthChecked] = useState(false)
+
+  // Full Canvas routes — no padding, no scroll wrapper; the page owns its own layout
+  const isFullCanvas = pathname === '/chat'
 
   useEffect(() => {
     const check = () => {
@@ -49,10 +53,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Navbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
-          {children}
-        </main>
+        {/* <Navbar /> */}
+        {isFullCanvas ? (
+          // Full Canvas mode — zero padding, overflow hidden, page manages its own height
+          <main className="flex-1 overflow-hidden flex flex-col">
+            {children}
+          </main>
+        ) : (
+          // Standard dashboard pages — padded scrollable main
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
+            {children}
+          </main>
+        )}
       </div>
     </div>
   )

@@ -18,6 +18,8 @@ export const transferSchema = z.object({
   recipientBank:    z.string().min(1, 'recipientBank is required'),
   recipientAccount: z.string().length(10, 'NUBAN must be 10 digits'),
   recipientName:    z.string().min(1, 'recipientName is required'),
+  category:         z.enum(['food', 'transport', 'subscriptions', 'utilities',
+                           'entertainment', 'shopping', 'transfer', 'bills', 'other']).optional(),
   narration:        z.string().optional(),
 })
 

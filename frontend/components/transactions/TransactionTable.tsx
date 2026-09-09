@@ -83,25 +83,25 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
   return (
     <div className="bg-white rounded-2xl border shadow-sm flex flex-col min-h-[500px]">
       {/* Filters */}
-      <div className="p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="relative">
+      <div className="p-4 sm:p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+        <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
             placeholder="Search by merchant or card…"
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(1) }}
-            className="pl-9 pr-4 py-2 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-[#E94560] outline-none w-full md:w-64 transition-all"
+            className="pl-9 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-[#E94560] outline-none w-full transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {CATEGORIES.filter(c => c === 'all' || transactions.some(t => t.category === c)).map(cat => (
             <button
               key={cat}
               onClick={() => { setSelectedCategory(cat); setPage(1) }}
               className={cn(
-                'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all',
+                'px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all',
                 selectedCategory === cat
                   ? 'bg-[#E94560] text-white shadow-md shadow-[#E94560]/20'
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -110,14 +110,72 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </button>
           ))}
-          <button onClick={fetchTx} className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition ml-1" title="Refresh">
+          <button onClick={fetchTx} className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition shrink-0 ml-1" title="Refresh">
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto flex-1">
+      {/* Mobile Card List (< md) */}
+      <div className="md:hidden divide-y divide-gray-100 flex-1">
+        {loading ? (
+          <div className="p-4 space-y-3">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="flex items-center gap-3 animate-pulse py-2">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 bg-gray-100 rounded w-1/2" />
+                  <div className="h-2.5 bg-gray-50 rounded w-1/3" />
+                </div>
+                <div className="h-3.5 bg-gray-100 rounded w-16" />
+              </div>
+            ))}
+          </div>
+        ) : paginated.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">
+            <Search size={32} className="mx-auto mb-2 opacity-50" />
+            <p className="text-sm font-semibold">No transactions found</p>
+          </div>
+        ) : (
+          paginated.map((t, i) => {
+            const cardName = t.cardLabel || t.card || 'Card'
+            const catColor = CATEGORY_COLORS[t.category] ?? CATEGORY_COLORS.other
+            return (
+              <div key={t._id || i} className="p-4 hover:bg-gray-50/50 transition-colors flex items-center gap-3">
+                <div className={cn(
+                  'w-10 h-10 rounded-xl flex items-center justify-center border shrink-0',
+                  t.amount >= 0 ? 'bg-green-50 border-green-100 text-green-600' : 'bg-red-50 border-red-100 text-red-600'
+                )}>
+                  {t.amount >= 0 ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-bold text-[#4A90e2] text-sm truncate">{t.merchant}</p>
+                    <p className={cn('font-bold text-sm shrink-0', t.amount >= 0 ? 'text-green-600' : 'text-red-600')}>
+                      {t.amount >= 0 ? '+' : '-'}{toNaira(Math.abs(t.amount))}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <div className="flex items-center gap-1.5 truncate text-[11px] text-gray-400">
+                      <span className={cn('text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shrink-0', catColor)}>
+                        {t.category}
+                      </span>
+                      <span>·</span>
+                      <span className="truncate">{cardName}</span>
+                    </div>
+                    <span className="text-[10px] text-gray-400 shrink-0">
+                      {new Date(t.transactionDate).toLocaleDateString('en-NG', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
+
+      {/* Desktop Table View (>= md) */}
+      <div className="hidden md:block overflow-x-auto flex-1">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/60 sticky top-0">
