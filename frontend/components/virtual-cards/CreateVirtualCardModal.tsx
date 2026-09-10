@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { X } from 'lucide-react'
+import { X, ShieldAlert } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 
 interface CreateVirtualCardModalProps {
@@ -83,32 +83,36 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b">
+    <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
           <div>
-            <h2 className="text-lg font-bold text-[#4A90e2]">Create Virtual Card</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Set up in under 30 seconds</p>
+            <h2 className="text-sm font-semibold text-slate-900">Create Virtual Card</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Provision an isolated merchant-locked virtual card</p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition">
-            <X size={18} />
+          <button 
+            onClick={onClose} 
+            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          >
+            <X size={16} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Parent card selector */}
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Linked Physical Card</label>
+            <label className="text-xs font-medium text-slate-700 mb-1.5 block">Source Funding Card</label>
             {physicalCards.length === 0 ? (
-              <p className="text-amber-600 text-xs bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                ⚠ You need to add a physical card first before creating a virtual card.
-              </p>
+              <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50/50 p-3 text-xs text-amber-800">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+                <p>You need to link a funding bank card first before provisioning virtual cards.</p>
+              </div>
             ) : (
               <select
                 value={form.parentCardId}
                 onChange={e => update('parentCardId', e.target.value)}
                 required
-                className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
               >
                 {physicalCards.map(c => (
                   <option key={c._id} value={c._id}>
@@ -120,60 +124,68 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Card Label</label>
+            <label className="text-xs font-medium text-slate-700 mb-1.5 block">Card Purpose / Label</label>
             <input
               type="text"
-              placeholder="e.g. Netflix Subscription"
+              placeholder="e.g. AWS Cloud Infrastructure"
               value={form.label}
               onChange={e => update('label', e.target.value)}
               required
-              className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Lock to Merchant (optional)</label>
+            <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+              Lock to Specific Merchant <span className="text-slate-400 font-normal">(Optional)</span>
+            </label>
             <input
               type="text"
-              placeholder="e.g. Netflix"
+              placeholder="e.g. Amazon Web Services"
               value={form.merchant}
               onChange={e => update('merchant', e.target.value)}
-              className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Monthly Spend Limit (₦)</label>
-            <input
-              type="number"
-              placeholder="e.g. 5000"
-              value={form.spendLimit}
-              onChange={e => update('spendLimit', e.target.value)}
-              required
-              min="1"
-              className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none"
-            />
+            <label className="text-xs font-medium text-slate-700 mb-1.5 block">Monthly Spend Limit (NGN)</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400">₦</span>
+              <input
+                type="number"
+                placeholder="50,000"
+                value={form.spendLimit}
+                onChange={e => update('spendLimit', e.target.value)}
+                required
+                min="1"
+                className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-xs font-mono tabular-nums text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
+              />
+            </div>
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex items-center gap-2.5 cursor-pointer py-1">
             <input
               type="checkbox"
               checked={form.autoRenew}
               onChange={e => update('autoRenew', e.target.checked)}
-              className="w-4 h-4 rounded accent-[#E94560]"
+              className="w-4 h-4 rounded border-slate-300 text-slate-900 accent-slate-900 focus:ring-0 cursor-pointer"
             />
-            <span className="text-sm text-gray-700">Auto-renew monthly</span>
+            <span className="text-xs font-medium text-slate-700">Auto-reset spend limit on 1st of every month</span>
           </label>
 
-          <button
-            type="submit"
-            disabled={loading || !form.label || !form.spendLimit || !form.parentCardId}
-            className="w-full bg-[#E94560] text-white py-3 rounded-xl font-semibold hover:bg-[#d63850] transition disabled:opacity-50"
-          >
-            {loading ? 'Creating…' : 'Create Virtual Card'}
-          </button>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading || !form.label || !form.spendLimit || !form.parentCardId}
+              className="w-full rounded-lg bg-slate-900 py-2.5 text-xs font-medium text-white shadow-sm hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Provisioning Card…' : 'Create Virtual Card'}
+            </button>
+          </div>
         </form>
       </div>
     </div>
   )
 }
+

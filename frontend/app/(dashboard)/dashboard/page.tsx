@@ -4,7 +4,7 @@ import BalanceSummary from '@/components/dashboard/BalanceSummary'
 import QuickStats from '@/components/dashboard/QuickStats'
 import SpendingChart from '@/components/dashboard/SpendingChart'
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow'
-import { ArrowUpRight, Send, Zap } from 'lucide-react'
+import { ArrowUpRight, Send, Zap, Sparkles, ArrowRight, History } from 'lucide-react'
 import Link from 'next/link'
 import { useCurrentUser } from '@/hooks/useAuth'
 import { useTransactions, useTransactionSummary } from '@/hooks/useTransactions'
@@ -22,8 +22,12 @@ function timeAgo(dateStr?: string) {
 
 function formatTxAmount(amount: number) {
   const abs = Math.abs(amount / 100)
-  const sign = amount >= 0 ? '+' : '-'
-  return `${sign}₦${abs.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`
+  const isCredit = amount >= 0
+  const sign = isCredit ? '+' : '-'
+  return {
+    formatted: `${sign}₦${abs.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
+    isCredit
+  }
 }
 
 export default function DashboardPage() {
@@ -42,89 +46,136 @@ export default function DashboardPage() {
     totalCards: cardsData?.length || 0,
     virtualCards: vcData?.length || 0,
     monthlySpend: (summaryData?.summary?.totalSpent ?? 0) / 100,
-    savedThisMonth: 0, // Placeholder for future implementation
+    savedThisMonth: 0,
   }
 
   const recentTx = txData?.transactions || []
 
   return (
-    <div className="max-w-6xl mx-auto px-4 md:px-0 pb-10">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 pb-12">
       {showOnboarding && (
         <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
       )}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#4A90e2]">Welcome {user?.name || 'User'} </h1>
-        <p className="text-gray-500 text-sm mt-1">Here&apos;s your financial overview for today</p>
+
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
+            Overview
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Welcome back{user?.name ? `, ${user.name}` : ''}. Here is your real-time treasury status.
+          </p>
+        </div>
+
+        {/* Action Toolbar */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <Link
+            href="/transfers"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs transition-colors shrink-0"
+          >
+            <Send size={13} className="text-slate-500" />
+            <span>Transfer</span>
+          </Link>
+          <Link
+            href="/bills"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs transition-colors shrink-0"
+          >
+            <Zap size={13} className="text-slate-500" />
+            <span>Pay Bill</span>
+          </Link>
+          <Link
+            href="/transactions"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs transition-colors shrink-0"
+          >
+            <History size={13} className="text-slate-500" />
+            <span>Ledger</span>
+          </Link>
+          <Link
+            href="/chat"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg shadow-xs transition-colors shrink-0"
+          >
+            <Sparkles size={13} className="text-blue-400" />
+            <span>AI Advisor</span>
+          </Link>
+        </div>
       </div>
 
+      {/* Balance Summary Hero */}
       <BalanceSummary />
 
-      {/* Action Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
-        <Link href="/transfers" className="bg-white border-2 border-gray-50 hover:border-[#E94560]/20 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all group">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Send size={20} className="md:w-6 md:h-6" />
-          </div>
-          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">Send Money</span>
-        </Link>
-        <Link href="/bills" className="bg-white border-2 border-gray-50 hover:border-[#E94560]/20 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all group">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Zap size={20} className="md:w-6 md:h-6" />
-          </div>
-          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">Pay Bills</span>
-        </Link>
-        <Link href="/transactions" className="bg-white border-2 border-gray-50 hover:border-[#E94560]/20 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all group">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <ArrowUpRight size={20} className="md:w-6 md:h-6" />
-          </div>
-          <span className="text-xs md:text-sm font-bold text-[#4A90e2]">History</span>
-        </Link>
-        <Link href="/chat" className="bg-[#4A90e2] p-4 rounded-2xl flex flex-col items-center gap-2 transition-all hover:scale-[1.02] group">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#E94560] text-white flex items-center justify-center shadow-lg shadow-[#E94560]/20">
-            <span className="text-lg md:text-xl">✦</span>
-          </div>
-          <span className="text-xs md:text-sm font-bold text-white">AI Advisor</span>
-        </Link>
-      </div>
-
+      {/* Key Metric Gauges */}
       <QuickStats {...stats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Analytics & Recent Activity Ledger */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <SpendingChart />
 
-        <div className="bg-white rounded-2xl border p-5 md:p-6">
-          <h3 className="font-bold text-[#4A90e2] mb-4">Recent Transactions</h3>
+        {/* Recent Transactions Module */}
+        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <History size={15} className="text-slate-500" />
+              <h3 className="text-xs font-semibold text-slate-900">Recent Transactions</h3>
+            </div>
+            <Link
+              href="/transactions"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              <span>View all</span>
+              <ArrowRight size={12} />
+            </Link>
+          </div>
+
           {txLoading ? (
             <div className="space-y-3 animate-pulse">
-              {[1,2,3,4].map(i => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex items-center gap-3 py-2">
-                  <div className="w-9 h-9 rounded-xl bg-gray-200 shrink-0" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 shrink-0" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    <div className="h-2.5 bg-gray-100 rounded w-1/3" />
+                    <div className="h-3 bg-slate-100 rounded w-1/2" />
+                    <div className="h-2 bg-slate-50 rounded w-1/3" />
                   </div>
-                  <div className="h-3 bg-gray-200 rounded w-16" />
+                  <div className="h-3 bg-slate-100 rounded w-16" />
                 </div>
               ))}
             </div>
           ) : recentTx.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-8">No recent transactions</p>
+            <div className="py-12 text-center">
+              <p className="text-xs text-slate-400">No recent transactions recorded</p>
+            </div>
           ) : (
-            <div className="space-y-1">
-              {recentTx.map((tx, i) => (
-                <div key={tx._id || i} className="flex items-center gap-3 py-2.5 border-b last:border-0">
-                  <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 shrink-0">
-                    {tx.merchant?.[0] ?? '?'}
+            <div className="divide-y divide-slate-100">
+              {recentTx.map((tx, i) => {
+                const { formatted, isCredit } = formatTxAmount(tx.amount)
+                return (
+                  <div key={tx._id || i} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 hover:bg-slate-50/60 px-1 rounded-md transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200/60 flex items-center justify-center text-xs font-medium text-slate-600 shrink-0">
+                        {tx.merchant ? tx.merchant.charAt(0).toUpperCase() : '•'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-xs text-slate-900 truncate">
+                          {tx.merchant || 'Unknown Merchant'}
+                        </p>
+                        <p className="text-[11px] text-slate-400 capitalize truncate">
+                          {tx.category || 'General'} · {timeAgo(tx.transactionDate)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0 ml-3">
+                      <p
+                        className={`font-mono text-xs font-medium tabular-nums ${
+                          isCredit ? 'text-emerald-600' : 'text-slate-900'
+                        }`}
+                      >
+                        {formatted}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-[#4A90e2] truncate">{tx.merchant}</p>
-                    <p className="text-[10px] md:text-xs text-gray-400 capitalize truncate">{tx.category} · {timeAgo(tx.transactionDate)}</p>
-                  </div>
-                  <p className={`font-semibold text-xs md:text-sm shrink-0 ${tx.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {formatTxAmount(tx.amount)}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -132,3 +183,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

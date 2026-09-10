@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { maskPAN, formatExpiry, toNaira } from '@/utils/format'
-import { Eye, EyeOff, Settings, ShieldAlert, Trash2, ArrowLeft, Lock, Unlock } from 'lucide-react'
+import { Eye, EyeOff, Settings, ShieldAlert, Trash2, ArrowLeft, Lock, Unlock, ShieldCheck } from 'lucide-react'
 
 interface Card {
   _id: string
@@ -36,7 +36,7 @@ interface CardWidgetProps {
 const NETWORK_LOGOS: Record<string, string> = {
   VERVE: 'VERVE',
   VISA: 'VISA',
-  MASTERCARD: '◉◎',
+  MASTERCARD: 'Mastercard',
 }
 
 export default function CardWidget({ 
@@ -56,9 +56,17 @@ export default function CardWidget({
   const [reveal, setReveal] = useState(false)
   
   const isBlocked = card.cardStatus === '2'
-  const bgColor = card.isUltimate 
-    ? 'linear-gradient(135deg, #4A90e2 0%, #16213E 50%, #4A90e2 100%)'
-    : (card.color?.startsWith('#') ? `linear-gradient(135deg, ${card.color} 0%, ${adjustColor(card.color, -20)} 100%)` : (card.color || 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)'))
+  
+  // Refined palette inspired by high-end physical cards
+  const getCardBackground = () => {
+    if (card.isUltimate) {
+      return 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)'
+    }
+    if (card.color?.startsWith('#')) {
+      return `linear-gradient(135deg, ${card.color} 0%, #0f172a 100%)`
+    }
+    return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+  }
 
   const toggleFlip = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -75,120 +83,126 @@ export default function CardWidget({
     <div className={`relative ${hideActions && !showRevealOnly ? 'min-w-0' : 'min-w-[280px] xs:min-w-[320px] sm:min-w-[340px] max-w-[440px]'} w-full aspect-[1.58/1] perspective-1000 ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}>
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className={`relative w-full h-full ${hideActions && !showRevealOnly ? 'cursor-default' : 'cursor-pointer'}`}
         style={{ transformStyle: 'preserve-3d' }}
         onClick={onClick}
       >
         {/* FRONT SIDE */}
         <div 
-          className={`absolute inset-0 rounded-[24px] p-5 sm:p-7 md:p-8 shadow-2xl flex flex-col justify-between overflow-hidden
-            ${card.isUltimate ? 'ring-2 ring-blue-500/50' : (isSelected ? 'ring-2 ring-[#E94560]' : '')}`}
+          className={`absolute inset-0 rounded-2xl p-5 sm:p-6 shadow-md flex flex-col justify-between overflow-hidden border ${
+            card.isUltimate 
+              ? 'border-indigo-500/30 ring-1 ring-indigo-500/30' 
+              : isSelected 
+                ? 'border-slate-900 ring-2 ring-slate-900 shadow-lg' 
+                : 'border-slate-700/60'
+          }`}
           style={{ 
-            background: bgColor,
+            background: getCardBackground(),
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             zIndex: isFlipped ? 0 : 1
           }}
         >
-          {/* Circuit Pattern for Ultimate Card */}
-          {card.isUltimate && (
-            <div className="absolute inset-0 opacity-40 pointer-events-none overflow-hidden">
-              <svg width="100%" height="100%" viewBox="0 0 400 250">
-                <path d="M0 100 H100 L150 50 H250 L300 100 H400" stroke="#4F46E5" fill="none" strokeWidth="1" />
-                <path d="M0 150 H120 L170 200 H280 L330 150 H400" stroke="#4F46E5" fill="none" strokeWidth="1" />
-                <path d="M50 0 V60 L90 100" stroke="#4F46E5" fill="none" strokeWidth="1" />
-                <circle cx="150" cy="50" r="3" fill="#60A5FA" />
-                <circle cx="300" cy="100" r="3" fill="#60A5FA" />
-                <circle cx="170" cy="200" r="3" fill="#60A5FA" />
-                <circle cx="120" cy="150" r="3" fill="#60A5FA" />
-              </svg>
-            </div>
-          )}
+          {/* Subtle satin gradient sheen overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.03] via-transparent to-white/[0.08] pointer-events-none" />
 
-          {/* Network & Icons */}
+          {/* Header Row: Bank / Network & Reveal Controls */}
           <div className="flex justify-between items-start z-10">
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {card.isUltimate ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full border-2 border-white/50 flex items-center justify-center p-1">
-                    <div className="w-full h-full border border-white/30 rounded-full" />
+                  <div className="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-indigo-400" />
                   </div>
-                  <span className="text-white font-bold tracking-tight">Orchestra</span>
+                  <span className="text-white font-semibold text-xs tracking-tight">Orchestra Ultimate</span>
                 </div>
               ) : (
                 <>
-                  {card.bank && <p className="text-white/60 text-[10px] uppercase tracking-widest leading-none mb-1">{card.bank}</p>}
-                  <div className="text-white font-bold text-sm opacity-90 uppercase leading-none">
-                    {card.cardProgram ? (NETWORK_LOGOS[card.cardProgram] ?? card.cardProgram) : 'VERVE'}
-                  </div>
+                  <p className="text-slate-400 text-[10px] font-mono uppercase tracking-wider leading-none">
+                    {card.bank || 'Commercial Bank'}
+                  </p>
+                  <p className="text-white font-medium text-xs tracking-tight">
+                    {card.label || card.nameOnCard || 'Orchestra Card'}
+                  </p>
                 </>
               )}
             </div>
             
             {(showRevealOnly || !hideActions) && (
-              <div className="flex items-center gap-2">
-                {card.isUltimate && !hideActions && <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest mr-1">Ultimate Card</span>}
+              <div className="flex items-center gap-1.5">
                 <button 
                   onClick={toggleReveal} 
-                  className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all text-white/80"
+                  className="p-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg transition-colors text-slate-300 hover:text-white"
                   aria-label={reveal ? "Hide card details" : "Reveal card details"}
+                  title={reveal ? "Hide PAN" : "Reveal PAN"}
                 >
-                  {reveal ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {reveal ? <EyeOff size={13} /> : <Eye size={13} />}
                 </button>
                 {!hideActions && (
                   <button 
                     onClick={toggleFlip} 
-                    className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all text-white/80"
-                    aria-label="Card settings"
+                    className="p-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg transition-colors text-slate-300 hover:text-white"
+                    aria-label="Card security settings"
+                    title="Flip for card security"
                   >
-                    <Settings size={16} />
+                    <Settings size={13} />
                   </button>
                 )}
               </div>
             )}
           </div>
 
-          {/* Middle Row: Chip & Available Balance */}
+          {/* Middle Row: EMV Chip & Available Balance */}
           <div className="flex justify-between items-center z-10 my-auto">
             {!card.isUltimate ? (
-              <div className="w-11 h-7 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 rounded-md shadow-sm border border-yellow-200/40 flex-shrink-0" />
-            ) : <div />}
+              <div className="w-10 h-7 bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 rounded-md border border-amber-200/50 shadow-xs flex items-center justify-center">
+                <div className="w-6 h-4 border border-amber-600/40 rounded-[2px]" />
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-[10px] font-mono">
+                <ShieldCheck size={11} /> Master Routing
+              </div>
+            )}
 
             {balance !== undefined && !isFlipped && !hideBalance && (
               <div className="text-right">
-                <p className="text-white/50 text-[10px] uppercase tracking-wider leading-none mb-1">Available</p>
-                <p className="text-white font-bold text-lg sm:text-xl tracking-tight">{toNaira(balance)}</p>
+                <p className="text-slate-400 text-[10px] font-mono uppercase tracking-wider leading-none mb-1">
+                  Balance
+                </p>
+                <p className="text-white font-mono font-semibold text-base sm:text-lg tracking-tight tabular-nums">
+                  {toNaira(balance)}
+                </p>
               </div>
             )}
           </div>
 
           {/* Card Number (PAN) */}
           <div className="z-10 my-1">
-            <p className={`text-white font-mono tracking-[0.12em] xs:tracking-[0.16em] sm:tracking-[0.2em] font-medium select-all ${card.isUltimate ? 'text-lg xs:text-xl sm:text-2xl md:text-3xl' : 'text-base xs:text-lg sm:text-xl'}`}>
+            <p className="text-white font-mono tracking-[0.18em] text-sm sm:text-base font-medium select-all">
               {reveal ? (card.pan || (card.isUltimate ? '4000 1234 5678 9010' : '0000 0000 0000 0000')) : (maskPAN(card.pan) ?? '•••• •••• •••• ••••')}
             </p>
           </div>
 
           {/* Footer Info */}
-          <div className="flex justify-between items-end z-10">
+          <div className="flex justify-between items-end z-10 pt-1 border-t border-white/10">
             <div className="space-y-0.5">
-              <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Card Holder</p>
-              <p className="text-white font-semibold text-xs sm:text-sm md:text-base truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] uppercase">
-                {card.isUltimate ? 'Orchestra Master' : (card.nameOnCard || card.label || 'YOUR NAME')}
+              <p className="text-slate-400 text-[9px] font-mono uppercase tracking-wider">Cardholder</p>
+              <p className="text-white font-medium text-xs truncate max-w-[150px] sm:max-w-[180px] uppercase">
+                {card.isUltimate ? 'Master Pool Account' : (card.nameOnCard || card.label || 'AUTHORIZED HOLDER')}
               </p>
             </div>
             <div className="text-right space-y-0.5">
-              <p className="text-white/50 text-[9px] sm:text-[10px] uppercase tracking-[0.15em]">Expires</p>
-              <p className="text-white font-semibold text-xs sm:text-sm md:text-base font-mono">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
+              <p className="text-slate-400 text-[9px] font-mono uppercase tracking-wider">Expires</p>
+              <p className="text-white font-mono text-xs font-medium">{formatExpiry(card.expiryDate) || (card.isUltimate ? '12/99' : '••/••')}</p>
             </div>
           </div>
 
-          {/* Status Badge */}
+          {/* Blocked Status Badge */}
           {isBlocked && (
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
-              <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2">
-                <ShieldAlert size={14} /> {card.isUltimate ? 'DISABLED' : 'BLOCKED'}
+            <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-[2px] flex items-center justify-center z-20">
+              <span className="bg-rose-500/20 border border-rose-400/40 text-rose-200 px-3.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
+                <ShieldAlert size={13} /> {card.isUltimate ? 'Disabled' : 'Locked / Blocked'}
               </span>
             </div>
           )}
@@ -196,9 +210,8 @@ export default function CardWidget({
 
         {/* BACK SIDE */}
         <div 
-          className="absolute inset-0 rounded-[24px] p-5 sm:p-7 md:p-8 shadow-2xl flex flex-col justify-between"
+          className="absolute inset-0 rounded-2xl p-5 sm:p-6 shadow-md flex flex-col justify-between bg-slate-900 border border-slate-700/80 text-white"
           style={{ 
-            background: '#1A1A2E',
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
@@ -206,35 +219,42 @@ export default function CardWidget({
           }}
         >
           {/* Back Header */}
-          <div className="flex justify-between items-center text-white">
-            <h4 className="font-bold text-sm">{card.isUltimate ? 'Orchestra Control' : 'Security & Control'}</h4>
-            <button onClick={toggleFlip} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/70">
-              <ArrowLeft size={18} />
+          <div className="flex justify-between items-center z-10">
+            <h4 className="font-semibold text-xs text-slate-200">
+              {card.isUltimate ? 'Orchestration Controls' : 'Card Security & Controls'}
+            </h4>
+            <button
+              onClick={toggleFlip}
+              className="p-1 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 transition-colors"
+              title="Flip to front"
+            >
+              <ArrowLeft size={14} />
             </button>
           </div>
 
-          {/* Magnetic Stripe Effect */}
-          <div className="absolute top-12 left-0 w-full h-10 bg-black/80" />
+          {/* Magnetic Stripe Band */}
+          <div className="absolute top-11 left-0 w-full h-8 bg-slate-950 border-y border-slate-800/80" />
 
-          {/* CVV & Stats */}
-          <div className="mt-12 space-y-4">
-            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">CVV / CVC</p>
-                  <p className="text-white font-mono font-bold text-xl select-all">{card.cvv || (card.isUltimate ? '888' : '123')}</p>
-                </div>
-                <div className="h-8 w-12 bg-gray-200/10 rounded border border-white/5" />
+          {/* CVV Box & Security Note */}
+          <div className="mt-8 space-y-2.5 z-10">
+            <div className="bg-slate-800/80 p-2.5 px-3 rounded-lg border border-slate-700/70 flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider mb-0.5">Security Code (CVV)</p>
+                <p className="text-white font-mono font-semibold text-sm select-all">
+                  {card.cvv || (card.isUltimate ? '888' : '123')}
+                </p>
               </div>
+              <div className="w-8 h-5 rounded bg-slate-700/60 border border-slate-600/40" />
             </div>
 
-            <div className="flex gap-2 items-center text-white/50 text-[10px] px-2 italic">
-              <Lock size={10} /> Do not share your card details with anyone.
+            <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-mono">
+              <Lock size={10} className="text-slate-400" />
+              <span>Never share CVV or authorization codes</span>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-2 mt-auto">
+          {/* Action Buttons */}
+          <div className="flex gap-2 mt-auto z-10 pt-2 border-t border-slate-800">
             <button
               onClick={(e) => { 
                 e.stopPropagation()
@@ -244,20 +264,22 @@ export default function CardWidget({
                   onBlock?.(card._id)
                 }
               }}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all
-                ${isBlocked 
-                  ? 'bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-green-600 hover:text-white' 
-                  : (card.isUltimate ? 'bg-red-600/20 text-red-200 border border-red-600/30 hover:bg-red-600 hover:text-white' : 'bg-amber-600/20 text-amber-100 border border-amber-600/30 hover:bg-amber-600 hover:text-white')}`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-colors border shadow-xs ${
+                isBlocked 
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30' 
+                  : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+              }`}
             >
-              {isBlocked ? <Unlock size={14} /> : <Lock size={14} />}
-              {card.isUltimate ? (isBlocked ? 'Enable Card' : 'Disable Card') : (isBlocked ? 'Unlock Card' : 'Block Card')}
+              {isBlocked ? <Unlock size={12} /> : <Lock size={12} />}
+              <span>{isBlocked ? 'Unlock Card' : 'Freeze Card'}</span>
             </button>
             {!card.isUltimate && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete?.(card._id) }}
-                className="px-4 py-3 rounded-xl bg-red-600/10 text-red-500 border border-red-600/20 hover:bg-red-600 hover:text-white transition-all"
+                className="p-1.5 px-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-colors"
+                title="Remove Card"
               >
-                <Trash2 size={14} />
+                <Trash2 size={13} />
               </button>
             )}
           </div>
@@ -270,11 +292,3 @@ export default function CardWidget({
   )
 }
 
-function adjustColor(hex: string, percent: number) {
-  const num = parseInt(hex.replace('#', ''), 16)
-  const amt = Math.round(2.55 * percent)
-  const R = (num >> 16) + amt
-  const G = (num >> 8 & 0x00FF) + amt
-  const B = (num & 0x0000FF) + amt
-  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)
-}

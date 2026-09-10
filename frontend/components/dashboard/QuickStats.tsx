@@ -1,5 +1,5 @@
 "use client";
-import { CreditCard, Layers, TrendingUp, Zap } from "lucide-react";
+import { CreditCard, Layers, TrendingUp, Sparkles } from "lucide-react";
 import { toNaira } from "@/utils/format";
 
 interface QuickStatsProps {
@@ -19,42 +19,47 @@ export default function QuickStats({
     {
       label: "Physical Cards",
       value: String(totalCards),
+      subtext: "Active in wallet",
       icon: CreditCard,
-      color: "bg-blue-50 text-blue-600",
     },
     {
-      label: "Subscription Cards",
+      label: "Virtual Cards",
       value: String(virtualCards),
+      subtext: "Subscriptions & online",
       icon: Layers,
-      color: "bg-purple-50 text-purple-600",
     },
     {
-      label: "This Month",
+      label: "Monthly Spend",
       value: toNaira(monthlySpend),
+      subtext: "Month to date",
       icon: TrendingUp,
-      color: "bg-amber-50 text-amber-600",
     },
     {
-      label: "Saved (Smart)",
+      label: "Smart Optimization",
       value: toNaira(savedThisMonth),
-      icon: Zap,
-      color: "bg-green-50 text-green-600",
+      subtext: "AI routing yield",
+      icon: Sparkles,
     },
   ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {stats.map(({ label, value, icon: Icon, color }) => (
-        <div key={label} className="bg-white rounded-2xl border p-4">
-          <div
-            className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center mb-3`}
-          >
-            <Icon size={18} />
+      {stats.map(({ label, value, subtext, icon: Icon }) => (
+        <div
+          key={label}
+          className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs hover:border-slate-300 transition-colors"
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="text-xs font-medium text-slate-500 truncate">{label}</span>
+            <Icon size={16} className="text-slate-400 shrink-0" />
           </div>
-          <p className="text-xl font-bold text-[#1A1A2E] truncate">{value}</p>
-          <p className="text-gray-500 text-xs mt-0.5">{label}</p>
+          <p className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 font-mono tabular-nums truncate">
+            {value}
+          </p>
+          <p className="text-[11px] text-slate-400 mt-1 font-normal truncate">{subtext}</p>
         </div>
       ))}
     </div>
   );
 }
+

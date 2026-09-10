@@ -23,6 +23,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Plus, Sparkles, Layers, ShieldCheck } from 'lucide-react'
 
 interface Card {
   _id: string
@@ -52,7 +53,7 @@ interface SortableCardProps {
 function SortableCard({ id, card, balance, isSelected, onClick, onBlock, onUnblock, onDelete }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id,
-    disabled: card.isUltimate // Disable dragging for Ultimate card
+    disabled: card.isUltimate
   })
   
   const style = {
@@ -83,14 +84,12 @@ interface CardGridProps {
 }
 
 export default function CardGrid({ cards, onRefresh }: CardGridProps) {
-  // Ensure cards is an array to avoid map errors
   const safeCards = useMemo(() => Array.isArray(cards) ? cards : [], [cards])
 
-  // Split localCards into ultimate and physical
   const ultimateCardData: Card = useMemo(() => {
     return {
       _id: 'ultimate_card_001',
-      label: 'Orchestra Ultimate',
+      label: 'Orchestra Ultimate Card',
       cardStatus: '1',
       isUltimate: true,
       pan: '4000123456789010',
@@ -115,7 +114,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
     : physicalCards.find(c => c._id === selectedId)
 
   async function handleStatusChange(cardId: string, newStatus: string) {
-    if (cardId === 'ultimate_card_001') return // Manage ultimate status separately if needed
+    if (cardId === 'ultimate_card_001') return
     setOverrideCards(cs => (cs ?? safeCards).map(c => c._id === cardId ? { ...c, cardStatus: newStatus } : c))
   }
 
@@ -189,11 +188,20 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Top Section: Ultimate Card */}
-      <section className="flex flex-col items-center">
-        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 self-start">Master Orchestration</h2>
-        <div className="w-full max-w-lg">
+    <div className="space-y-6">
+      {/* Master Orchestration Card Hero */}
+      <section className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <Sparkles size={15} className="text-blue-600" />
+            <h2 className="text-xs font-semibold text-slate-900">Primary Aggregation Card</h2>
+          </div>
+          <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60">
+            Auto-Routes Multi-Bank Balances
+          </span>
+        </div>
+
+        <div className="max-w-md mx-auto py-2">
           <CardWidget
             card={ultimateCardData}
             balance={ultimateCardData.availableBalance}
@@ -207,17 +215,18 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
         </div>
       </section>
 
-      <div className="h-px bg-gray-100 mx-[-20px]" />
-
-      {/* Bottom Section: Physical Cards */}
-      <section className="pt-2">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Physical Cards</h2>
-          <span className="text-xs font-medium text-gray-400">{physicalCards.length} Cards Connected</span>
+      {/* Physical Cards Ledger Grid */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers size={15} className="text-slate-500" />
+            <h2 className="text-xs font-semibold text-slate-900">Linked Bank Accounts & Hardware Cards</h2>
+          </div>
+          <span className="text-xs font-mono text-slate-500">{physicalCards.length} Cards in Priority Sequence</span>
         </div>
         
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             <SortableContext items={physicalCards.map(c => c._id)} strategy={horizontalListSortingStrategy}>
               {physicalCards.map(card => (
                 <SortableCard
@@ -234,41 +243,54 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
               ))}
             </SortableContext>
 
+            {/* Add Card Action Card */}
             <button
               onClick={() => setShowAdd(true)}
-              className="flex-shrink-0 snap-center rounded-[24px] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#E94560] hover:text-[#E94560] transition bg-gray-50/50 w-[180px] sm:w-[215px] min-h-[180px] sm:min-h-[215px]"
+              className="flex-shrink-0 snap-center rounded-2xl border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-50 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-[260px] min-h-[165px] p-6 shadow-xs group"
             >
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gray-200/50 flex items-center justify-center text-2xl sm:text-3xl font-light">+</div>
-              <p className="text-xs sm:text-sm font-bold tracking-tight">Add New Card</p>
+              <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 group-hover:scale-105 transition-transform shadow-xs">
+                <Plus size={16} />
+              </div>
+              <p className="text-xs font-semibold">Link Another Bank Card</p>
+              <p className="text-[11px] text-slate-400">Debit, Credit or Prepaid</p>
             </button>
           </div>
         </DndContext>
       </section>
 
-      {/* Selected card actions */}
+      {/* Selected Card Security Detail Panel */}
       {selectedCard && (
-        <div className="bg-white rounded-2xl border p-5">
-          <div className="flex items-start justify-between mb-3">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-bold text-[#1A1A2E]">{selectedCard.label || selectedCard.nameOnCard}</h3>
-              <p className="text-gray-500 text-sm">{selectedCard.isUltimate ? 'Master Card' : `${selectedCard.bank || ''} · ${selectedCard.cardProgram || ''}`}</p>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-slate-900">
+                  {selectedCard.label || selectedCard.nameOnCard || 'Card Details'}
+                </h3>
+                {selectedCard.isUltimate ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <ShieldCheck size={11} /> Master Routing
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    {selectedCard.bank || ''} · {selectedCard.cardProgram || 'Debit'}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {selectedCard.isUltimate 
+                  ? 'All incoming settlement charges are automatically split across available linked balances.'
+                  : 'Individual funding card with dedicated balance and freeze controls.'}
+              </p>
             </div>
           </div>
+
           {!selectedCard.isUltimate && (
             <CardActions
               cardId={selectedCard._id}
               cardStatus={selectedCard.cardStatus}
               onStatusChange={s => handleStatusChange(selectedCard._id, s)}
             />
-          )}
-          {selectedCard.isUltimate && (
-            <div className="bg-blue-50 p-4 rounded-xl flex items-center gap-3 mt-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shrink-0">✨</div>
-              <div>
-                <p className="text-sm font-bold text-blue-900">Ultimate Orchestration Active</p>
-                <p className="text-xs text-blue-700">This card automatically routes transactions to your prioritized physical cards.</p>
-              </div>
-            </div>
           )}
         </div>
       )}
@@ -277,3 +299,4 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
     </div>
   )
 }
+

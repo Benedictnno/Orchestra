@@ -40,22 +40,27 @@ export default function VirtualCardsPage() {
   useEffect(() => { fetchCards() }, [fetchCards])
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto px-4 md:px-0 pb-12">
+      {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#4A90e2]">Virtual Cards</h1>
-          <p className="text-gray-500 text-sm mt-1">Isolated cards for subscriptions and online spending</p>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
+            Virtual Cards
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Isolated digital cards for recurring subscriptions, cloud services, and merchant-locked limits.
+          </p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="self-start sm:self-auto flex items-center gap-2 bg-[#E94560] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#d63850] transition shadow-md shadow-[#E94560]/20"
+          className="self-start sm:self-auto inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-xs"
         >
-          <Plus size={16} />
-          New Card
+          <Plus size={14} />
+          <span>New Virtual Card</span>
         </button>
       </div>
 
-      {loading && <div className="py-16"><LoadingSpinner /></div>}
+      {loading && <div className="py-20"><LoadingSpinner /></div>}
       {error && !loading && <ErrorState onRetry={fetchCards} />}
       {!loading && !error && <VirtualCardList cards={cards} onRefresh={fetchCards} />}
 
@@ -63,3 +68,4 @@ export default function VirtualCardsPage() {
     </div>
   )
 }
+

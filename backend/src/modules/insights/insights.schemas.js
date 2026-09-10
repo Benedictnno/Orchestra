@@ -7,5 +7,11 @@ export const reportSchema = z.object({
 })
 
 export const chatSchema = z.object({
-  message: z.string().min(1, 'message cannot be empty'),
+  message:   z.string().min(1, 'message cannot be empty'),
+  sessionId: z.string().optional(),
 })
+
+export const createSessionSchema = z.object({
+  title: z.string().optional(),
+})
+

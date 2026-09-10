@@ -181,8 +181,18 @@ export interface ChatMessage {
   sentAt?: string;
 }
 
+export interface ChatSession {
+  _id: string;
+  title: string;
+  messageCount?: number;
+  lastMessage?: string;
+  updatedAt: string;
+  createdAt: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
 }
+

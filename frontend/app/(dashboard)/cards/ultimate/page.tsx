@@ -6,6 +6,8 @@ import CardPriorityList from '@/components/routing/CardPriorityList'
 import UltimateCardPanel from '@/components/routing/UltimateCardPanel'
 import toast from 'react-hot-toast'
 import { fetchWithAuth } from '@/lib/fetch-utils'
+import { Sparkles, Check, SlidersHorizontal, ArrowUpDown } from 'lucide-react'
+import { cn } from '@/utils/cn'
 
 interface Card {
   _id: string
@@ -105,62 +107,96 @@ export default function UltimateCardPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-dark">Ultimate Card</h1>
-        <p className="text-gray-500 text-sm mt-1">Configure how Orchestra routes your payments across cards</p>
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200/80 pb-5">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Ultimate Card &amp; Routing Engine</h1>
+            <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200/60 text-blue-700 text-[11px] font-semibold tracking-wide">
+              Smart Orchestrator
+            </span>
+          </div>
+          <p className="text-slate-500 text-xs sm:text-sm">
+            Configure how Orchestra unifies balances, applies priorities, and routes ATM &amp; online charges
+          </p>
+        </div>
       </div>
 
-      <div className="mb-8">
-        <UltimateCardPanel
-          totalAvailable={cards.reduce((acc, c) => acc + (c.availableBalance || 0), 0)}
-          totalLimit={cards.reduce((acc, c) => acc + (c.availableBalance || 0) + 50000000, 0)} // Mock limit
-          numCards={cards.length}
-        />
-      </div>
+      {/* Unified Spending Pool Hero */}
+      <UltimateCardPanel
+        totalAvailable={cards.reduce((acc, c) => acc + (c.availableBalance || 0), 0)}
+        totalLimit={cards.reduce((acc, c) => acc + (c.availableBalance || 0) + 50000000, 0)} // Mock limit
+        numCards={cards.length}
+      />
 
+      {/* Grid: Routing Configuration + Live Simulator */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left column */}
+        {/* Left column: Routing Mode + Card Priority */}
         <div className="space-y-6">
-          {/* Routing Mode */}
-          <div className="bg-white rounded-2xl border p-6">
-            <h2 className="font-bold text-dark mb-4">Routing Mode</h2>
+          {/* Routing Mode Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs">
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+              <SlidersHorizontal size={16} className="text-slate-600" />
+              <h2 className="font-semibold text-slate-900 text-sm tracking-tight">Execution Strategy</h2>
+            </div>
+            
             <RoutingModeSelector selected={mode} onChange={handleModeChange} />
             
             {mode === 'primary' && (
-              <div className="mt-6 pt-6 border-t animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Select Primary Card</label>
+              <div className="mt-5 pt-5 border-t border-slate-100 animate-in fade-in slide-in-from-top-1 duration-200">
+                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2.5">
+                  Designate Primary Card
+                </label>
                 <div className="space-y-2">
-                  {cards.map(card => (
-                    <button
-                      key={card._id}
-                      onClick={() => handlePrimaryChange(card._id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all
-                        ${primaryCardId === card._id 
-                          ? 'border-[#E94560] bg-[#E94560]/5 ring-4 ring-[#E94560]/5' 
-                          : 'border-gray-50 hover:border-gray-200'}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-400">
-                          {card.bank?.slice(0, 3)}
+                  {cards.map(card => {
+                    const isSelected = primaryCardId === card._id
+                    return (
+                      <button
+                        key={card._id}
+                        type="button"
+                        onClick={() => handlePrimaryChange(card._id)}
+                        className={cn(
+                          'w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150',
+                          isSelected
+                            ? 'border-slate-900 bg-slate-50/80 shadow-xs ring-1 ring-slate-900'
+                            : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/40'
+                        )}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white uppercase shrink-0 shadow-xs"
+                            style={{ backgroundColor: card.color || '#0f172a' }}
+                          >
+                            {card.bank?.slice(0, 3) || 'CRD'}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-slate-900 truncate">{card.label || card.nameOnCard}</p>
+                            <p className="text-[11px] text-slate-500 truncate">{card.bank}</p>
+                          </div>
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-bold text-[#4A90e2]">{card.label}</p>
-                          <p className="text-[10px] text-gray-500">{card.bank}</p>
-                        </div>
-                      </div>
-                      {primaryCardId === card._id && <div className="w-2 h-2 rounded-full bg-[#E94560]" />}
-                    </button>
-                  ))}
+                        {isSelected && (
+                          <div className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
+                            <Check size={10} strokeWidth={3} />
+                          </div>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}
           </div>
 
           {/* Card Priority */}
-          <div className="bg-white rounded-2xl border p-6">
-            <h2 className="font-bold text-dark mb-1">Card Priority</h2>
-            <p className="text-xs text-gray-500 mb-4">Drag to reorder — highest priority first</p>
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown size={16} className="text-slate-600" />
+                <h2 className="font-semibold text-slate-900 text-sm tracking-tight">Fallback Priority Hierarchy</h2>
+              </div>
+              <span className="text-[11px] text-slate-500">Drag to reorder</span>
+            </div>
             <CardPriorityList cards={orderedCards} onReorder={handleReorder} />
           </div>
         </div>

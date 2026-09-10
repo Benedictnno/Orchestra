@@ -40,15 +40,21 @@ export default function CardsPage() {
   useEffect(() => { fetchCards() }, [fetchCards])
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto px-4 md:px-0 pb-12">
+      {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#4A90e2]">My Cards</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your physical ATM cards across all banks</p>
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
+          Physical Cards & Wallets
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          Manage, prioritize, and orchestrate debit and prepaid cards linked across banking institutions.
+        </p>
       </div>
 
-      {loading && <div className="py-16"><LoadingSpinner /></div>}
+      {loading && <div className="py-20"><LoadingSpinner /></div>}
       {error && !loading && <ErrorState onRetry={fetchCards} />}
       {!loading && !error && <CardGrid cards={cards} onRefresh={fetchCards} />}
     </div>
   )
 }
+

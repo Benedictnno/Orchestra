@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toNaira } from '@/utils/format'
-import { Eye, EyeOff, Settings, Pause, Play, Trash2, ArrowLeft, Plus } from 'lucide-react'
+import { Eye, EyeOff, Settings, Pause, Play, Trash2, ArrowLeft, Plus, Lock } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import toast from 'react-hot-toast'
 
@@ -43,7 +43,7 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
   const [loading, setLoading] = useState(false)
   
   const isPaused = card.paused
-  const bgColor = card.color || '#0052FF'
+  const spendPercentage = Math.min(100, Math.round(((card.amountSpent || 0) / (card.spendLimit || 1)) * 100))
 
   // Set default source card if not set
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
         }),
       })
       if (res.ok) {
-        toast.success('Top-up successful')
+        toast.success('Top-up completed successfully')
         setShowTopUp(false)
         setTopUpAmount('')
         onTopUp?.()
@@ -85,7 +85,7 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
         toast.error('Top-up failed')
       }
     } catch {
-      toast.error('An error occurred')
+      toast.error('An error occurred during top-up')
     } finally {
       setLoading(false)
     }
@@ -95,182 +95,212 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
     <div className="relative w-full aspect-[1.6/1] perspective-1000">
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-full h-full preserve-3d"
       >
         {/* FRONT SIDE */}
         <div 
-          className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl"
-          style={{ background: `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -30)} 100%)` }}
+          className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-md border border-slate-700/60 flex flex-col justify-between p-5 sm:p-6 text-white"
+          style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%)' }}
         >
-          {/* Grid Pattern */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
+          {/* Subtle sheen overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-white/[0.07] pointer-events-none" />
 
-          <div className="relative h-full w-full p-5 sm:p-7 md:p-8 flex flex-col justify-between text-white">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[10px] font-bold tracking-[0.2em] opacity-80 uppercase mb-1">Virtual Subscription</p>
-                <h3 className="text-xl sm:text-2xl font-bold tracking-tight truncate max-w-[180px] xs:max-w-[220px] sm:max-w-[260px]">{card.label || 'New Card'}</h3>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={toggleReveal} className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all">
-                  {reveal ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-                <button onClick={toggleFlip} className="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all">
-                  <Settings size={16} />
-                </button>
-              </div>
+          {/* Header Row */}
+          <div className="flex justify-between items-start z-10">
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
+                {card.merchant ? `Locked: ${card.merchant}` : 'Virtual Subscription Card'}
+              </span>
+              <h3 className="text-sm sm:text-base font-semibold tracking-tight text-white truncate max-w-[200px]">
+                {card.label || 'Subscription Card'}
+              </h3>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={toggleReveal}
+                className="p-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg transition-colors text-slate-300 hover:text-white"
+                title={reveal ? "Hide card details" : "Reveal card details"}
+              >
+                {reveal ? <EyeOff size={13} /> : <Eye size={13} />}
+              </button>
+              <button
+                onClick={toggleFlip}
+                className="p-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg transition-colors text-slate-300 hover:text-white"
+                title="Card settings & limit"
+              >
+                <Settings size={13} />
+              </button>
+            </div>
+          </div>
+
+          {/* Card Number Row */}
+          <div className="z-10 my-auto">
+            <div className="flex items-baseline gap-2">
+              <p className="text-white font-mono tracking-[0.18em] text-sm sm:text-base font-medium select-all">
+                {reveal ? '•••• •••• •••• ' : '•••• •••• •••• '}
+                <span className="text-white font-semibold">{card.last4 || '1234'}</span>
+              </p>
             </div>
 
-            <div className="flex gap-3 sm:gap-6 items-center flex-wrap">
-              <div className="flex gap-2">
-                {[1, 2, 3].map(group => (
-                  <div key={group} className="flex gap-1">
-                    {reveal ? (
-                      <span className="text-lg sm:text-2xl font-mono tracking-wider opacity-90">0000</span>
-                    ) : (
-                      <div className="flex gap-1.5 py-2">
-                        {[1, 2, 3, 4].map(dot => <div key={dot} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white opacity-90" />)}
-                      </div>
-                    )}
-                  </div>
-                ))}
+            {/* Spend Limit Mini Progress Bar */}
+            <div className="mt-2 space-y-1">
+              <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                <span>{toNaira(card.amountSpent || 0)} used</span>
+                <span>{toNaira(card.spendLimit)} limit</span>
               </div>
-              <span className="text-lg sm:text-2xl font-mono tracking-wider text-white/90">{card.last4 || '1234'}</span>
-            </div>
-
-            <div className="flex justify-between items-end">
-              <div className="flex gap-5 sm:gap-8">
-                <div className="space-y-0.5">
-                  <p className="text-[9px] font-bold tracking-widest opacity-60 uppercase">Expiry</p>
-                  <p className="text-xs sm:text-sm font-bold font-mono tracking-wider">{card.expiry || '12/28'}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[9px] font-bold tracking-widest opacity-60 uppercase">CVV</p>
-                  <p className="text-xs sm:text-sm font-bold font-mono tracking-wider">{reveal ? '123' : '***'}</p>
-                </div>
-              </div>
-              <div className="relative w-10 sm:w-12 h-7 sm:h-8 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
-                <div className="relative flex -space-x-4">
-                  <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-[#EB001B] opacity-90" />
-                  <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-[#F79E1B] mix-blend-screen" />
-                </div>
+              <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full ${spendPercentage > 85 ? 'bg-rose-500' : 'bg-emerald-400'}`}
+                  style={{ width: `${spendPercentage}%` }}
+                />
               </div>
             </div>
           </div>
-          {isPaused && (
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-              <div className="bg-white text-black px-6 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-2">
-                <span>PAUSED</span>
+
+          {/* Footer Info */}
+          <div className="flex justify-between items-end z-10 pt-1 border-t border-white/10">
+            <div className="flex gap-6">
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">Expires</p>
+                <p className="text-xs font-mono font-medium text-white">{card.expiry || '12/28'}</p>
               </div>
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">CVV</p>
+                <p className="text-xs font-mono font-medium text-white">{reveal ? (card.cvv || '123') : '•••'}</p>
+              </div>
+            </div>
+
+            {/* Network Brand Badge */}
+            <div className="relative w-8 h-5 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded border border-white/10">
+              <div className="relative flex -space-x-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#EB001B] opacity-90" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#F79E1B] mix-blend-screen" />
+              </div>
+            </div>
+          </div>
+
+          {/* Paused Overlay */}
+          {isPaused && (
+            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-[2px] flex items-center justify-center z-20">
+              <span className="bg-amber-500/20 border border-amber-400/40 text-amber-200 px-3.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
+                <Lock size={12} /> Paused
+              </span>
             </div>
           )}
         </div>
 
         {/* BACK SIDE */}
         <div 
-          className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl rotate-y-180 bg-[#4A90e2]"
-          style={{ background: `linear-gradient(135deg, #4A90e2 0%, ${bgColor} 100%)` }}
+          className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-md rotate-y-180 bg-slate-900 border border-slate-700/80 p-5 sm:p-6 flex flex-col justify-between text-white"
         >
-          <div className="relative h-full w-full p-5 sm:p-7 md:p-8 flex flex-col justify-between text-white">
-            <div className="flex justify-between items-center">
-              <h4 className="font-bold text-base sm:text-lg">Card Settings</h4>
-              <button onClick={toggleFlip} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all">
-                <ArrowLeft size={16} />
-              </button>
-            </div>
+          <div className="flex justify-between items-center z-10">
+            <h4 className="font-semibold text-xs text-slate-200">Virtual Card Controls</h4>
+            <button
+              onClick={toggleFlip}
+              className="p-1 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 transition-colors"
+              title="Flip to front"
+            >
+              <ArrowLeft size={14} />
+            </button>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 my-4">
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                <p className="text-[9px] font-bold tracking-widest opacity-50 uppercase mb-1">Spent</p>
-                <p className="text-lg font-bold">{toNaira(card.amountSpent)}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                <p className="text-[9px] font-bold tracking-widest opacity-50 uppercase mb-1">Remaining</p>
-                <p className="text-lg font-bold">{toNaira(card.spendLimit - card.amountSpent)}</p>
-              </div>
+          <div className="grid grid-cols-2 gap-3 my-auto z-10">
+            <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700/60">
+              <p className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-0.5">Total Spent</p>
+              <p className="text-sm font-mono font-semibold text-white tabular-nums">{toNaira(card.amountSpent)}</p>
             </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={(e) => { 
-                  e.stopPropagation()
-                  if (isPaused) {
-                    onResume?.(card._id)
-                  } else {
-                    onPause?.(card._id)
-                  }
-                }}
-                className="flex-1 flex items-center justify-center gap-2 bg-white text-black py-3 rounded-2xl font-bold transition-all hover:bg-white/90"
-              >
-                {isPaused ? <Play size={18} /> : <Pause size={18} />}
-                {isPaused ? 'Resume' : 'Pause'}
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowTopUp(true) }}
-                className="bg-blue-500/20 text-blue-100 p-3 rounded-2xl border border-blue-500/30 hover:bg-blue-500 hover:text-white transition-all"
-              >
-                <Plus size={18} />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete?.(card._id) }}
-                className="bg-red-500/20 text-red-100 p-3 rounded-2xl border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
-              >
-                <Trash2 size={18} />
-              </button>
+            <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700/60">
+              <p className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-0.5">Remaining Limit</p>
+              <p className="text-sm font-mono font-semibold text-emerald-400 tabular-nums">{toNaira(Math.max(0, card.spendLimit - card.amountSpent))}</p>
             </div>
           </div>
 
-          {/* Top-up Overlay */}
+          <div className="flex gap-2 z-10 pt-2 border-t border-slate-800">
+            <button
+              onClick={(e) => { 
+                e.stopPropagation()
+                if (isPaused) {
+                  onResume?.(card._id)
+                } else {
+                  onPause?.(card._id)
+                }
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-colors border shadow-xs ${
+                isPaused 
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30' 
+                  : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+              }`}
+            >
+              {isPaused ? <Play size={12} /> : <Pause size={12} />}
+              <span>{isPaused ? 'Resume' : 'Pause'}</span>
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowTopUp(true) }}
+              className="px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-300 border border-blue-500/30 hover:bg-blue-600/30 text-xs font-medium transition-colors flex items-center gap-1"
+            >
+              <Plus size={13} />
+              <span>Top Up</span>
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete?.(card._id) }}
+              className="p-1.5 px-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-colors"
+              title="Delete Virtual Card"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
+
+          {/* Top-up Modal Overlay */}
           <AnimatePresence>
             {showTopUp && (
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="absolute inset-0 bg-[#4A90e2]/95 backdrop-blur-md rounded-3xl z-30 p-8 flex flex-col justify-between"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                className="absolute inset-0 bg-slate-900/98 backdrop-blur-md z-30 p-5 sm:p-6 flex flex-col justify-between rounded-2xl"
                 onClick={e => e.stopPropagation()}
               >
                 <div>
-                  <h4 className="font-bold text-lg mb-1">Top-up Card</h4>
-                  <p className="text-white/50 text-xs mb-6">Fund your virtual card from a physical card.</p>
+                  <h4 className="font-semibold text-xs text-white mb-0.5">Top-up Virtual Limit</h4>
+                  <p className="text-slate-400 text-[11px] mb-3">Debit funds from a physical source card.</p>
                   
-                  <div className="space-y-4">
-                    {/* Source Card Selector */}
+                  <div className="space-y-2.5">
                     <div>
-                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 block">Source Card</label>
+                      <label className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 block">Funding Source</label>
                       <select 
                         value={sourceCardId}
                         onChange={e => setSourceCardId(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg py-1.5 px-2.5 text-xs text-white font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
                         {physicalCards.length === 0 ? (
                           <option value="">No cards connected</option>
                         ) : (
                           physicalCards.map(c => (
-                            <option key={c._id} value={c._id} className="bg-[#4A90e2]">{c.label} ({c.bank})</option>
+                            <option key={c._id} value={c._id} className="bg-slate-900">{c.label} ({c.bank})</option>
                           ))
                         )}
                       </select>
                     </div>
 
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 font-bold">₦</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-sm">₦</span>
                       <input 
                         type="number"
                         autoFocus
                         value={topUpAmount}
                         onChange={e => setTopUpAmount(e.target.value)}
                         placeholder="0.00"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-8 pr-4 text-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg py-1.5 pl-7 pr-3 text-sm font-mono font-medium text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5">
                       {['500', '1000', '2500'].map(amt => (
                         <button 
                           key={amt}
+                          type="button"
                           onClick={() => setTopUpAmount(amt)}
-                          className="bg-white/5 hover:bg-white/10 border border-white/10 py-2 rounded-xl text-xs font-bold transition-all"
+                          className="bg-slate-800 hover:bg-slate-700 border border-slate-700/80 py-1 rounded-md text-[11px] font-mono text-slate-300 transition-colors"
                         >
                           ₦{amt}
                         </button>
@@ -279,19 +309,21 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2 pt-2 border-t border-slate-800">
                   <button 
+                    type="button"
                     onClick={() => setShowTopUp(false)}
-                    className="flex-1 py-3 rounded-2xl text-sm font-bold text-white/60 hover:text-white transition-all"
+                    className="flex-1 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-800 transition-colors"
                   >
                     Cancel
                   </button>
                   <button 
+                    type="button"
                     onClick={handleTopUp}
                     disabled={loading || !topUpAmount}
-                    className="flex-[2] bg-blue-600 hover:bg-blue-500 disabled:opacity-50 py-3 rounded-2xl text-sm font-bold transition-all"
+                    className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 py-1.5 rounded-lg text-xs font-medium text-white transition-colors"
                   >
-                    {loading ? 'Processing...' : 'Confirm Top-up'}
+                    {loading ? 'Processing...' : 'Confirm'}
                   </button>
                 </div>
               </motion.div>
@@ -309,11 +341,3 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
   )
 }
 
-function adjustColor(hex: string, percent: number) {
-  const num = parseInt(hex.replace('#', ''), 16)
-  const amt = Math.round(2.55 * percent)
-  const R = (num >> 16) + amt
-  const G = (num >> 8 & 0x00FF) + amt
-  const B = (num & 0x0000FF) + amt
-  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)
-}

@@ -2,13 +2,11 @@
 import { useState } from 'react'
 import { 
   X, 
-  Briefcase, 
   User, 
   Building2, 
   CreditCard, 
   ShieldAlert, 
   Calendar, 
-  Sparkles,
   Layers
 } from 'lucide-react'
 import { toNaira } from '@/utils/format'
@@ -122,125 +120,100 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
     )
   }
 
-  const budgetNum = parseFloat(form.budget.replace(/,/g, '') || '0') * 100
+  const budgetNum = parseFloat(form.budget.replace(/,/g, '') || '0')
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden"
+        className="bg-white rounded-xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b bg-gradient-to-r from-gray-900 to-[#1A1A2E] text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-blue-400">
-              <Briefcase size={20} />
-            </div>
-            <div>
-              <h2 className="font-bold text-lg leading-tight text-white">Issue Corporate Business Card</h2>
-              <p className="text-xs text-gray-400">Provision smart expense cards with automated approval policies</p>
-            </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Issue Corporate Card</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Provision a department team expense card with spending controls</p>
           </div>
           <button 
             type="button" 
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition"
+            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {/* Scrollable Form Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Card Live Preview */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                <Sparkles size={13} className="text-blue-500" /> Live Card Preview
-              </span>
-              <span className="text-[10px] bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full">
+          <div className="rounded-lg p-4 bg-slate-900 text-white shadow-sm border border-slate-800">
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-4 rounded bg-amber-400/80 border border-amber-300/40" />
+                <span className="text-[10px] font-mono tracking-widest text-slate-400">ORCHESTRA BIZ</span>
+              </div>
+              <span className="text-[10px] uppercase font-medium bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
                 {form.department}
               </span>
             </div>
-            <div className="relative rounded-2xl p-5 bg-gradient-to-br from-[#1E2235] via-[#16192B] to-[#0D101D] text-white shadow-xl overflow-hidden border border-gray-700/50">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-5 rounded bg-amber-400/80 border border-amber-300/40 flex items-center justify-center text-[8px] font-bold text-amber-950">
-                    CHIP
-                  </div>
-                  <span className="text-xs font-mono tracking-widest text-gray-300">ORCHESTRA BIZ</span>
-                </div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2.5 py-0.5 rounded-full">
-                  Corporate
-                </span>
-              </div>
 
-              <div className="my-2">
-                <p className="text-xs text-gray-400 font-medium">Monthly Spend Limit</p>
-                <p className="text-2xl font-black text-white tracking-tight">
-                  {budgetNum > 0 ? toNaira(budgetNum) : '₦0.00'}
+            <div className="my-2">
+              <p className="text-[10px] text-slate-400 font-medium uppercase">Spend Limit</p>
+              <p className="text-lg font-semibold font-mono tabular-nums text-white tracking-tight">
+                {budgetNum > 0 ? toNaira(budgetNum) : '₦0.00'}
+              </p>
+            </div>
+
+            <div className="flex justify-between items-end pt-2 border-t border-slate-800 text-xs">
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase">Cardholder</p>
+                <p className="text-xs font-medium text-slate-200 truncate max-w-[180px]">
+                  {form.assignedTo || 'Team Member'}
                 </p>
               </div>
-
-              <div className="flex justify-between items-end pt-3 border-t border-white/10 text-xs">
-                <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-semibold">Cardholder</p>
-                  <p className="font-bold text-gray-100 truncate max-w-[200px]">
-                    {form.assignedTo || 'Employee Name'}
-                  </p>
-                </div>
-                <div className="text-right font-mono text-gray-300">
-                  <p className="text-[10px] text-gray-400 uppercase">Card Label</p>
-                  <p className="font-semibold text-gray-200 truncate max-w-[180px]">
-                    {form.label || 'Expense Card'}
-                  </p>
-                </div>
+              <div className="text-right font-mono text-slate-400">
+                <p className="text-[10px] text-slate-400 uppercase">Purpose</p>
+                <p className="text-xs font-medium text-slate-300 truncate max-w-[160px]">
+                  {form.label || 'Operational Spend'}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Basic Info */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Card & Team Assignment</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                  <CreditCard size={14} className="text-blue-500" /> Card Label / Purpose *
-                </label>
+          <div className="space-y-3 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">Card Purpose / Label *</label>
                 <input 
                   type="text"
                   required
                   placeholder="e.g. AWS & Cloud Tools"
                   value={form.label}
                   onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                  <User size={14} className="text-blue-500" /> Assigned Cardholder *
-                </label>
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">Assigned Cardholder *</label>
                 <input 
                   type="text"
                   required
                   placeholder="e.g. Emeka Okafor"
                   value={form.assignedTo}
                   onChange={e => setForm(f => ({ ...f, assignedTo: e.target.value }))}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                <Building2 size={14} className="text-blue-500" /> Department
-              </label>
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1.5 block">Department</label>
               <select
                 value={form.department}
                 onChange={e => setForm(f => ({ ...f, department: e.target.value }))}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
               >
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
@@ -248,13 +221,12 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
           </div>
 
           {/* Budget & Policy Controls */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Budget & Spending Limits</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">Monthly Budget (₦) *</label>
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">Monthly Budget (NGN) *</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">₦</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-slate-400 text-xs">₦</span>
                   <input 
                     type="text"
                     inputMode="decimal"
@@ -263,19 +235,17 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
                     placeholder="150,000"
                     value={form.budget}
                     onChange={e => setForm(f => ({ ...f, budget: formatNumberInput(e.target.value) }))}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm font-bold text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                    className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-xs font-mono tabular-nums text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                  <Calendar size={14} className="text-blue-500" /> Card Expiry
-                </label>
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">Card Expiry</label>
                 <select
                   value={form.expiryMonths}
                   onChange={e => setForm(f => ({ ...f, expiryMonths: e.target.value }))}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   <option value="3">3 Months</option>
                   <option value="6">6 Months</option>
@@ -286,27 +256,26 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
             </div>
 
             {/* Approval threshold checkbox & input */}
-            <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-3">
-              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2.5">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input 
                   type="checkbox"
                   checked={form.hasThreshold}
                   onChange={e => setForm(f => ({ ...f, hasThreshold: e.target.checked }))}
-                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 rounded border-slate-300 text-slate-900 accent-slate-900 focus:ring-0 cursor-pointer"
                 />
-                <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                  <ShieldAlert size={14} className="text-amber-500" />
-                  Require Manager Approval for High-Value Purchases
+                <span className="text-xs font-medium text-slate-800">
+                  Require managerial sign-off for large transactions
                 </span>
               </label>
 
               {form.hasThreshold && (
-                <div className="pt-2 animate-in fade-in duration-150">
-                  <label className="text-[11px] font-semibold text-gray-600 block mb-1">
-                    Approval Threshold Amount (₦)
+                <div className="pt-1 animate-in fade-in duration-150">
+                  <label className="text-[11px] font-medium text-slate-600 block mb-1">
+                    Approval Threshold Amount (NGN)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 text-xs">₦</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-slate-400 text-xs">₦</span>
                     <input 
                       type="text"
                       inputMode="decimal"
@@ -314,10 +283,10 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
                       placeholder="25,000"
                       value={form.approvalThreshold}
                       onChange={e => setForm(f => ({ ...f, approvalThreshold: formatNumberInput(e.target.value) }))}
-                      className="w-full bg-white border border-gray-200 rounded-xl pl-8 pr-4 py-2.5 text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                      className="w-full rounded-lg border border-slate-200 bg-white pl-7 pr-3 py-1.5 text-xs font-mono tabular-nums text-slate-900 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                     />
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-1">
+                  <p className="text-[10px] text-slate-400 mt-1">
                     Any transaction on this card exceeding this amount will route directly to your Approval Queue.
                   </p>
                 </div>
@@ -326,11 +295,11 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
           </div>
 
           {/* Allowed Merchant Categories */}
-          <div className="space-y-2.5">
-            <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-              <Layers size={14} className="text-blue-500" /> Allowed Merchant Categories
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+              <Layers size={12} className="text-slate-500" /> Allowed Merchant Categories
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {CATEGORY_OPTIONS.map(cat => {
                 const isSelected = form.merchantCategories.includes(cat)
                 return (
@@ -338,10 +307,10 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
                     key={cat}
                     type="button"
                     onClick={() => toggleCategory(cat)}
-                    className={`text-xs px-3 py-1.5 rounded-xl border font-medium transition ${
+                    className={`text-xs px-2.5 py-1 rounded-md border font-medium transition ${
                       isSelected 
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
-                        : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     {isSelected ? '✓ ' : '+ '}{cat}
@@ -352,20 +321,20 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4 border-t flex items-center justify-end gap-3">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
+              className="px-3.5 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || !form.budget || !form.label || !form.assignedTo}
-              className="px-6 py-2.5 rounded-xl text-sm font-bold bg-[#4A90e2] hover:bg-[#357abd] text-white shadow-lg shadow-blue-500/20 disabled:opacity-50 transition flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-sm disabled:opacity-50 transition"
             >
-              {submitting ? 'Issuing Card...' : 'Issue Business Card'}
+              {submitting ? 'Issuing Card…' : 'Issue Corporate Card'}
             </button>
           </div>
         </form>
@@ -373,3 +342,4 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
     </div>
   )
 }
+

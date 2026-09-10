@@ -8,6 +8,7 @@ import FinancialHealthScore from '@/components/insights/FinancialHealthScore'
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 import toast from 'react-hot-toast'
 import { fetchWithAuth } from '@/lib/fetch-utils'
+import { Download, AlertCircle } from 'lucide-react'
 
 interface InsightsData {
   insights: {
@@ -84,24 +85,27 @@ export default function InsightsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="max-w-5xl mx-auto space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#4A90e2]">AI Insights</h1>
-          <p className="text-gray-500 text-sm mt-1">Smart analysis of your spending patterns</p>
+          <h1 className="text-lg font-semibold text-slate-900 tracking-tight">AI Financial Insights</h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Automated spending pattern diagnostics, predictive burn rate, and capital efficiency recommendations.
+          </p>
         </div>
         <button
           onClick={downloadReport}
-          className="self-start sm:self-auto bg-[#4A90e2] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#3B78C4] transition flex items-center gap-2 shadow-sm"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors self-start sm:self-auto"
         >
-          ↓ Export Report
+          <Download size={13} className="text-slate-500" /> Export CSV Report
         </button>
       </div>
 
       {loading ? (
         <div className="py-16"><LoadingSpinner /></div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Top Row: Health Score + AI Insights */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <div className="lg:col-span-4 h-full">
@@ -114,10 +118,11 @@ export default function InsightsPage() {
 
           {/* Bottom Row: Anomaly Feed + Spending Breakdown + Savings Calculator */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl border p-5 h-full flex flex-col">
-              <h3 className="font-bold text-gray-400 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
-                Live Anomaly Feed
-              </h3>
+            <div className="bg-white rounded-xl border border-slate-200/80 p-5 h-full flex flex-col shadow-sm">
+              <div className="flex items-center gap-1.5 mb-4 text-slate-900">
+                <AlertCircle size={14} className="text-amber-500" />
+                <h3 className="text-xs font-semibold">Live Anomaly Feed</h3>
+              </div>
               <div className="flex-1">
                 <AnomalyFeed />
               </div>
@@ -136,3 +141,4 @@ export default function InsightsPage() {
     </div>
   )
 }
+

@@ -19,37 +19,40 @@ export function ObservationList({ observations }: ObservationListProps) {
   const allObs = [...sorted, ...extras]
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-bold text-foreground">AI Intelligence Observations</span>
-        <span className="text-[10px] text-muted-foreground">Rule of Three insights</span>
+        <span className="font-medium text-slate-900">Intelligence Observations</span>
+        <span className="text-[10px] text-slate-400 font-mono">Rule of Three insights</span>
       </div>
 
-      {allObs.map((obs, i) => {
-        const config = OBSERVATION_CONFIG[obs.type as keyof typeof OBSERVATION_CONFIG] ?? OBSERVATION_CONFIG.behavioral
+      <div className="space-y-2">
+        {allObs.map((obs, i) => {
+          const config = OBSERVATION_CONFIG[obs.type as keyof typeof OBSERVATION_CONFIG] ?? OBSERVATION_CONFIG.behavioral
 
-        return (
-          <div
-            key={i}
-            className={`flex gap-3.5 p-3.5 sm:p-4 rounded-2xl border ${config.bg} ${config.border} transition-all hover:shadow-sm`}
-          >
-            {/* Icon badge */}
-            <div className="w-8 h-8 rounded-xl bg-card border border-border/60 flex items-center justify-center text-lg shrink-0 shadow-sm mt-0.5">
-              {obs.icon}
-            </div>
-
-            <div className="flex-1 min-w-0 space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${config.bg} ${config.text}`}>
-                  {config.label}
-                </span>
-                <span className="text-xs font-bold text-foreground truncate">{obs.title}</span>
+          return (
+            <div
+              key={i}
+              className="flex gap-3 p-3 rounded-lg border border-slate-200/80 bg-slate-50/70 transition-colors"
+            >
+              {/* Icon badge */}
+              <div className="w-6 h-6 rounded bg-white border border-slate-200 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                {obs.icon}
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">{obs.detail}</p>
+
+              <div className="flex-1 min-w-0 space-y-0.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-white border border-slate-200 text-slate-600 font-mono">
+                    {config.label}
+                  </span>
+                  <span className="text-xs font-medium text-slate-900 truncate">{obs.title}</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">{obs.detail}</p>
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }
+

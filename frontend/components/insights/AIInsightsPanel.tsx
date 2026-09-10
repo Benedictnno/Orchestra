@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
+import { Sparkles, Check, ArrowRight } from 'lucide-react'
+import { toNaira } from '@/utils/format'
 
 interface InsightItem {
   title?: string
@@ -28,7 +30,7 @@ function renderInsightText(item: InsightEntry): React.ReactNode {
     if (item.title && item.detail) {
       return (
         <span>
-          <strong className="font-semibold text-gray-900">{item.title}: </strong>
+          <strong className="font-medium text-slate-900">{item.title}: </strong>
           {item.detail}
         </span>
       )
@@ -58,24 +60,24 @@ function buildLocalInsights(transactions: Transaction[]): Insights {
 
   if (sorted.length === 0) {
     return {
-      summary: 'No transaction data yet. Add a card and make some transactions to unlock AI insights.',
-      insights: ['Your spending data will appear here once you have transactions.'],
-      recommendations: ['Add a physical card to get started.', 'Create a virtual card for subscriptions.', 'Set up your routing preference.'],
+      summary: 'No transaction data yet. Link a card and make transactions to generate automated intelligence.',
+      insights: ['Spending telemetry will calibrate once settlement events are recorded.'],
+      recommendations: ['Link your primary hardware bank card.', 'Provision a merchant-locked virtual card for recurring SaaS.', 'Configure auto-balance routing.'],
       savingsOpportunity: 0,
     }
   }
 
-  insights.push(`Your highest spend category is ${topCat?.[0] ?? 'unknown'} at ₦${(topCat?.[1] ?? 0).toLocaleString('en-NG')}.`)
-  if (sorted.length > 1) insights.push(`You spent across ${sorted.length} categories this period.`)
-  if (byCategory['subscriptions']) insights.push(`Subscription spending: ₦${byCategory['subscriptions'].toLocaleString('en-NG')} — consider a virtual card to isolate these.`)
+  insights.push(`Primary capital outflow category is ${topCat?.[0] ?? 'unknown'} at ${toNaira(topCat?.[1] ?? 0)}.`)
+  if (sorted.length > 1) insights.push(`Outflow diversified across ${sorted.length} distinct merchant categories.`)
+  if (byCategory['subscriptions']) insights.push(`Recurring software spend is ${toNaira(byCategory['subscriptions'])} — isolate via merchant-locked cards.`)
 
   const savingsOpportunity = Math.round(totalSpend * 0.12)
-  recommendations.push('Switch subscriptions to a merchant-locked virtual card to avoid accidental overcharges.')
-  recommendations.push('Enable "Balance Optimised" routing to avoid declined transactions near your card limits.')
-  if (byCategory['food'] || byCategory['transport']) recommendations.push('Set a monthly budget alert for food and transport — your two largest variable expenses.')
+  recommendations.push('Route recurring subscriptions to dedicated virtual cards to mitigate unauthorized overcharges.')
+  recommendations.push('Enable balance-optimized routing to prevent transaction declines on card limits.')
+  if (byCategory['food'] || byCategory['transport']) recommendations.push('Configure a monthly budget threshold alert for variable operational expenses.')
 
   return {
-    summary: `This period you spent ₦${totalSpend.toLocaleString('en-NG')} across ${sorted.length} categories. ${topCat ? `Your biggest area is ${topCat[0]}.` : ''} Orchestra has identified ₦${savingsOpportunity.toLocaleString('en-NG')} in potential monthly savings.`,
+    summary: `Current outflow totaled ${toNaira(totalSpend)} across ${sorted.length} merchant categories. ${topCat ? `Primary concentration in ${topCat[0]}.` : ''} Orchestra identified ${toNaira(savingsOpportunity)} in monthly capital efficiency opportunities.`,
     insights,
     recommendations,
     savingsOpportunity,
@@ -124,51 +126,55 @@ export default function AIInsightsPanel() {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
-      {/* AI Summary */}
-      <div className="bg-[#1A1A2E] text-white rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[#E94560]">✦</span>
-          <p className="text-sm text-white/60 font-medium">
-            {source === 'ai' ? 'AI Financial Summary' : 'Financial Summary'}
+    <div className="space-y-4">
+      {/* AI Summary Banner */}
+      <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Sparkles size={13} className="text-slate-400" />
+          <p className="text-xs text-slate-400 font-medium">
+            {source === 'ai' ? 'Executive AI Financial Brief' : 'Automated Financial Summary'}
           </p>
           {source === 'local' && (
-            <span className="ml-auto text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-white/50">Auto-generated</span>
+            <span className="ml-auto text-[10px] bg-slate-800 border border-slate-700 px-2 py-0.5 rounded font-mono text-slate-400">
+              Calibrated
+            </span>
           )}
         </div>
-        <p className="text-lg leading-relaxed">{data.summary}</p>
+        <p className="text-sm font-normal text-slate-200 leading-relaxed">{data.summary}</p>
       </div>
 
       {/* Insights + Recommendations */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-5 border">
-          <h3 className="font-bold text-[#1A1A2E] mb-4">Spending Insights</h3>
-          <div className="space-y-3">
+        <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
+          <h3 className="text-xs font-semibold text-slate-900 mb-3">Spending Pattern Insights</h3>
+          <div className="space-y-2.5">
             {(data.insights || []).map((insight, i) => (
-              <div key={i} className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
+              <div key={i} className="flex gap-2.5">
+                <div className="w-5 h-5 rounded bg-slate-100 text-slate-700 text-[11px] flex items-center justify-center font-mono font-medium shrink-0 mt-0.5">
                   {i + 1}
                 </div>
-                <div className="text-sm text-gray-700">{renderInsightText(insight)}</div>
+                <div className="text-xs text-slate-600 leading-relaxed">{renderInsightText(insight)}</div>
               </div>
             ))}
             {(!data.insights || data.insights.length === 0) && (
-              <p className="text-sm text-gray-400 italic">No specific spending insights at this time.</p>
+              <p className="text-xs text-slate-400 italic">No specific spending insights at this time.</p>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border">
-          <h3 className="font-bold text-[#1A1A2E] mb-4">Recommendations</h3>
-          <div className="space-y-3">
+        <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
+          <h3 className="text-xs font-semibold text-slate-900 mb-3">Optimization Actions</h3>
+          <div className="space-y-2.5">
             {(data.recommendations || []).map((rec, i) => (
-              <div key={i} className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
-                <div className="text-sm text-gray-700">{renderInsightText(rec)}</div>
+              <div key={i} className="flex gap-2.5">
+                <div className="w-5 h-5 rounded bg-emerald-50 text-emerald-700 text-[11px] flex items-center justify-center font-medium shrink-0 mt-0.5 border border-emerald-200/60">
+                  <Check size={11} />
+                </div>
+                <div className="text-xs text-slate-600 leading-relaxed">{renderInsightText(rec)}</div>
               </div>
             ))}
             {(!data.recommendations || data.recommendations.length === 0) && (
-              <p className="text-sm text-gray-400 italic">No recommendations available at this time.</p>
+              <p className="text-xs text-slate-400 italic">No recommendations available at this time.</p>
             )}
           </div>
         </div>
@@ -176,11 +182,15 @@ export default function AIInsightsPanel() {
 
       {/* Savings callout */}
       {(data.savingsOpportunity || 0) > 0 && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
-          <p className="text-green-700 font-bold text-lg">
-            ₦{data.savingsOpportunity.toLocaleString('en-NG')} potential monthly savings
-          </p>
-          <p className="text-green-600 text-sm mt-1">If you follow all {(data.recommendations || []).length} recommendations above</p>
+        <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold text-slate-900">
+              <strong className="font-mono tabular-nums text-emerald-700">{toNaira(data.savingsOpportunity)}</strong> potential monthly efficiency gain
+            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Identified through automated routing optimization and merchant limit controls
+            </p>
+          </div>
         </div>
       )}
     </div>
@@ -189,12 +199,13 @@ export default function AIInsightsPanel() {
 
 function InsightsSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
-      <div className="bg-gray-800 rounded-2xl h-32" />
+    <div className="space-y-4 animate-pulse">
+      <div className="bg-slate-100 rounded-xl h-28" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-gray-200 rounded-2xl h-48" />
-        <div className="bg-gray-200 rounded-2xl h-48" />
+        <div className="bg-slate-100 rounded-xl h-44" />
+        <div className="bg-slate-100 rounded-xl h-44" />
       </div>
     </div>
   )
 }
+

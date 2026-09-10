@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Zap, Wifi, Tv, Droplets, ArrowRight } from 'lucide-react'
+import { Zap, Wifi, Tv, Droplets, Check, ShieldCheck, CreditCard } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import { toNaira } from '@/utils/format'
 import { extractErrorMessage } from '@/lib/utils'
@@ -16,10 +16,34 @@ interface Card {
 }
 
 const BILL_CATEGORIES = [
-  { id: 'electricity', label: 'Electricity', icon: Zap, color: 'bg-yellow-50 text-yellow-600', billers: ['EKEDC', 'IKEDC', 'PHED'] },
-  { id: 'tv', label: 'Cable TV', icon: Tv, color: 'bg-blue-50 text-blue-600', billers: ['DSTV', 'GOTV', 'STARTIMES'] },
-  { id: 'internet', label: 'Internet', icon: Wifi, color: 'bg-purple-50 text-purple-600', billers: ['MTN', 'AIRTEL', 'GLO', '9MOBILE'] },
-  { id: 'water', label: 'Utilities', icon: Droplets, color: 'bg-cyan-50 text-cyan-600', billers: ['LWC', 'Water Board'] },
+  { 
+    id: 'electricity', 
+    label: 'Electricity', 
+    desc: 'Prepaid & Postpaid Meters',
+    icon: Zap, 
+    billers: ['EKEDC', 'IKEDC', 'PHED', 'AEDC', 'EEDC', 'IBEDC'] 
+  },
+  { 
+    id: 'tv', 
+    label: 'Cable & TV', 
+    desc: 'Decoder Subscriptions',
+    icon: Tv, 
+    billers: ['DSTV', 'GOTV', 'STARTIMES', 'SHOWMAX'] 
+  },
+  { 
+    id: 'internet', 
+    label: 'Internet & Data', 
+    desc: 'ISP & Broadband Bundles',
+    icon: Wifi, 
+    billers: ['MTN', 'AIRTEL', 'GLO', '9MOBILE', 'SMILE', 'SPECTRANET'] 
+  },
+  { 
+    id: 'water', 
+    label: 'Utilities & Water', 
+    desc: 'Municipal Water Boards',
+    icon: Droplets, 
+    billers: ['LWC', 'Water Board', 'FCT Water'] 
+  },
 ]
 
 export default function BillsPage() {
@@ -46,6 +70,8 @@ export default function BillsPage() {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  const selectedCard = cards.find(c => c._id === form.sourceCardId)
 
   async function handlePayment(e: React.FormEvent) {
     e.preventDefault()
@@ -74,118 +100,187 @@ export default function BillsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pb-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#4A90e2] tracking-tight">Pay Bills</h1>
-        <p className="text-gray-500 font-medium text-sm mt-1">
-          Settled utilities and services instantly using your connected cards.
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-lg font-semibold text-slate-900 tracking-tight">Pay Bills</h1>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Direct settlement of utility invoices, internet subscriptions, and services from linked funding accounts.
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl border shadow-sm overflow-hidden">
-        <form onSubmit={handlePayment} className="p-5 sm:p-8 space-y-6 sm:space-y-8">
-          {/* Categories */}
-          <section className="space-y-3 sm:space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Select Category</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-              {BILL_CATEGORIES.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => { setSelectedCat(cat); setForm(f => ({ ...f, billerCode: '' })) }}
-                  className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-2xl border-2 transition-all
-                    ${selectedCat.id === cat.id 
-                      ? 'border-[#E94560] bg-[#E94560]/5' 
-                      : 'border-gray-50 hover:border-gray-100 bg-gray-50/50'}`}
-                >
-                  <div className={`w-9 sm:w-10 h-9 sm:h-10 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <cat.icon size={18} className="sm:w-5 sm:h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold text-[#4A90e2] uppercase">{cat.label}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* Source Card */}
-          <section className="space-y-3 sm:space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Payment Method</h3>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
-              {loading ? (
-                <div className="h-24 bg-gray-50 animate-pulse rounded-2xl w-full" />
-              ) : (
-                cards.map(card => (
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <form onSubmit={handlePayment} className="p-6 sm:p-7 space-y-6">
+          {/* Category Selector */}
+          <div>
+            <label className="text-xs font-medium text-slate-700 block mb-2.5">
+              Service Category
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {BILL_CATEGORIES.map(cat => {
+                const isSelected = selectedCat.id === cat.id
+                const IconComponent = cat.icon
+                return (
                   <button
-                    key={card._id}
+                    key={cat.id}
                     type="button"
-                    onClick={() => setForm(f => ({ ...f, sourceCardId: card._id }))}
-                    className={`flex-shrink-0 w-56 sm:w-64 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left
-                      ${form.sourceCardId === card._id 
-                        ? 'border-[#E94560] bg-[#E94560]/5' 
-                        : 'border-gray-50 hover:border-gray-100 bg-gray-50/50'}`}
+                    onClick={() => { 
+                      setSelectedCat(cat)
+                      setForm(f => ({ ...f, billerCode: '' })) 
+                    }}
+                    className={`flex flex-col items-start p-3 rounded-lg border text-left transition-all relative ${
+                      isSelected
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700 hover:bg-slate-50/50'
+                    }`}
                   >
-                    <p className="font-bold text-[#4A90e2] text-sm mb-0.5 truncate">{card.label}</p>
-                    <p className="text-xs text-gray-500 font-medium mb-2 sm:mb-3">**** {card.pan.slice(-4)}</p>
-                    <p className="text-sm font-black text-[#E94560]">{toNaira(card.availableBalance)}</p>
+                    <div className="flex items-center justify-between w-full mb-2">
+                      <div className={`p-1.5 rounded-md ${
+                        isSelected ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        <IconComponent size={15} />
+                      </div>
+                      {isSelected && <Check size={13} className="text-white" />}
+                    </div>
+                    <span className="text-xs font-semibold">{cat.label}</span>
+                    <span className={`text-[10px] mt-0.5 line-clamp-1 ${
+                      isSelected ? 'text-slate-300' : 'text-slate-400'
+                    }`}>
+                      {cat.desc}
+                    </span>
                   </button>
-                ))
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Funding Source Selector */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-medium text-slate-700">Funding Card</label>
+              {selectedCard && (
+                <span className="text-[11px] text-slate-500 font-mono tabular-nums">
+                  Avail: <strong className="text-slate-900 font-medium">{toNaira(selectedCard.availableBalance)}</strong>
+                </span>
               )}
             </div>
-          </section>
 
-          {/* Bill Details */}
-          <section className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Biller Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Provider</label>
+            {loading ? (
+              <div className="h-16 bg-slate-50 animate-pulse rounded-lg border border-slate-100 w-full" />
+            ) : cards.length === 0 ? (
+              <div className="p-4 rounded-lg border border-dashed border-slate-200 text-center text-xs text-slate-500">
+                No funding cards found. Please link a bank card in the Cards tab first.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {cards.map(card => {
+                  const isSelected = form.sourceCardId === card._id
+                  return (
+                    <button
+                      key={card._id}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, sourceCardId: card._id }))}
+                      className={`p-3 rounded-lg border text-left transition-all relative ${
+                        isSelected
+                          ? 'border-slate-900 bg-slate-50/70 ring-1 ring-slate-900 shadow-sm'
+                          : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-1.5 text-slate-500">
+                          <CreditCard size={13} />
+                          <span className="text-[11px] font-mono">•••• {card.pan.slice(-4)}</span>
+                        </div>
+                        {isSelected && (
+                          <div className="w-4 h-4 rounded-full bg-slate-900 flex items-center justify-center text-white">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium text-slate-900 truncate">{card.label}</p>
+                      <p className="text-xs font-mono font-medium text-slate-700 mt-1 tabular-nums">
+                        {toNaira(card.availableBalance)}
+                      </p>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Biller & Customer Details */}
+          <div className="space-y-4 pt-1 border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+                  Service Provider / Biller
+                </label>
                 <select 
                   required
                   value={form.billerCode}
                   onChange={e => setForm(f => ({ ...f, billerCode: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   <option value="">Select Biller</option>
-                  {selectedCat.billers.map(b => <option key={b} value={b}>{b}</option>)}
+                  {selectedCat.billers.map(b => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
                 </select>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Customer ID / Meter</label>
+
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+                  Customer ID / SmartCard / Meter No.
+                </label>
                 <input 
                   type="text"
                   required
-                  placeholder="ID Number"
+                  placeholder="e.g. 04192849102"
                   value={form.customerId}
                   onChange={e => setForm(f => ({ ...f, customerId: e.target.value }))}
-                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
                 />
               </div>
             </div>
             
-            <div className="relative group">
-              <label className="absolute left-5 top-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider transition-all group-focus-within:text-[#E94560]">Amount to Pay</label>
-              <span className="absolute left-5 bottom-4 text-2xl font-black text-[#4A90e2]">₦</span>
-              <input 
-                type="number"
-                required
-                placeholder="0.00"
-                value={form.amount}
-                onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                className="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pt-10 pb-4 pl-10 pr-6 text-2xl font-black text-[#4A90e2] focus:outline-none focus:border-[#E94560]/20 focus:bg-white transition-all"
-              />
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+                Payment Amount (NGN)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400">₦</span>
+                <input 
+                  type="number"
+                  required
+                  placeholder="0.00"
+                  min="1"
+                  step="any"
+                  value={form.amount}
+                  onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-xs font-mono tabular-nums text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
+                />
+              </div>
             </div>
-          </section>
+          </div>
 
-          <button
-            type="submit"
-            disabled={submitting || !form.amount || !form.billerCode || !form.customerId}
-            className="w-full bg-[#E94560] text-white py-5 rounded-2xl font-black text-lg hover:bg-[#d63850] transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-[#E94560]/20"
-          >
-            {submitting ? 'Processing Payment...' : 'Pay Bill Now'}
-            <ArrowRight size={20} />
-          </button>
+          {/* Action Button & Security */}
+          <div className="space-y-3 pt-2">
+            <button
+              type="submit"
+              disabled={submitting || !form.amount || !form.billerCode || !form.customerId || !form.sourceCardId}
+              className="w-full rounded-lg bg-slate-900 py-2.5 text-xs font-medium text-white shadow-sm hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {submitting ? 'Processing Payment…' : `Pay ${form.amount ? toNaira(parseFloat(form.amount)) : 'Bill'}`}
+            </button>
+
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+              <ShieldCheck size={13} className="text-emerald-600" />
+              <span>Direct automated provider settlement • 256-bit encrypted</span>
+            </div>
+          </div>
         </form>
       </div>
     </div>
   )
 }
+

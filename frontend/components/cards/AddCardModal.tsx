@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { X } from 'lucide-react'
+import { X, CreditCard, Lock } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 
 interface AddCardModalProps {
@@ -13,12 +13,12 @@ interface AddCardModalProps {
 const BANKS = ['GTBank', 'Access Bank', 'UBA', 'First Bank', 'Zenith Bank', 'Stanbic IBTC', 'Polaris Bank', 'Union Bank']
 const PROGRAMS = ['VERVE', 'VISA', 'MASTERCARD']
 const CARD_COLORS = [
-  '#4A90e2',
-  '#1A1A2E',
-  '#E94560',
-  '#0f3460',
-  '#533483',
-  '#1B4332',
+  '#0f172a',
+  '#1e293b',
+  '#1e1b4b',
+  '#134e4a',
+  '#312e81',
+  '#3b0764',
 ]
 
 export default function AddCardModal({ open, onClose, onAdded }: AddCardModalProps) {
@@ -64,7 +64,7 @@ export default function AddCardModal({ open, onClose, onAdded }: AddCardModalPro
         throw new Error(data.message || data.error || 'Failed to add card')
       }
 
-      toast.success('Card added successfully!')
+      toast.success('Card added successfully')
       onAdded()
       onClose()
     } catch (err: unknown) {
@@ -75,89 +75,95 @@ export default function AddCardModal({ open, onClose, onAdded }: AddCardModalPro
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-bold text-[#1A1A2E]">Add a Card</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition">
-            <X size={18} />
+    <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl w-full max-w-md shadow-xl border border-slate-200/80 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex items-center gap-2">
+            <CreditCard size={16} className="text-slate-500" />
+            <h2 className="text-xs font-semibold text-slate-900">Link Bank Card</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            <X size={15} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Card color picker */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          {/* Card Finish Swatches */}
           <div>
-            <label className="text-xs text-gray-500 mb-2 block">Card Colour</label>
+            <label className="text-[11px] font-medium text-slate-500 mb-1.5 block">Card Finish Palette</label>
             <div className="flex gap-2">
               {CARD_COLORS.map(c => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setSelectedColor(c)}
-                  className={`w-8 h-8 rounded-full transition ${selectedColor === c ? 'ring-2 ring-[#E94560] ring-offset-2' : ''}`}
+                  className={`w-6 h-6 rounded-md transition-all ${selectedColor === c ? 'ring-2 ring-slate-900 ring-offset-2 scale-105' : 'opacity-80 hover:opacity-100'}`}
                   style={{ background: c }}
                 />
               ))}
             </div>
           </div>
 
-          <InputField label="Card Label (e.g. My GTBank)" name="label" value={form.label} onChange={v => updateField('label', v)} placeholder="e.g. GTBank Salary" />
+          <InputField label="Card Label" name="label" value={form.label} onChange={v => updateField('label', v)} placeholder="e.g. Salary Primary Account" />
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Bank</label>
-              <select value={form.bank} onChange={e => updateField('bank', e.target.value)}
-                className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none">
+              <label className="text-[11px] font-medium text-slate-500 mb-1 block">Issuing Bank</label>
+              <select
+                value={form.bank}
+                onChange={e => updateField('bank', e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:outline-none shadow-xs"
+              >
                 {BANKS.map(b => <option key={b}>{b}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Network</label>
-              <select value={form.cardProgram} onChange={e => updateField('cardProgram', e.target.value)}
-                className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none">
+              <label className="text-[11px] font-medium text-slate-500 mb-1 block">Payment Network</label>
+              <select
+                value={form.cardProgram}
+                onChange={e => updateField('cardProgram', e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:outline-none shadow-xs"
+              >
                 {PROGRAMS.map(p => <option key={p}>{p}</option>)}
               </select>
             </div>
           </div>
 
-          <InputField label="Card Number (16 digits)" name="pan" value={form.pan} onChange={v => updateField('pan', v)} placeholder="1234 5678 9012 3456" maxLength={16} />
-          <InputField label="Name on Card" name="nameOnCard" value={form.nameOnCard} onChange={v => updateField('nameOnCard', v)} placeholder="JOHN DOE" />
+          <InputField label="Card Number (PAN 16 Digits)" name="pan" value={form.pan} onChange={v => updateField('pan', v.replace(/\D/g, ''))} placeholder="1234 5678 9012 3456" maxLength={16} isMono />
+          <InputField label="Name on Card" name="nameOnCard" value={form.nameOnCard} onChange={v => updateField('nameOnCard', v.toUpperCase())} placeholder="JOHN DOE" />
 
           <div className="grid grid-cols-2 gap-3">
-            <InputField label="Expiry (YYMM)" name="expiryDate" value={form.expiryDate} onChange={v => updateField('expiryDate', v)} placeholder="2612" maxLength={4} />
-            <InputField label="CVV" name="cvv" value={form.cvv} onChange={v => updateField('cvv', v)} placeholder="123" maxLength={4} />
+            <InputField label="Expiry (YYMM)" name="expiryDate" value={form.expiryDate} onChange={v => updateField('expiryDate', v.replace(/\D/g, ''))} placeholder="2612" maxLength={4} isMono />
+            <InputField label="CVV" name="cvv" value={form.cvv} onChange={v => updateField('cvv', v.replace(/\D/g, ''))} placeholder="123" maxLength={4} isMono />
           </div>
 
-          <InputField label="Account Number (10 digits)" name="accountNumber" value={form.accountNumber} onChange={v => updateField('accountNumber', v)} placeholder="0123456789" maxLength={10} />
+          <InputField label="Account Number (10 Digits)" name="accountNumber" value={form.accountNumber} onChange={v => updateField('accountNumber', v.replace(/\D/g, ''))} placeholder="0123456789" maxLength={10} isMono />
 
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Card Type</label>
-            <select value={form.cardType} onChange={e => updateField('cardType', e.target.value)}
-              className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none">
-              <option value="debit">Debit</option>
-              <option value="prepaid">Prepaid</option>
-            </select>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading || !form.label || !form.pan}
+              className="w-full py-2.5 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs flex items-center justify-center gap-2"
+            >
+              <Lock size={12} />
+              <span>{loading ? 'Verifying & Linking...' : 'Authorize & Link Card'}</span>
+            </button>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading || !form.label || !form.pan}
-            className="w-full bg-[#E94560] text-white py-3 rounded-xl font-semibold hover:bg-[#d63850] transition disabled:opacity-50"
-          >
-            {loading ? 'Adding card…' : 'Add Card'}
-          </button>
         </form>
       </div>
     </div>
   )
 }
 
-function InputField({ label, name, value, onChange, placeholder, maxLength }: {
-  label: string; name: string; value: string; onChange: (v: string) => void; placeholder?: string; maxLength?: number
+function InputField({ label, name, value, onChange, placeholder, maxLength, isMono = false }: {
+  label: string; name: string; value: string; onChange: (v: string) => void; placeholder?: string; maxLength?: number; isMono?: boolean
 }) {
   return (
     <div>
-      <label htmlFor={name} className="text-xs text-gray-500 mb-1 block">{label}</label>
+      <label htmlFor={name} className="text-[11px] font-medium text-slate-500 mb-1 block">{label}</label>
       <input
         id={name}
         type="text"
@@ -165,8 +171,9 @@ function InputField({ label, name, value, onChange, placeholder, maxLength }: {
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#E94560] focus:outline-none"
+        className={`w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:outline-none shadow-xs ${isMono ? 'font-mono' : ''}`}
       />
     </div>
   )
 }
+

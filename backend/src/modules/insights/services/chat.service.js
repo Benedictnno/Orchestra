@@ -359,18 +359,31 @@ ALWAYS respond ONLY with the JSON object.`
 
 /**
  * Process a chat message with intent detection.
+ * Supports multi-session conversations.
  * Returns either a direct conversational text reply or a structured financial artifact.
  */
-export async function processChatMessage(userId, message) {
+export async function processChatMessage(userId, message, sessionId = null) {
   if (!message) throw new BadRequestError('Message is required')
 
   const snap = await buildFinancialSnapshot(userId)
   const systemPrompt = buildNarrativeSystemPrompt(snap)
 
-  // Retrieve or initialize chat history
-  let chat = await Chat.findOne({ userId })
+  // Retrieve or initialize chat session
+  let chat = null
+  if (sessionId) {
+    chat = await Chat.findOne({ _id: sessionId, userId })
+  }
   if (!chat) {
-    chat = await Chat.create({ userId, messages: [] })
+    chat = await Chat.create({ userId, title: 'New Chat', messages: [] })
+  }
+
+  // Auto-generate title if this is the first message or default title
+  if (!chat.title || chat.title === 'New Chat' || chat.messages.length === 0) {
+    const cleanTitle = message.replace(/[^\w\s₦$]/gi, ' ').trim().replace(/\s+/g, ' ')
+    if (cleanTitle) {
+      chat.title = cleanTitle.length > 32 ? cleanTitle.slice(0, 32).trim() + '…' : cleanTitle
+      chat.title = chat.title.charAt(0).toUpperCase() + chat.title.slice(1)
+    }
   }
 
   // Determine intent heuristically as a fallback
@@ -443,6 +456,8 @@ export async function processChatMessage(userId, message) {
       reply: introText,
       response: introText,
       history: chat.messages,
+      sessionId: chat._id,
+      title: chat.title,
       snapshot: {
         totalSpent: snap.totalSpentNaira,
         totalBalance: snap.totalBalanceNaira,
@@ -474,6 +489,8 @@ export async function processChatMessage(userId, message) {
     reply: textReply,
     response: textReply,
     history: chat.messages,
+    sessionId: chat._id,
+    title: chat.title,
     snapshot: {
       totalSpent: snap.totalSpentNaira,
       totalBalance: snap.totalBalanceNaira,
@@ -487,17 +504,96 @@ export async function processChatMessage(userId, message) {
 }
 
 /**
- * Retrieve chat history for a user.
+ * List all chat sessions for a user.
  */
-export async function getChatHistory(userId) {
-  const chat = await Chat.findOne({ userId }).lean()
-  return { history: chat ? chat.messages : [] }
+export async function getChatSessions(userId) {
+  const sessions = await Chat.find({ userId })
+    .sort({ updatedAt: -1 })
+    .select('_id title messages updatedAt createdAt')
+    .lean()
+
+  return {
+    sessions: sessions.map(s => ({
+      _id: s._id,
+      title: s.title || 'New Chat',
+      messageCount: s.messages?.length || 0,
+      lastMessage: s.messages?.slice(-1)[0]?.content?.slice(0, 60) || '',
+      updatedAt: s.updatedAt,
+      createdAt: s.createdAt,
+    }))
+  }
 }
 
 /**
- * Clear chat history for a user.
+ * Retrieve a specific chat session or the most recent one.
  */
-export async function clearChatHistory(userId) {
-  await Chat.findOneAndDelete({ userId })
-  return { message: 'Chat history cleared' }
+export async function getChatSession(userId, sessionId = null) {
+  let chat = null
+  if (sessionId) {
+    chat = await Chat.findOne({ _id: sessionId, userId }).lean()
+  } else {
+    chat = await Chat.findOne({ userId }).sort({ updatedAt: -1 }).lean()
+  }
+
+  if (!chat) {
+    return { session: null, history: [] }
+  }
+
+  return {
+    session: {
+      _id: chat._id,
+      title: chat.title || 'New Chat',
+      messages: chat.messages || [],
+      updatedAt: chat.updatedAt,
+      createdAt: chat.createdAt,
+    },
+    history: chat.messages || [],
+  }
+}
+
+/**
+ * Create a new blank chat session.
+ */
+export async function createChatSession(userId, initialTitle = 'New Chat') {
+  const chat = await Chat.create({
+    userId,
+    title: initialTitle,
+    messages: [],
+  })
+
+  return {
+    _id: chat._id,
+    title: chat.title,
+    messages: [],
+    updatedAt: chat.updatedAt,
+    createdAt: chat.createdAt,
+  }
+}
+
+/**
+ * Delete a specific chat session.
+ */
+export async function deleteChatSession(userId, sessionId) {
+  if (!sessionId) throw new BadRequestError('Session ID is required')
+  await Chat.findOneAndDelete({ _id: sessionId, userId })
+  return { message: 'Chat session deleted', sessionId }
+}
+
+/**
+ * Retrieve chat history for a user (backward-compatible).
+ */
+export async function getChatHistory(userId, sessionId = null) {
+  return getChatSession(userId, sessionId)
+}
+
+/**
+ * Clear chat history for a user or session.
+ */
+export async function clearChatHistory(userId, sessionId = null) {
+  if (sessionId) {
+    await Chat.findOneAndDelete({ _id: sessionId, userId })
+    return { message: 'Chat session deleted', sessionId }
+  }
+  await Chat.deleteMany({ userId })
+  return { message: 'All chat history cleared' }
 }

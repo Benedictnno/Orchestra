@@ -1,5 +1,14 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getInsights, getSavingsCalculation, getAnomalies, scanAnomalies } from '@/api/insights';
+import {
+  getInsights,
+  getSavingsCalculation,
+  getAnomalies,
+  scanAnomalies,
+  getChatSessions,
+  createChatSession,
+  getChatSession,
+  deleteChatSession,
+} from '@/api/insights';
 import { queryClient } from '@/lib/queryClient';
 
 export const useInsights = () => {
@@ -33,3 +42,38 @@ export const useScanAnomalies = () => {
     },
   });
 };
+
+export const useChatSessions = () => {
+  return useQuery({
+    queryKey: ['chat-sessions'],
+    queryFn: getChatSessions,
+    staleTime: 1000 * 30, // 30s
+  });
+};
+
+export const useChatSession = (sessionId?: string | null) => {
+  return useQuery({
+    queryKey: ['chat-session', sessionId],
+    queryFn: () => (sessionId ? getChatSession(sessionId) : null),
+    enabled: Boolean(sessionId),
+  });
+};
+
+export const useCreateChatSession = () => {
+  return useMutation({
+    mutationFn: (title?: string) => createChatSession(title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
+    },
+  });
+};
+
+export const useDeleteChatSession = () => {
+  return useMutation({
+    mutationFn: (sessionId: string) => deleteChatSession(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
+    },
+  });
+};
+

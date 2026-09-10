@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { ShieldCheck, Zap, Layers, Sparkles, SlidersHorizontal, ArrowRightLeft, CreditCard, ChevronRight } from 'lucide-react'
 
 /* ─── tiny hook for intersection observer fade-in ─────────── */
 function useFadeIn<T extends HTMLElement = HTMLDivElement>(threshold = 0.15) {
@@ -25,46 +26,52 @@ function CardChip({ color, label, bank, pan, delay = '0s' }: {
 }) {
   return (
     <div
-      className="absolute rounded-[24px] p-6 shadow-2xl w-64 text-white text-xs select-none"
+      className="absolute rounded-2xl p-5 sm:p-6 shadow-2xl w-64 text-white text-xs select-none border border-white/20 backdrop-blur-md"
       style={{
         background: color,
         animation: `floatCard 4s ease-in-out infinite`,
         animationDelay: delay,
       }}
     >
-      <div className="flex justify-between items-start mb-8">
-        <span className="font-black text-xl tracking-tight">Orchestra</span>
-        <span className="opacity-70 uppercase text-[10px] tracking-widest font-bold">{bank}</span>
+      <div className="flex justify-between items-start mb-7">
+        <div className="flex items-center gap-1.5">
+          <div className="w-5 h-5 rounded-md bg-white/20 flex items-center justify-center font-black text-[10px]">O</div>
+          <span className="font-bold text-sm tracking-tight">Orchestra</span>
+        </div>
+        <span className="opacity-80 uppercase text-[9px] tracking-widest font-mono font-semibold">{bank}</span>
       </div>
-      <p className="font-mono tracking-[0.2em] text-[13px] mb-5 opacity-90">{pan}</p>
+      <p className="font-mono tracking-[0.2em] text-xs mb-5 opacity-90">{pan}</p>
       <div className="flex justify-between items-end">
-        <p className="font-bold text-sm opacity-90">{label}</p>
-        <div className="w-10 h-6 bg-white/20 rounded-md backdrop-blur-sm" />
+        <div>
+          <p className="text-[10px] text-white/60 uppercase font-medium">Cardholder</p>
+          <p className="font-semibold text-xs opacity-95">{label}</p>
+        </div>
+        <div className="w-9 h-5 bg-white/20 rounded border border-white/30 backdrop-blur-sm" />
       </div>
     </div>
   )
 }
 
 /* ─── feature card ────────────────────────────────────────── */
-function FeatureCard({ icon, title, desc, delay }: {
-  icon: string; title: string; desc: string; delay: string
+function FeatureCard({ icon: Icon, title, desc, delay }: {
+  icon: React.ElementType; title: string; desc: string; delay: string
 }) {
   const [ref, visible] = useFadeIn()
   return (
     <div
       ref={ref}
-      className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 group"
+      className="bg-white/10 border border-white/15 rounded-2xl p-6 hover:bg-white/15 hover:border-white/25 transition-all duration-300 hover:-translate-y-0.5 group"
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity 0.6s ease ${delay}, transform 0.6s ease ${delay}`,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `opacity 0.5s ease ${delay}, transform 0.5s ease ${delay}`,
       }}
     >
-      <div className="w-12 h-12 rounded-xl bg-[#E94560]/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
-        {icon}
+      <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white mb-4 group-hover:scale-105 transition-transform shadow-xs">
+        <Icon size={18} />
       </div>
-      <h3 className="font-bold text-white text-lg mb-2">{title}</h3>
-      <p className="text-white/60 text-sm leading-relaxed">{desc}</p>
+      <h3 className="font-bold text-white text-base mb-2 tracking-tight">{title}</h3>
+      <p className="text-white/70 text-xs sm:text-sm leading-relaxed">{desc}</p>
     </div>
   )
 }
@@ -80,15 +87,15 @@ function StepCard({ n, title, desc, delay }: {
       className="text-center"
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(28px)',
-        transition: `all 0.6s ease ${delay}s`,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `all 0.5s ease ${delay}s`,
       }}
     >
-      <div className="w-20 h-20 rounded-2xl bg-[#E94560]/20 border border-[#E94560]/30 flex items-center justify-center text-2xl font-black text-[#E94560] mx-auto mb-5 hover:bg-[#E94560]/30 transition">
+      <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-base font-bold text-white mx-auto mb-4 font-mono shadow-xs">
         {n}
       </div>
-      <h3 className="text-white font-bold text-xl mb-2">{title}</h3>
-      <p className="text-white/50 text-sm leading-relaxed">{desc}</p>
+      <h3 className="text-white font-bold text-base mb-1.5 tracking-tight">{title}</h3>
+      <p className="text-white/60 text-xs sm:text-sm leading-relaxed">{desc}</p>
     </div>
   )
 }
@@ -111,19 +118,15 @@ export default function LandingPage() {
       <style>{`
         @keyframes floatCard {
           0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
-          50% { transform: translateY(-14px) rotate(var(--rot, 0deg)); }
+          50% { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
         }
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        @keyframes pulse-ring {
-          0% { transform: scale(1); opacity: 0.6; }
-          100% { transform: scale(1.6); opacity: 0; }
-        }
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(40px); }
+          from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeIn {
@@ -131,17 +134,8 @@ export default function LandingPage() {
           to { opacity: 1; }
         }
         .hero-gradient {
-          background: linear-gradient(135deg, #4A90e2 0%, #16213E 40%, #0F3460 70%, #4A90e2 100%);
-          background-size: 400% 400%;
-          animation: gradientShift 12s ease infinite;
-        }
-        .text-gradient {
-          background: linear-gradient(90deg, #E94560, #F59E0B, #E94560);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: gradientShift 4s linear infinite;
+          background: linear-gradient(135deg, #4A90e2 0%, #1e3a8a 45%, #0f172a 100%);
+          background-size: 200% 200%;
         }
         .slide-up { animation: slideUp 0.8s ease forwards; }
         .fade-in { animation: fadeIn 1s ease forwards; }
@@ -149,30 +143,30 @@ export default function LandingPage() {
 
       {/* ── NAV ─────────────────────────────────────────── */}
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-[#4A90e2]/95 backdrop-blur-md shadow-xl' : 'bg-transparent'
+        scrolled ? 'bg-[#4A90e2]/95 backdrop-blur-md shadow-lg border-b border-white/10' : 'bg-transparent'
       }`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#E94560] flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-xs">
               <span className="text-white font-black text-sm">O</span>
             </div>
             <span className="text-white font-black text-xl tracking-tight">Orchestra</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-white/70">
-            <a href="#features" className="hover:text-white transition">Features</a>
-            <a href="#how" className="hover:text-white transition">How it works</a>
-            <a href="#stats" className="hover:text-white transition">Impact</a>
+          <div className="hidden md:flex items-center gap-8 text-xs font-semibold text-white/80">
+            <a href="#features" className="hover:text-white transition-colors">Platform Features</a>
+            <a href="#how" className="hover:text-white transition-colors">How It Works</a>
+            <a href="#security" className="hover:text-white transition-colors">Security &amp; Routing</a>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-white/80 text-sm font-medium hover:text-white transition hidden sm:block"
+              className="text-white/90 text-xs font-semibold hover:text-white px-3 py-1.5 transition-colors hidden sm:block"
             >
               Sign in
             </Link>
             <Link
               href="/register"
-              className="bg-[#E94560] text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-[#d63850] transition hover:shadow-lg hover:shadow-[#E94560]/30"
+              className="bg-white text-slate-900 text-xs font-bold px-4 py-2 rounded-lg hover:bg-slate-100 transition shadow-sm"
             >
               Get Started
             </Link>
@@ -183,189 +177,165 @@ export default function LandingPage() {
       {/* ── HERO ─────────────────────────────────────────── */}
       <section ref={heroRef} className="hero-gradient min-h-screen flex items-center relative overflow-hidden">
         {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{
+        <div className="absolute inset-0 opacity-[0.06]" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
-          backgroundSize: '60px 60px'
+          backgroundSize: '40px 40px'
         }} />
 
-        {/* Glow orbs */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#E94560]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Ambient glows */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-slate-900/40 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
+        <div className="max-w-6xl mx-auto px-6 pt-28 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
           {/* Left — copy */}
           <div>
-            {/* <div
-              className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs text-white/80 font-medium mb-6"
-              style={{ animation: 'fadeIn 0.8s ease forwards' }}
-            >
-              <span className="w-2 h-2 bg-[#E94560] rounded-full animate-pulse" />
-             
-            </div> */}
+          
 
             <h1
-              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-6 tracking-tight"
-              style={{ animation: 'slideUp 0.9s ease 0.1s both' }}
+              className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 tracking-tight"
+              style={{ animation: 'slideUp 0.8s ease 0.1s both' }}
             >
-              One card to{' '}
-              <span className="text-gradient">orchestrate</span>
-              {' '}them all
+              One card to orchestrate them all
             </h1>
 
             <p
-              className="text-white/70 text-base sm:text-lg leading-relaxed mb-8 max-w-lg"
-              style={{ animation: 'slideUp 0.9s ease 0.25s both' }}
+              className="text-white/80 text-sm sm:text-base leading-relaxed mb-8 max-w-lg"
+              style={{ animation: 'slideUp 0.8s ease 0.2s both' }}
             >
-              Orchestra is an AI-powered ATM card orchestration platform that unifies all your bank cards into a single programmable payment layer — routing every naira intelligently.
+              Orchestra is an AI-powered financial OS that unifies all your Nigerian bank cards into a single programmable payment layer — intelligently routing, splitting, and optimizing every transaction.
             </p>
 
             <div
               className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
-              style={{ animation: 'slideUp 0.9s ease 0.4s both' }}
+              style={{ animation: 'slideUp 0.8s ease 0.3s both' }}
             >
               <Link
                 href="/register"
-                className="group relative bg-[#E94560] text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-center text-sm sm:text-base hover:bg-[#d63850] transition-all duration-200 hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-0.5"
+                className="bg-white text-slate-900 font-bold px-6 py-3 rounded-xl text-center text-sm hover:bg-slate-100 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span className="relative z-10">Start for free</span>
-                {/* pulse ring */}
-                <span className="absolute inset-0 rounded-2xl bg-[#E94560] opacity-0 group-hover:opacity-100" style={{ animation: 'pulse-ring 1.5s ease-out infinite' }} />
+                Start for free
               </Link>
               <Link
                 href="/login"
-                className="bg-white/10 border border-white/20 text-white font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-center text-sm sm:text-base hover:bg-white/20 transition backdrop-blur-sm"
+                className="bg-white/15 border border-white/30 text-white font-semibold px-6 py-3 rounded-xl text-center text-sm hover:bg-white/25 transition backdrop-blur-md"
               >
-                Sign in →
+                Sign in to console
               </Link>
             </div>
 
             <p
-              className="text-white/30 text-xs mt-5"
-              style={{ animation: 'fadeIn 1.2s ease 0.6s both' }}
+              className="text-white/50 text-xs mt-5"
+              style={{ animation: 'fadeIn 1s ease 0.4s both' }}
             >
-              No credit card required · Free during hackathon
+              Zero monthly maintenance fees · Sandbox test mode included
             </p>
           </div>
 
           {/* Right — floating cards */}
-          <div className="relative h-96 lg:h-[450px] hidden lg:block">
-            <div style={{ '--rot': '-8deg' } as React.CSSProperties} className="absolute top-0 left-24 z-30">
-              <CardChip color="linear-gradient(135deg,#4A90e2,#E94560)" label="Master Orchestrator" bank="Ultimate Card" pan="5399 •••• •••• 8888" delay="0s" />
+          <div className="relative h-96 lg:h-[420px] hidden lg:block">
+            <div style={{ '--rot': '-6deg' } as React.CSSProperties} className="absolute top-0 left-20 z-30">
+              <CardChip color="linear-gradient(135deg,#1e293b,#0f172a)" label="Alex Morgan" bank="Master Orchestrator" pan="5399 •••• •••• 8888" delay="0s" />
             </div>
-            <div style={{ '--rot': '4deg' } as React.CSSProperties} className="absolute top-32 left-52 z-20">
-              <CardChip color="linear-gradient(135deg,#0F3460,#533483)" label="Primary Debit" bank="Physical Card" pan="4111 •••• •••• 1234" delay="0.8s" />
+            <div style={{ '--rot': '5deg' } as React.CSSProperties} className="absolute top-28 left-48 z-20">
+              <CardChip color="linear-gradient(135deg,#0284c7,#0369a1)" label="Alex Morgan" bank="GTBank Debit" pan="4111 •••• •••• 1234" delay="0.8s" />
             </div>
-            <div style={{ '--rot': '-3deg' } as React.CSSProperties} className="absolute top-64 left-28 z-10">
-              <CardChip color="linear-gradient(135deg,#16213E,#E94560CC)" label="Netflix Subscription" bank="Virtual Card" pan="6280 •••• •••• 4567" delay="1.6s" />
+            <div style={{ '--rot': '-2deg' } as React.CSSProperties} className="absolute top-56 left-24 z-10">
+              <CardChip color="linear-gradient(135deg,#0d9488,#115e59)" label="Alex Morgan" bank="Access Virtual" pan="6280 •••• •••• 4567" delay="1.6s" />
             </div>
-            {/* Connection lines SVG */}
-            <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
-              <line x1="200" y1="80" x2="320" y2="180" stroke="#E94560" strokeWidth="2" strokeDasharray="8 6" />
-              <line x1="320" y1="180" x2="230" y2="280" stroke="#E94560" strokeWidth="2" strokeDasharray="8 6" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Scroll cue */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40">
-          <span className="text-white text-xs">Scroll to explore</span>
-          <div className="w-5 h-8 rounded-full border border-white/40 flex items-start justify-center pt-1.5">
-            <div className="w-1 h-2 bg-white rounded-full" style={{ animation: 'slideUp 1.5s ease infinite' }} />
           </div>
         </div>
       </section>
 
-      {/* ── STATS ────────────────────────────────────────── */}
-      {/* <section id="stats" className="bg-[#16213E] py-20 border-y border-white/10">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <Stat to={18} suffix="+" label="Supported banks" />
-          <Stat to={99} suffix="%" label="Routing accuracy" />
-          <Stat to={3} suffix="s" label="Avg routing time" />
-          <Stat to={40} suffix="%" label="Fewer declined txns" />
-        </div>
-      </section> */}
-
       {/* ── FEATURES ─────────────────────────────────────── */}
-      <section id="features" className="bg-[#4A90e2] py-24">
+      <section id="features" className="bg-[#4A90e2] py-20 sm:py-24 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <div
             ref={featuresRef}
-            className="text-center mb-16"
+            className="text-center mb-14"
             style={{
               opacity: featuresVisible ? 1 : 0,
-              transform: featuresVisible ? 'translateY(0)' : 'translateY(30px)',
-              transition: 'all 0.7s ease',
+              transform: featuresVisible ? 'translateY(0)' : 'translateY(24px)',
+              transition: 'all 0.6s ease',
             }}
           >
-            <p className="text-[#E94560] font-semibold text-sm uppercase tracking-widest mb-3">Why Orchestra</p>
-            <h2 className="text-4xl font-black text-white">The financial OS for modern Nigerians</h2>
-            <p className="text-white/50 mt-4 max-w-xl mx-auto">Stop juggling multiple banking apps. Orchestra unifies everything and makes your money work smarter.</p>
+            <p className="text-white/80 font-bold text-xs uppercase tracking-widest mb-2 font-mono">Platform Capabilities</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">The Financial OS for Nigerian Commerce</h2>
+            <p className="text-white/70 mt-3 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
+              Eliminate card declines, fragmented balances, and manual reconciliations with algorithmic payment routing.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <FeatureCard delay="0s" icon="🎼" title="Programmable Routing" desc="Set rules based on cashback, balance thresholds, merchant categories, or time of day. Orchestra picks the best card — automatically." />
-            <FeatureCard delay="0.1s" icon="⚡" title="Auto-Split Payments" desc="When one card doesn't have enough, Orchestra splits the charge intelligently across multiple cards in milliseconds." />
-            <FeatureCard delay="0.2s" icon="🛡️" title="Anomaly Detection" desc="Our AI flags unusual transactions in real-time — duplicate charges, sudden merchant changes, or out-of-pattern spending." />
-            <FeatureCard delay="0.3s" icon="💳" title="Virtual Cards" desc="Create merchant-locked virtual cards for subscriptions. Pause, resume, or destroy them with one tap — your data, your rules." />
-            <FeatureCard delay="0.4s" icon="🤖" title="AI Insights" desc="Get a financial health score, personalised recommendations, and a what-if savings calculator powered by your real spending data." />
-            <FeatureCard delay="0.5s" icon="🏢" title="Business Workflows" desc="Issue departmental cards with spend limits, enforce approval workflows, and get consolidated reports across your entire team." />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <FeatureCard delay="0s" icon={SlidersHorizontal} title="Programmable Routing" desc="Configure sequential auto-split, default primary priority, or balanced proportion rules evaluated at swipe time." />
+            <FeatureCard delay="0.1s" icon={ArrowRightLeft} title="Sub-Second Auto-Split" desc="When a single card has insufficient balance, Orchestra splits the transaction seamlessly across multiple linked wallets." />
+            <FeatureCard delay="0.2s" icon={ShieldCheck} title="Zero-Trust Anomaly Engine" desc="Interswitch-powered fraud heuristics flag out-of-pattern spending, duplicate attempts, and sudden velocity spikes in real time." />
+            <FeatureCard delay="0.3s" icon={CreditCard} title="Merchant-Locked Virtual Cards" desc="Issue instant virtual cards for SaaS subscriptions and vendor bills with configurable spending caps and auto-freeze rules." />
+            <FeatureCard delay="0.4s" icon={Sparkles} title="AI Financial Intelligence" desc="Access conversational spend auditing, automated anomaly investigations, and predictive savings scenario modeling." />
+            <FeatureCard delay="0.5s" icon={Layers} title="Corporate Treasury &amp; Teams" desc="Manage business departmental cards, configure multi-tier approval limits, and consolidate company disbursements in one ledger." />
           </div>
         </div>
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────── */}
-      <section id="how" className="bg-[#16213E] py-24">
+      <section id="how" className="bg-slate-900 py-20 sm:py-24 border-y border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-[#E94560] font-semibold text-sm uppercase tracking-widest mb-3">Simple setup</p>
-            <h2 className="text-4xl font-black text-white">Up and running in 3 steps</h2>
+          <div className="text-center mb-14">
+            <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">Streamlined Onboarding</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Up and running in three steps</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-10 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-[#E94560]/50 via-[#E94560] to-[#E94560]/50" />
-            <StepCard n="01" title="Add your cards" desc="Link all your ATM cards from any Nigerian bank. We support 18+ banks and counting." delay={0} />
-            <StepCard n="02" title="Set your rules" desc="Choose auto-split, primary card, or balance-optimised routing. Or let our AI decide." delay={0.15} />
-            <StepCard n="03" title="Pay smarter" desc="Tap to pay and Orchestra routes instantly — maximising cashback, avoiding declines." delay={0.3} />
+            <StepCard n="01" title="Link your cards" desc="Connect debit and prepaid cards from major Nigerian banks via secure tokenization." delay={0} />
+            <StepCard n="02" title="Define routing policy" desc="Select sequential auto-split, default primary, or let our AI optimizer balance cashflow." delay={0.12} />
+            <StepCard n="03" title="Swipe &amp; transact" desc="Use your single Orchestra card anywhere — funds route instantly with zero friction." delay={0.24} />
           </div>
         </div>
       </section>
 
       {/* ── CTA ──────────────────────────────────────────── */}
-      <section className="hero-gradient py-28 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,1) 1px, transparent 1px)',
-          backgroundSize: '32px 32px'
-        }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#E94560]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-2xl mx-auto px-6 text-center relative">
-          <h2 className="text-3xl sm:text-5xl font-black text-white mb-4 leading-tight">
-            Ready to <span className="text-gradient">orchestrate</span> your money?
+      <section id="security" className="hero-gradient py-20 sm:py-24 relative overflow-hidden">
+        <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight">
+            Ready to orchestrate your money?
           </h2>
-          <p className="text-white/60 text-base sm:text-lg mb-8 sm:mb-10">Join thousands of Nigerians making every naira work harder.</p>
-          <Link
-            href="/register"
-            className="inline-block bg-[#E94560] text-white font-bold text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-5 rounded-2xl hover:bg-[#d63850] transition-all hover:shadow-2xl hover:shadow-[#E94560]/40 hover:-translate-y-1"
-          >
-            Create your free account →
-          </Link>
-          <p className="text-white/30 text-sm mt-5">Already have an account? <Link href="/login" className="text-white/60 hover:text-white underline">Sign in</Link></p>
+          <p className="text-white/80 text-xs sm:text-sm mb-8 max-w-md mx-auto leading-relaxed">
+            Experience programmable banking built specifically for modern individuals and growing Nigerian businesses.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/register"
+              className="w-full sm:w-auto bg-white text-slate-900 font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-slate-100 transition shadow-lg"
+            >
+              Create free account
+            </Link>
+            <Link
+              href="/login"
+              className="w-full sm:w-auto bg-white/15 border border-white/30 text-white font-semibold text-sm px-8 py-3.5 rounded-xl hover:bg-white/25 transition backdrop-blur-md"
+            >
+              Sign in to dashboard
+            </Link>
+          </div>
+          <p className="text-white/50 text-xs mt-5">
+            Protected by bank-grade 256-bit encryption · Interswitch Hackathon 2025
+          </p>
         </div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="bg-[#4A90e2] border-t border-white/10 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="bg-slate-950 border-t border-slate-800/80 py-8 text-white">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#E94560] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center">
               <span className="text-white font-black text-xs">O</span>
             </div>
-            <span className="text-white font-bold">Orchestra</span>
+            <span className="text-white font-bold text-sm">Orchestra</span>
           </div>
-          <p className="text-white/30 text-xs text-center">
-            Built for the Interswitch × Enyata ATM Card Orchestration Hackathon 2025
+          <p className="text-slate-400 text-xs text-center">
+            Built for Interswitch × Enyata ATM Card Orchestration Hackathon 2025
           </p>
-          <div className="flex items-center gap-6 text-white/40 text-xs">
-            <Link href="/login" className="hover:text-white transition">Login</Link>
-            <Link href="/register" className="hover:text-white transition">Register</Link>
+          <div className="flex items-center gap-5 text-slate-400 text-xs font-medium">
+            <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
+            <Link href="/register" className="hover:text-white transition-colors">Register</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
           </div>
         </div>
       </footer>
