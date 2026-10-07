@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { getBusinessCards, createBusinessCard, updateBusinessCardStatus, approveExpense } from '@/api/business';
 import { queryClient } from '@/lib/queryClient';
 import { BusinessCard } from '@/api/types';
+import toast from 'react-hot-toast';
 
 export const useBusinessCards = () => {
   return useQuery({
@@ -38,4 +39,28 @@ export const useApproveExpense = () => {
       queryClient.invalidateQueries({ queryKey: ['business-approvals'] });
     },
   });
+};
+
+export const useApprovalActions = () => {
+  const { mutate } = useApproveExpense();
+
+  const approve = (requestId: string, note?: string) =>
+    mutate(
+      { requestId, action: 'approve', note },
+      {
+        onSuccess: () => toast.success('Expense request approved and settled'),
+        onError: () => toast.error('Failed to approve request'),
+      }
+    );
+
+  const reject = (requestId: string, note?: string) =>
+    mutate(
+      { requestId, action: 'reject', note },
+      {
+        onSuccess: () => toast.success('Expense request rejected'),
+        onError: () => toast.error('Failed to reject request'),
+      }
+    );
+
+  return { approve, reject };
 };

@@ -10,6 +10,8 @@ interface VirtualCard {
   paused?: boolean
   autoRenew?: boolean
   color?: string
+  pan?: string
+  expiryDate?: string
 }
 
 interface PhysicalCardOption {

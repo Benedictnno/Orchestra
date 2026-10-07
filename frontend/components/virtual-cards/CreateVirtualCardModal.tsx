@@ -10,6 +10,17 @@ interface CreateVirtualCardModalProps {
   onCreated: () => void
 }
 
+export const VIRTUAL_CARD_COLORS = [
+  { name: 'Midnight', value: '#1e1b4b' },
+  { name: 'Slate', value: '#334155' },
+  { name: 'Ocean', value: '#1d4ed8' },
+  { name: 'Emerald', value: '#047857' },
+  { name: 'Violet', value: '#6d28d9' },
+  { name: 'Rose', value: '#be123c' },
+  { name: 'Amber', value: '#b45309' },
+  { name: 'Teal', value: '#0f766e' },
+]
+
 interface PhysicalCard {
   _id: string
   label?: string
@@ -25,6 +36,7 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
     spendLimit: '',
     parentCardId: '',
     autoRenew: true,
+    color: VIRTUAL_CARD_COLORS[0].value,
   })
 
   useEffect(() => {
@@ -65,6 +77,7 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
           spendLimit: parseFloat(form.spendLimit),
           parentCardId: form.parentCardId,
           autoRenew: form.autoRenew,
+          color: form.color,
         }),
       })
       if (!res.ok) {
@@ -74,7 +87,7 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
       toast.success('Virtual card created!')
       onCreated()
       onClose()
-      setForm({ label: '', merchant: '', spendLimit: '', parentCardId: '', autoRenew: true })
+      setForm({ label: '', merchant: '', spendLimit: '', parentCardId: '', autoRenew: true, color: VIRTUAL_CARD_COLORS[0].value })
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Failed to create virtual card')
     } finally {
@@ -161,6 +174,34 @@ export default function CreateVirtualCardModal({ open, onClose, onCreated }: Cre
                 min="1"
                 className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-xs font-mono tabular-nums text-slate-900 placeholder:text-slate-400 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950"
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-700 mb-1.5 block">Card Color</label>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-14 h-9 rounded-md border border-slate-200 shadow-xs shrink-0"
+                style={{ background: `linear-gradient(135deg, ${form.color} 0%, #0f172a 100%)` }}
+              />
+              <div className="flex flex-wrap gap-1.5">
+                {VIRTUAL_CARD_COLORS.map(c => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => update('color', c.value)}
+                    title={c.name}
+                    aria-label={`${c.name} card color`}
+                    aria-pressed={form.color === c.value}
+                    className={`w-6 h-6 rounded-full border transition ${
+                      form.color === c.value
+                        ? 'ring-2 ring-offset-2 ring-slate-900 border-transparent'
+                        : 'border-slate-200 hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: c.value }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { toNaira } from '@/utils/format'
+import { toNaira, formatExpiry } from '@/utils/format'
 import { Eye, EyeOff, Settings, Pause, Play, Trash2, ArrowLeft, Plus, Lock } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import toast from 'react-hot-toast'
@@ -21,8 +21,10 @@ interface ModernVirtualCardProps {
     spendLimit: number
     paused?: boolean
     color?: string
+    pan?: string
     last4?: string
     expiry?: string
+    expiryDate?: string
     cvv?: string
   }
   isSelected?: boolean
@@ -43,7 +45,13 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
   const [loading, setLoading] = useState(false)
   
   const isPaused = card.paused
-  const spendPercentage = Math.min(100, Math.round(((card.amountSpent || 0) / (card.spendLimit || 1)) * 100))
+  // Virtual PANs are stored as "VIRT<digits>"; render them as a 16-digit card number
+  const panDigits = (card.pan || '').replace(/\D/g, '')
+  const fullPan = panDigits.length >= 4
+    ? '5200' + panDigits.slice(-12).padStart(12, '0')
+    : `5200${'0'.repeat(8)}${card.last4 || '1234'}`
+  const panGroups = [fullPan.slice(0, 4), fullPan.slice(4, 8), fullPan.slice(8, 12), fullPan.slice(12, 16)]
+  const spendPercentage =Math.min(100, Math.round(((card.amountSpent || 0) / (card.spendLimit || 1)) * 100))
 
   // Set default source card if not set
   useEffect(() => {
@@ -96,12 +104,21 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full h-full preserve-3d"
+        className="relative w-full h-full"
+        style={{ transformStyle: 'preserve-3d' }}
       >
         {/* FRONT SIDE */}
-        <div 
-          className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-md border border-slate-700/60 flex flex-col justify-between p-5 sm:p-6 text-white"
-          style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%)' }}
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden shadow-md border border-slate-700/60 flex flex-col justify-between p-5 sm:p-6 text-white"
+          style={{
+            background: card.color?.startsWith('#')
+              ? `linear-gradient(135deg, ${card.color} 0%, #0f172a 100%)`
+              : 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            zIndex: isFlipped ? 0 : 1,
+            pointerEvents: isFlipped ? 'none' : 'auto',
+          }}
         >
           {/* Subtle sheen overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-white/[0.07] pointer-events-none" />
@@ -138,8 +155,10 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
           <div className="z-10 my-auto">
             <div className="flex items-baseline gap-2">
               <p className="text-white font-mono tracking-[0.18em] text-sm sm:text-base font-medium select-all">
-                {reveal ? '•••• •••• •••• ' : '•••• •••• •••• '}
-                <span className="text-white font-semibold">{card.last4 || '1234'}</span>
+                {reveal
+                  ? `${panGroups[0]} ${panGroups[1]} ${panGroups[2]} `
+                  : '•••• •••• •••• '}
+                <span className="text-white font-semibold">{panGroups[3]}</span>
               </p>
             </div>
 
@@ -163,7 +182,7 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
             <div className="flex gap-6">
               <div className="space-y-0.5">
                 <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">Expires</p>
-                <p className="text-xs font-mono font-medium text-white">{card.expiry || '12/28'}</p>
+                <p className="text-xs font-mono font-medium text-white">{formatExpiry(card.expiryDate) || card.expiry || '12/28'}</p>
               </div>
               <div className="space-y-0.5">
                 <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">CVV</p>
@@ -192,7 +211,14 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
 
         {/* BACK SIDE */}
         <div 
-          className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-md rotate-y-180 bg-slate-900 border border-slate-700/80 p-5 sm:p-6 flex flex-col justify-between text-white"
+          className="absolute inset-0 rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-700/80 p-5 sm:p-6 flex flex-col justify-between text-white"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            zIndex: isFlipped ? 1 : 0,
+            pointerEvents: isFlipped ? 'auto' : 'none',
+          }}
         >
           <div className="flex justify-between items-center z-10">
             <h4 className="font-semibold text-xs text-slate-200">Virtual Card Controls</h4>
@@ -333,9 +359,6 @@ export default function ModernVirtualCard({ card, onPause, onResume, onDelete, o
       </motion.div>
       <style jsx global>{`
         .perspective-1000 { perspective: 1000px; }
-        .preserve-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
-        .rotate-y-180 { transform: rotateY(180deg); }
       `}</style>
     </div>
   )

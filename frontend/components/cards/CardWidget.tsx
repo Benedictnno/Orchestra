@@ -53,7 +53,7 @@ export default function CardWidget({
   showRevealOnly = false
 }: CardWidgetProps) {
   const [isFlipped, setIsFlipped] = useState(false)
-  const [reveal, setReveal] = useState(true)
+  const [reveal, setReveal] = useState(false)
   
   const isBlocked = card.cardStatus === '2'
   
@@ -181,7 +181,7 @@ export default function CardWidget({
           <div className="z-10 my-auto py-1">
             {card.isUltimate ? (
               /* Ultimate Card: Bigger and spaced out like a real debit card */
-              <div className="flex items-center justify-between font-mono font-bold tracking-[0.14em] xs:tracking-[0.20em] sm:tracking-[0.3em] text-sm xs:text-base sm:text-2xl md:text-[23px] drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] select-all px-0.5">
+              <div className="flex items-center justify-between font-mono font-bold text-white tracking-[0.14em] xs:tracking-[0.20em] sm:tracking-[0.3em] text-sm xs:text-base sm:text-2xl md:text-[23px] drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] select-all px-0.5">
                 {formatCardGroups(card.pan, reveal, true, card.cardProgram, card.bank).map((group, idx) => (
                   <span key={idx} className="tabular-nums transition-all duration-200">
                     {group}
@@ -257,10 +257,17 @@ export default function CardWidget({
               <div>
                 <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider mb-0.5">Security Code (CVV)</p>
                 <p className="text-white font-mono font-semibold text-sm select-all">
-                  {card.cvv || (card.isUltimate ? '888' : '123')}
+                  {reveal ? (card.cvv || (card.isUltimate ? '888' : '123')) : '•••'}
                 </p>
               </div>
-              <div className="w-8 h-5 rounded bg-slate-700/60 border border-slate-600/40" />
+              <button
+                onClick={toggleReveal}
+                className="p-1.5 bg-slate-700/60 hover:bg-slate-700 rounded-md border border-slate-600/40 text-slate-300 hover:text-white transition-colors"
+                aria-label={reveal ? "Hide card details" : "Reveal card details"}
+                title={reveal ? "Hide CVV" : "Reveal CVV"}
+              >
+                {reveal ? <EyeOff size={13} /> : <Eye size={13} />}
+              </button>
             </div>
 
             <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-mono">
