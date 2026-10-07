@@ -5,6 +5,7 @@ const virtualCardSchema = new mongoose.Schema({
   parentCardId: { type: mongoose.Schema.Types.ObjectId, ref: 'Card', required: true },
   label:        { type: String, required: true },
   merchant:     String,
+  color:        { type: String, default: '#1e1b4b' },
   spendLimit:   { type: Number, required: true },   // monthly limit in kobo
   amountSpent:  { type: Number, default: 0 },
   autoRenew:    { type: Boolean, default: true },

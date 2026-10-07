@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import {
   Send,
   User,
@@ -44,6 +44,9 @@ const SUGGESTED_PROMPTS = [
 
 function ChatContent() {
   const router = useRouter()
+  const pathname = usePathname()
+  // Chat is mounted at both /chat and /business/chat — keep navigation within the current workspace
+  const chatBase = pathname.startsWith('/business') ? '/business/chat' : '/chat'
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session')
   const newChatSignal = searchParams.get('new')
@@ -66,9 +69,9 @@ function ChatContent() {
       setSessionTitle('New Session')
       setMessages([])
       setFetchingHistory(false)
-      router.replace('/chat', { scroll: false })
+      router.replace(chatBase, { scroll: false })
     }
-  }, [newChatSignal, router])
+  }, [newChatSignal, router, chatBase])
 
   // Sync activeSessionId from URL ?session= param
   useEffect(() => {
@@ -131,7 +134,7 @@ function ChatContent() {
     setActiveSessionId(null)
     setSessionTitle('New Session')
     setMessages([])
-    router.push('/chat')
+    router.push(chatBase)
   }
 
   // ── Send message ────────────────────────────────────────────────────────
@@ -166,7 +169,7 @@ function ChatContent() {
       if (data.sessionId && data.sessionId !== activeSessionId) {
         setActiveSessionId(data.sessionId)
         if (data.title) setSessionTitle(data.title)
-        router.replace(`/chat?session=${data.sessionId}`, { scroll: false })
+        router.replace(`${chatBase}?session=${data.sessionId}`, { scroll: false })
         queryClient.invalidateQueries({ queryKey: ['chat-sessions'] })
       }
 

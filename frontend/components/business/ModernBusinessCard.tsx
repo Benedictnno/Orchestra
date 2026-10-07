@@ -10,7 +10,9 @@ import {
   Unlock, 
   Layers, 
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { toNaira } from '@/utils/format'
 import { BusinessCard } from '@/api-client/types'
@@ -23,6 +25,7 @@ interface ModernBusinessCardProps {
 
 export default function ModernBusinessCard({ card }: ModernBusinessCardProps) {
   const [copied, setCopied] = useState(false)
+  const [reveal, setReveal] = useState(false)
   const { mutate: updateStatusMutation, isPending: updating } = useUpdateBusinessCardStatus()
 
   const limit = card.spendLimit || card.budget || 0
@@ -56,10 +59,12 @@ export default function ModernBusinessCard({ card }: ModernBusinessCardProps) {
     )
   }
 
-  // Formatting masked PAN
-  const displayPan = card.pan 
-    ? (card.pan.length > 8 ? `${card.pan.slice(0, 4)} •••• ${card.pan.slice(-4)}` : card.pan)
-    : 'BIZ•••• 8921'
+  // Masked by default; reveal shows the full PAN in 4-digit groups
+  const displayPan = card.pan
+    ? reveal
+      ? card.pan.replace(/(.{4})(?=.)/g, '$1 ')
+      : `•••• •••• •••• ${card.pan.slice(-4)}`
+    : '•••• •••• •••• 8921'
 
   return (
     <div className={`bg-white rounded-xl border transition-all duration-200 overflow-hidden shadow-sm hover:border-slate-300 ${
@@ -103,6 +108,16 @@ export default function ModernBusinessCard({ card }: ModernBusinessCardProps) {
         </div>
 
         <div className="flex items-center justify-between pt-2.5 border-t border-slate-800 relative z-10">
+          <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setReveal(!reveal)}
+            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            aria-label={reveal ? 'Hide card number' : 'Reveal card number'}
+            title={reveal ? 'Hide PAN' : 'Reveal PAN'}
+          >
+            {reveal ? <EyeOff size={12} /> : <Eye size={12} />}
+          </button>
           <button
             type="button"
             onClick={handleCopyPan}
@@ -116,7 +131,8 @@ export default function ModernBusinessCard({ card }: ModernBusinessCardProps) {
               <Copy size={12} className="opacity-60 hover:opacity-100" />
             )}
           </button>
-          
+          </div>
+
           <div className="text-right">
             <p className="text-[10px] text-slate-400 uppercase font-medium">Available</p>
             <p className="text-xs font-semibold font-mono tabular-nums text-white">{toNaira(remaining)}</p>

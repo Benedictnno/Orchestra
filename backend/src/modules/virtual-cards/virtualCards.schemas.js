@@ -4,6 +4,7 @@ export const createVirtualCardSchema = z.object({
   parentCardId: z.string().min(1, 'parentCardId is required'),
   label:        z.string().min(1, 'label is required'),
   merchant:     z.string().optional(),
+  color:        z.string().regex(/^#[0-9a-fA-F]{6}$/, 'color must be a hex value like #1e1b4b').optional(),
   spendLimit:   z.number().positive('spendLimit must be a positive number in Naira'),
   autoRenew:    z.boolean().default(true),
 })
