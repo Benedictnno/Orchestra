@@ -1,11 +1,10 @@
 'use client'
 import VirtualCardItem from './VirtualCardItem'
 import EmptyState from '@/components/shared/EmptyState'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CreateVirtualCardModal from './CreateVirtualCardModal'
 import toast from 'react-hot-toast'
 import { fetchWithAuth } from '@/lib/fetch-utils'
-import { useEffect } from 'react'
 
 interface VirtualCard {
   _id: string
@@ -15,6 +14,9 @@ interface VirtualCard {
   spendLimit: number
   paused?: boolean
   autoRenew?: boolean
+  color?: string
+  pan?: string
+  expiryDate?: string
 }
 
 interface PhysicalCardOption {
@@ -34,6 +36,9 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
   const [overrideCards, setOverrideCards] = useState<VirtualCard[] | null>(null)
   const displayCards = overrideCards ?? safeCards
   const [physicalCards, setPhysicalCards] = useState<PhysicalCardOption[]>([])
+
+  // Drop local optimistic edits whenever the parent refetches, so newly created cards show up
+  useEffect(() => { setOverrideCards(null) }, [cards])
 
   useEffect(() => {
     fetchWithAuth('/api/cards')
@@ -66,8 +71,32 @@ export default function VirtualCardList({ cards, onRefresh }: VirtualCardListPro
     } else toast.error('Failed to resume card')
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Delete this virtual card?')) return
+  function handleDelete(id: string) {
+    toast(t => (
+      <div className="flex flex-col gap-2.5">
+        <div>
+          <p className="text-xs font-semibold text-slate-900">Delete this virtual card?</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">This action cannot be undone.</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => { toast.dismiss(t.id); deleteCard(id) }}
+            className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-rose-600 hover:bg-rose-500 transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ), { id: `delete-${id}`, duration: Infinity })
+  }
+
+  async function deleteCard(id: string) {
     const res = await fetchWithAuth(`/api/virtual-cards/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

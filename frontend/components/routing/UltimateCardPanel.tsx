@@ -1,7 +1,8 @@
 'use client'
-import { toNaira } from '@/utils/format'
+import { useState } from 'react'
+import { toNaira, formatCardGroups } from '@/utils/format'
 import { motion } from 'framer-motion'
-import { ShieldCheck, Zap, Layers, Activity } from 'lucide-react'
+import { ShieldCheck, Zap, Layers, Activity, Eye, EyeOff } from 'lucide-react'
 
 interface UltimateCardPanelProps {
   totalLimit: number
@@ -14,6 +15,7 @@ export default function UltimateCardPanel({
   totalAvailable,
   numCards
 }: UltimateCardPanelProps) {
+  const [reveal, setReveal] = useState(false)
   const percentSpent = totalLimit > 0 ? Math.min(100, Math.max(0, ((totalLimit - totalAvailable) / totalLimit) * 100)) : 0
 
   return (
@@ -79,11 +81,21 @@ export default function UltimateCardPanel({
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Master Debit PAN</span>
                 <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Auto-Routing Active</span>
               </div>
-              <div className="flex items-center gap-2.5 sm:gap-4 font-mono font-bold text-white text-base sm:text-xl tracking-[0.24em] drop-shadow-md select-all mt-0.5">
-                <span>4000</span>
-                <span>1234</span>
-                <span>5678</span>
-                <span>9010</span>
+              <div className="flex items-center gap-2.5 sm:gap-4 mt-0.5">
+                <div className="flex items-center gap-2.5 sm:gap-4 font-mono font-bold text-white text-base sm:text-xl tracking-[0.24em] drop-shadow-md select-all">
+                  {formatCardGroups(undefined, reveal, true).map((group, idx) => (
+                    <span key={idx} className="tabular-nums">{group}</span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReveal(!reveal)}
+                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-slate-300 hover:text-white"
+                  aria-label={reveal ? 'Hide card details' : 'Reveal card details'}
+                  title={reveal ? 'Hide PAN' : 'Reveal PAN'}
+                >
+                  {reveal ? <EyeOff size={13} /> : <Eye size={13} />}
+                </button>
               </div>
             </div>
           </div>
@@ -96,7 +108,7 @@ export default function UltimateCardPanel({
             <div className="h-6 w-px bg-slate-800" />
             <div>
               <span className="text-[9px] uppercase tracking-wider text-slate-500 block">CVV</span>
-              <span className="text-white font-medium">888</span>
+              <span className="text-white font-medium">{reveal ? '888' : '•••'}</span>
             </div>
           </div>
         </div>

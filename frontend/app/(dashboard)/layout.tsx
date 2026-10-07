@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [authChecked, setAuthChecked] = useState(false)
 
   // Full Canvas routes — no padding, no scroll wrapper; the page owns its own layout
-  const isFullCanvas = pathname === '/chat'
+  const isFullCanvas = pathname === '/chat' || pathname === '/business/chat'
 
   useEffect(() => {
     const check = () => {
@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Mobile Header (md:hidden) */}
         <header className="md:hidden h-14 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 shrink-0 z-30">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href={pathname.startsWith('/business') ? '/business' : '/dashboard'} className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#4A90e2] flex items-center justify-center text-white font-black text-xs shadow-xs">
               O
             </div>

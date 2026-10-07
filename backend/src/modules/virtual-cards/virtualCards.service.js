@@ -14,7 +14,7 @@ export async function getVirtualCards(userId) {
 /**
  * Create a new virtual card attached to a parent bank card.
  */
-export async function createVirtualCard(userId, { label, parentCardId, spendLimit, merchant, autoRenew }) {
+export async function createVirtualCard(userId, { label, parentCardId, spendLimit, merchant, autoRenew, color }) {
   // Ensure parent card exists and is owned by user
   await cardsService.getCardById(userId, parentCardId)
 
@@ -23,6 +23,7 @@ export async function createVirtualCard(userId, { label, parentCardId, spendLimi
     parentCardId,
     label,
     merchant,
+    color,
     spendLimit: nairaToKobo(spendLimit),
     autoRenew,
     pan: `VIRT${Date.now()}`,
