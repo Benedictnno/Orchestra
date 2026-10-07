@@ -56,7 +56,8 @@ export async function getUserCards(userId) {
     const cardData = typeof card.toObject === 'function' ? card.toObject() : card
     return {
       ...cardData,
-      pan:              maskPan(card.pan),
+      pan:              card.pan,
+      maskedPan:        maskPan(card.pan),
       availableBalance: bal.availableBalance ?? 0,
       ledgerBalance:    bal.ledgerBalance ?? 0,
       currency:         bal.currency ?? 'NGN',
@@ -87,7 +88,8 @@ export async function getCardById(userId, cardId) {
   if (!card) throw new NotFoundError('Card not found')
   return {
     ...card,
-    pan: maskPan(card.pan),
+    pan: card.pan,
+    maskedPan: maskPan(card.pan),
   }
 }
 
@@ -158,8 +160,8 @@ export async function addCard(userId, cardData) {
   }
 
   // Ensure balance record exists for demo/mock mode
-  const existingBal = await CardBalance.findOne({ pan: card.pan })
-  if (!existingBal) {
+  const existingBalance = await CardBalance.findOne({ pan: card.pan })
+  if (!existingBalance) {
     await CardBalance.create({
       cardId: card._id,
       pan: card.pan,
@@ -171,7 +173,7 @@ export async function addCard(userId, cardData) {
   }
 
   const cardObj = card.toObject()
-  return { ...cardObj, pan: maskPan(cardObj.pan) }
+  return { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) }
 }
 
 /**
@@ -189,7 +191,7 @@ export async function updateCard(userId, cardId, updateData) {
       { new: true }
     )
     const updatedObj = updated.toObject()
-    return { card: { ...updatedObj, pan: maskPan(updatedObj.pan) } }
+    return { card: { ...updatedObj, pan: updatedObj.pan, maskedPan: maskPan(updatedObj.pan) } }
   }
 
   const result = action === 'block'
@@ -202,7 +204,7 @@ export async function updateCard(userId, cardId, updateData) {
   }
 
   const cardObj = card.toObject()
-  return { card: { ...cardObj, pan: maskPan(cardObj.pan) }, ...result }
+  return { card: { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) }, ...result }
 }
 
 /**
@@ -253,7 +255,7 @@ export async function getCardBalance(userId, cardId) {
 /**
  * Verify card balance and deduct funds atomically in cache/mock.
  */
-export async function verifyAndDeductBalance(userId, cardId, amountKobo) {
+export async function verifyAndDeductBalance(userId, cardId, amountKobo, session = null) {
   const card = await Card.findOne({ _id: cardId, userId })
   if (!card) throw new NotFoundError('Card not found')
 
@@ -262,13 +264,16 @@ export async function verifyAndDeductBalance(userId, cardId, amountKobo) {
     throw new BadRequestError('Insufficient funds on card')
   }
 
+  const options = { sort: { fetchedAt: -1 }, upsert: true }
+  if (session) options.session = session
+
   await CardBalance.findOneAndUpdate(
     { pan: card.pan },
     {
       $inc: { availableBalance: -amountKobo, ledgerBalance: -amountKobo },
       $set: { fetchedAt: new Date() }
     },
-    { sort: { fetchedAt: -1 }, upsert: true }
+    options
   )
 
   return card
@@ -276,14 +281,18 @@ export async function verifyAndDeductBalance(userId, cardId, amountKobo) {
 
 /**
  * Deduct card balance directly by PAN (used during split / batch allocations).
+ * A negative amountKobo credits the balance, enabling compensating rollbacks.
  */
-export async function deductBalanceByPan(pan, amountKobo) {
+export async function deductBalanceByPan(pan, amountKobo, session = null) {
+  const options = { sort: { fetchedAt: -1 }, upsert: true }
+  if (session) options.session = session
+
   await CardBalance.findOneAndUpdate(
     { pan },
     {
       $inc: { availableBalance: -amountKobo, ledgerBalance: -amountKobo },
       $set: { fetchedAt: new Date() }
     },
-    { sort: { fetchedAt: -1 }, upsert: true }
+    options
   )
 }

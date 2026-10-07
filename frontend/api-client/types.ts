@@ -95,6 +95,14 @@ export interface Transaction {
   type?: 'debit' | 'top_up' | 'transfer' | 'bill_payment';
 }
 
+export interface TransferFundingSource {
+  cardId?: string;
+  label?: string;
+  bank?: string;
+  pan?: string;
+  amount: number;
+}
+
 export interface Transfer {
   _id: string;
   userId: string;
@@ -110,6 +118,33 @@ export interface Transfer {
   recipientBankName?: string;
   status: 'pending' | 'success' | 'failed';
   createdAt: string;
+  isPooled?: boolean;
+  poolId?: string;
+  fundingSources?: TransferFundingSource[];
+}
+
+/** A single source's contribution inside a proposed funding-pool allocation. */
+export interface TransferAllocation {
+  accountId: string;
+  label: string;
+  bank?: string | null;
+  maskedPan?: string | null;
+  color?: string | null;
+  amountRequested: number;
+  amountAllocated: number;
+  balanceBefore: number;
+  balanceAfter: number;
+}
+
+/** Read-only allocation preview returned by POST /api/transfers/preview. */
+export interface TransferPreview {
+  status: 'OK' | 'INSUFFICIENT_FUNDS' | 'INVALID_AMOUNT';
+  requestedAmount: number;
+  totalAvailable: number;
+  totalAllocated: number;
+  shortfall: number;
+  currency: string;
+  allocations: TransferAllocation[];
 }
 
 export interface BillPayment {

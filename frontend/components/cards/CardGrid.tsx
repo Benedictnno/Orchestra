@@ -63,7 +63,7 @@ function SortableCard({ id, card, balance, isSelected, onClick, onBlock, onUnblo
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="flex-shrink-0 snap-center">
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="w-[280px] sm:w-[320px] shrink-0 snap-center">
       <CardWidget
         card={card}
         balance={balance}
@@ -93,7 +93,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
       cardStatus: '1',
       isUltimate: true,
       pan: '4000123456789010',
-      expiryDate: '1299',
+      expiryDate: '9912',
       availableBalance: safeCards.reduce((acc, c) => acc + (c.availableBalance || 0), 0)
     }
   }, [safeCards])
@@ -190,13 +190,13 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
   return (
     <div className="space-y-6">
       {/* Master Orchestration Card Hero */}
-      <section className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
-        <div className="flex items-center justify-between gap-4 mb-4">
+      <section className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
             <Sparkles size={15} className="text-blue-600" />
             <h2 className="text-xs font-semibold text-slate-900">Primary Aggregation Card</h2>
           </div>
-          <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60">
+          <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60 self-start sm:self-auto">
             Auto-Routes Multi-Bank Balances
           </span>
         </div>
@@ -217,7 +217,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
 
       {/* Physical Cards Ledger Grid */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4">
           <div className="flex items-center gap-2">
             <Layers size={15} className="text-slate-500" />
             <h2 className="text-xs font-semibold text-slate-900">Linked Bank Accounts & Hardware Cards</h2>
@@ -246,7 +246,7 @@ export default function CardGrid({ cards, onRefresh }: CardGridProps) {
             {/* Add Card Action Card */}
             <button
               onClick={() => setShowAdd(true)}
-              className="flex-shrink-0 snap-center rounded-2xl border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-50 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-[260px] min-h-[165px] p-6 shadow-xs group"
+              className="flex-shrink-0 snap-center rounded-2xl border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-50 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-[220px] sm:w-[260px] min-h-[145px] sm:min-h-[165px] p-5 sm:p-6 shadow-xs group"
             >
               <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 group-hover:scale-105 transition-transform shadow-xs">
                 <Plus size={16} />

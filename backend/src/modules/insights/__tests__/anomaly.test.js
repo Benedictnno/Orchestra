@@ -23,6 +23,17 @@ const tx = (overrides = {}) => ({
 })
 
 describe('detectAnomalies', () => {
+  // Pin the clock to a normal weekday afternoon (UTC) so the "unusual hour"
+  // rule (22:00–04:00) can't make these assertions time-dependent.
+  beforeEach(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-06-15T12:00:00.000Z'))
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   test('returns null when no anomaly rules are triggered', async () => {
     transactionsService.getTransactions.mockResolvedValue({
       transactions: [

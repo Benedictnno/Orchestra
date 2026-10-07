@@ -5,6 +5,11 @@ export async function createTransfer(req, res) {
   res.status(201).json({ success: true, transfer })
 }
 
+export async function previewTransfer(req, res) {
+  const preview = await transfersService.previewTransfer(req.user._id, req.body)
+  res.json({ success: true, preview })
+}
+
 export async function getTransfers(req, res) {
   const transfers = await transfersService.getTransfers(req.user._id)
   res.json({ transfers })

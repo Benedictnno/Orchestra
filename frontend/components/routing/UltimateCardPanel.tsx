@@ -68,6 +68,39 @@ export default function UltimateCardPanel({
           </div>
         </div>
 
+        {/* Master Debit Card Number Embossed Strip */}
+        <div className="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-7 bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 rounded-md border border-amber-200/50 shadow-xs flex items-center justify-center shrink-0">
+              <div className="w-6 h-4 border border-amber-600/40 rounded-[2px]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Master Debit PAN</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Auto-Routing Active</span>
+              </div>
+              <div className="flex items-center gap-2.5 sm:gap-4 font-mono font-bold text-white text-base sm:text-xl tracking-[0.24em] drop-shadow-md select-all mt-0.5">
+                <span>4000</span>
+                <span>1234</span>
+                <span>5678</span>
+                <span>9010</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-mono text-slate-400 pl-1 sm:pl-0">
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-slate-500 block">Expires</span>
+              <span className="text-white font-medium">12/99</span>
+            </div>
+            <div className="h-6 w-px bg-slate-800" />
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-slate-500 block">CVV</span>
+              <span className="text-white font-medium">888</span>
+            </div>
+          </div>
+        </div>
+
         {/* System Capabilities Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3.5 flex items-start gap-3">

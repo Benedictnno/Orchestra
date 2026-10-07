@@ -28,8 +28,8 @@ export default function SpendingChart() {
     .slice(-14) // Show last 14 days for clean density
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+      <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <BarChart3 size={15} className="text-slate-500" />
           <h3 className="text-xs font-semibold text-slate-900">Daily Outflow Trend</h3>
@@ -44,19 +44,19 @@ export default function SpendingChart() {
           No spending activity recorded in this period
         </div>
       ) : (
-        <div className="h-48 w-full">
+        <div className="h-48 sm:h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 8, right: 0, left: -16, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 8, right: 4, left: -22, bottom: 0 }}>
               <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#f1f5f9" />
               <XAxis 
                 dataKey="day" 
-                tick={{ fontSize: 10, fill: '#64748b', fontFamily: 'monospace' }} 
+                tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} 
                 axisLine={{ stroke: '#e2e8f0' }} 
                 tickLine={false} 
               />
               <YAxis 
                 tickFormatter={v => `₦${(v / 100000).toFixed(0)}k`} 
-                tick={{ fontSize: 10, fill: '#64748b', fontFamily: 'monospace' }} 
+                tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} 
                 axisLine={false} 
                 tickLine={false} 
               />
@@ -68,8 +68,8 @@ export default function SpendingChart() {
                   borderRadius: '8px',
                   border: '1px solid #e2e8f0',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-                  fontSize: '12px',
-                  padding: '8px 12px',
+                  fontSize: '11px',
+                  padding: '6px 10px',
                   color: '#0f172a'
                 }} 
               />
@@ -77,7 +77,7 @@ export default function SpendingChart() {
                 dataKey="amount" 
                 fill="#3B82F6" 
                 radius={[3, 3, 0, 0]} 
-                maxBarSize={28}
+                maxBarSize={24}
               />
             </BarChart>
           </ResponsiveContainer>

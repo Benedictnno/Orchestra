@@ -55,7 +55,7 @@ console.log('👤  Users created:', alice.email, bob.email)
 // ── Cards ────────────────────────────────────────────────────────────────────
 const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
   {
-    pan: '5061123456789012', expiryDate: '2612', issuerNr: '000001',
+    pan: '5061984021984419', expiryDate: '2612', issuerNr: '000001',
     firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
     cardProgram: 'VERVE', customerId: 'CUST001', cardStatus: '1', seqNr: '01',
     userId: alice._id, cardType: 'debit', label: 'GTBank Debit',
@@ -63,7 +63,7 @@ const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
     accountNumber: '0123456789',
   },
   {
-    pan: '4084123456789012', expiryDate: '2709', issuerNr: '000002',
+    pan: '4084729130487150', expiryDate: '2709', issuerNr: '000002',
     firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
     cardProgram: 'VISA', customerId: 'CUST001', cardStatus: '1', seqNr: '02',
     userId: alice._id, cardType: 'prepaid', label: 'Access Prepaid',
@@ -71,20 +71,23 @@ const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
     accountNumber: '0987654321',
   },
   {
-    pan: '5399123456789012', expiryDate: '2804', issuerNr: '000003',
+    pan: '5399481239018842', expiryDate: '2804', issuerNr: '000003',
     firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
     cardProgram: 'MASTERCARD', customerId: 'CUST001', cardStatus: '1', seqNr: '03',
-    userId: alice._id, cardType: 'debit', label: 'Union Bank Platinum',
-    bank: 'Union Bank', color: '#4A90e2', isDefault: false,
+    userId: alice._id, cardType: 'debit', label: 'UBA Platinum',
+    bank: 'UBA', color: '#4A90e2', isDefault: false,
     accountNumber: '0112233445',
   },
 ])
 
 // ── Card Balances ────────────────────────────────────────────────────────────
+// Deliberately small, varied balances so the Multi-Source Funding Pool demo can
+// be exercised without touching the database: GTBank ₦1,000 / Access ₦8,000 /
+// UBA ₦1,000. Sending ₦3,000 forces a multi-source waterfall allocation.
 await CardBalance.create([
-  { pan: aliceDebit.pan,   availableBalance: 500_000_00,   ledgerBalance: 500_000_00,   cardId: aliceDebit._id },
-  { pan: alicePrepaid.pan, availableBalance: 500_000_00,   ledgerBalance: 500_000_00,   cardId: alicePrepaid._id },
-  { pan: aliceUnion.pan,   availableBalance: 1_250_000_00, ledgerBalance: 1_250_000_00, cardId: aliceUnion._id },
+  { pan: aliceDebit.pan,   availableBalance: 1_000_00, ledgerBalance: 1_000_00, cardId: aliceDebit._id },
+  { pan: alicePrepaid.pan, availableBalance: 8_000_00, ledgerBalance: 8_000_00, cardId: alicePrepaid._id },
+  { pan: aliceUnion.pan,   availableBalance: 1_000_00, ledgerBalance: 1_000_00, cardId: aliceUnion._id },
 ])
 
 // ── Routing Rule ─────────────────────────────────────────────────────────────

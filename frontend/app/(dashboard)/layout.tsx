@@ -3,11 +3,14 @@ import Sidebar from '@/components/shared/Sidebar'
 import Navbar from '@/components/shared/Navbar'
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { tokenStorage } from '@/utils/tokenStorage'
+import { useCurrentUser } from '@/hooks/useAuth'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { data: user } = useCurrentUser()
   const [authChecked, setAuthChecked] = useState(false)
 
   // Full Canvas routes — no padding, no scroll wrapper; the page owns its own layout
@@ -53,10 +56,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* <Navbar /> */}
+        {/* Mobile Header (md:hidden) */}
+        <header className="md:hidden h-14 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 shrink-0 z-30">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-[#4A90e2] flex items-center justify-center text-white font-black text-xs shadow-xs">
+              O
+            </div>
+            <span className="font-bold text-base text-slate-900 tracking-tight">Orchestra</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-xs uppercase" title={user?.name || user?.email}>
+              {user?.name?.[0] || 'U'}
+            </div>
+          </div>
+        </header>
+
         {isFullCanvas ? (
           // Full Canvas mode — zero padding, overflow hidden, page manages its own height
-          <main className="flex-1 overflow-hidden flex flex-col">
+          <main className="flex-1 overflow-hidden flex flex-col pb-16 md:pb-0">
             {children}
           </main>
         ) : (

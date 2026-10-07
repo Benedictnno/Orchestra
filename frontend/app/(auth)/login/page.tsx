@@ -18,7 +18,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
-        <div className="flex flex-col items-center mb-6">
+        <Link href="/" className="flex flex-col items-center mb-6">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
               <span className="text-white font-black text-lg">O</span>
@@ -28,7 +28,7 @@ export default function LoginPage() {
           <p className="text-white/80 text-xs font-medium tracking-wide">
             Financial OS &amp; Card Orchestration Platform
           </p>
-        </div>
+        </Link>
 
         {/* Auth Surface Card */}
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-2xl shadow-slate-950/20">

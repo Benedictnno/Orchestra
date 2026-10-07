@@ -1,6 +1,6 @@
 'use client'
-import { Search, CreditCard, RefreshCw, AlertTriangle, ArrowDownLeft, ArrowUpRight } from 'lucide-react'
-import { toNaira } from '@/utils/format'
+import { Search, CreditCard, RefreshCw, AlertTriangle } from 'lucide-react'
+import { formatTxAmount } from '@/utils/format'
 import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/utils/cn'
 import { fetchWithAuth } from '@/lib/fetch-utils'
@@ -11,6 +11,8 @@ export interface Transaction {
   category: string
   amount: number
   transactionDate: string
+  type?: string
+  narration?: string
   card?: string
   cardLabel?: string
   status?: string
@@ -19,16 +21,6 @@ export interface Transaction {
 }
 
 const CATEGORIES = ['all', 'shopping', 'subscriptions', 'transport', 'income', 'utilities', 'food', 'savings', 'entertainment', 'other']
-
-function formatTxAmount(amount: number) {
-  const abs = Math.abs(amount / 100)
-  const isCredit = amount >= 0
-  const sign = isCredit ? '+' : '-'
-  return {
-    formatted: `${sign}₦${abs.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
-    isCredit
-  }
-}
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -180,7 +172,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
         ) : (
           paginated.map((t, i) => {
             const cardName = t.cardLabel || t.card || 'Orchestra Routing'
-            const { formatted, isCredit } = formatTxAmount(t.amount)
+            const { formatted, colorClass } = formatTxAmount(t.amount, t)
             return (
               <div key={t._id || i} className="p-3.5 hover:bg-slate-50/60 transition-colors flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -207,7 +199,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className={cn('font-mono text-xs font-medium tabular-nums', isCredit ? 'text-emerald-600' : 'text-slate-900')}>
+                  <p className={cn('font-mono text-xs font-semibold tabular-nums', colorClass)}>
                     {formatted}
                   </p>
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500 mt-0.5">
@@ -259,7 +251,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
             ) : (
               paginated.map((t, i) => {
                 const cardName = t.cardLabel || t.card || 'Orchestra Multi-Bank'
-                const { formatted, isCredit } = formatTxAmount(t.amount)
+                const { formatted, colorClass } = formatTxAmount(t.amount, t)
                 const isCompleted = (t.status || 'completed').toLowerCase() === 'completed'
                 const isPending = (t.status || '').toLowerCase() === 'pending'
                 return (
@@ -312,7 +304,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                     </td>
 
                     <td className="px-5 py-3.5 text-right">
-                      <span className={cn('font-mono text-xs font-medium tabular-nums', isCredit ? 'text-emerald-600' : 'text-slate-900')}>
+                      <span className={cn('font-mono text-xs font-semibold tabular-nums', colorClass)}>
                         {formatted}
                       </span>
                     </td>

@@ -41,8 +41,8 @@ export function FlaggedMerchantRows({ merchants }: FlaggedMerchantRowProps) {
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 capitalize font-mono">
                 {m.category}
               </span>
-              <span className="text-xs font-semibold font-mono tabular-nums text-slate-900">
-                {fmtNGN(m.amount)}
+              <span className={`text-xs font-semibold font-mono tabular-nums ${m.amount < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                {m.amount < 0 ? `-₦${Math.abs(m.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}` : `+₦${Math.abs(m.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`}
               </span>
             </div>
           </div>

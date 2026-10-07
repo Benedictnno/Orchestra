@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { maskPAN, formatExpiry, toNaira } from '@/utils/format'
+import { maskPAN, formatExpiry, toNaira, formatCardGroups } from '@/utils/format'
 import { Eye, EyeOff, Settings, ShieldAlert, Trash2, ArrowLeft, Lock, Unlock, ShieldCheck } from 'lucide-react'
 
 interface Card {
@@ -53,7 +53,7 @@ export default function CardWidget({
   showRevealOnly = false
 }: CardWidgetProps) {
   const [isFlipped, setIsFlipped] = useState(false)
-  const [reveal, setReveal] = useState(false)
+  const [reveal, setReveal] = useState(true)
   
   const isBlocked = card.cardStatus === '2'
   
@@ -80,7 +80,7 @@ export default function CardWidget({
   }
 
   return (
-    <div className={`relative ${hideActions && !showRevealOnly ? 'min-w-0' : 'min-w-[280px] xs:min-w-[320px] sm:min-w-[340px] max-w-[440px]'} w-full aspect-[1.58/1] perspective-1000 ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}>
+    <div className={`relative w-full aspect-[1.58/1] perspective-1000 min-w-0 max-w-[440px] mx-auto ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}>
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -178,10 +178,26 @@ export default function CardWidget({
           </div>
 
           {/* Card Number (PAN) */}
-          <div className="z-10 my-1">
-            <p className="text-white font-mono tracking-[0.18em] text-sm sm:text-base font-medium select-all">
-              {reveal ? (card.pan || (card.isUltimate ? '4000 1234 5678 9010' : '0000 0000 0000 0000')) : (maskPAN(card.pan) ?? '•••• •••• •••• ••••')}
-            </p>
+          <div className="z-10 my-auto py-1">
+            {card.isUltimate ? (
+              /* Ultimate Card: Bigger and spaced out like a real debit card */
+              <div className="flex items-center justify-between font-mono font-bold tracking-[0.14em] xs:tracking-[0.20em] sm:tracking-[0.3em] text-sm xs:text-base sm:text-2xl md:text-[23px] drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] select-all px-0.5">
+                {formatCardGroups(card.pan, reveal, true, card.cardProgram, card.bank).map((group, idx) => (
+                  <span key={idx} className="tabular-nums transition-all duration-200">
+                    {group}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              /* Connected Physical / Linked Bank Card: Distinct 4-digit groups */
+              <div className="flex items-center justify-between font-mono font-semibold tracking-[0.08em] xs:tracking-[0.14em] sm:tracking-[0.22em] text-slate-100 text-[11px] xs:text-xs sm:text-base md:text-[18px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] select-all px-0.5">
+                {formatCardGroups(card.pan, reveal, false, card.cardProgram, card.bank).map((group, idx) => (
+                  <span key={idx} className="tabular-nums transition-all duration-200">
+                    {group}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Footer Info */}

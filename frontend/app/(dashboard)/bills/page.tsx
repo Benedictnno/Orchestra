@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Zap, Wifi, Tv, Droplets, Check, ShieldCheck, CreditCard } from 'lucide-react'
+import { Zap, Wifi, Tv, Droplets, Check, CreditCard } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-utils'
 import { toNaira } from '@/utils/format'
 import { extractErrorMessage } from '@/lib/utils'
@@ -273,10 +273,7 @@ export default function BillsPage() {
               {submitting ? 'Processing Payment…' : `Pay ${form.amount ? toNaira(parseFloat(form.amount)) : 'Bill'}`}
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-              <ShieldCheck size={13} className="text-emerald-600" />
-              <span>Direct automated provider settlement • 256-bit encrypted</span>
-            </div>
+          
           </div>
         </form>
       </div>
