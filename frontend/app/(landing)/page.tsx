@@ -213,17 +213,11 @@ export default function LandingPage() {
 
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center gap-7 text-xs font-semibold text-white/80">
-            <a href="#simulator" className="hover:text-white transition-colors">
-              Live Simulator
-            </a>
             <a href="#features" className="hover:text-white transition-colors">
               Platform Features
             </a>
             <a href="#how" className="hover:text-white transition-colors">
               How It Works
-            </a>
-            <a href="#architecture" className="hover:text-white transition-colors">
-              Architecture
             </a>
             <a href="#difference" className="hover:text-white transition-colors">
               Comparison
@@ -263,13 +257,6 @@ export default function LandingPage() {
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#0f172a] border-b border-white/10 px-6 py-4 space-y-3 text-xs font-semibold text-white/90">
-            <a
-              href="#simulator"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-blue-400"
-            >
-              Live Simulator
-            </a>
             <a
               href="#features"
               onClick={() => setMobileMenuOpen(false)}
@@ -347,13 +334,6 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 pt-28 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
           {/* Left — copy */}
           <div>
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-[11px] font-mono font-medium mb-6"
-              style={{ animation: 'slideUp 0.8s ease both' }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Programmable Payment Orchestration</span>
-            </div>
 
             <h1
               className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 tracking-tight"
