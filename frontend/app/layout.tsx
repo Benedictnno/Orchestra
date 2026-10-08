@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   title: 'Orchestra — Your Financial OS',
   description: 'Programmable ATM card orchestration platform. Unify all your Nigerian bank cards, set smart routing rules, and spend intelligently.',
   keywords: ['ATM card', 'Nigeria', 'fintech', 'Interswitch', 'card management', 'routing'],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

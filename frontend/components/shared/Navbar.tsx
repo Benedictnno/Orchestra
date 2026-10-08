@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Bell } from 'lucide-react'
 import AnomalyBadge from '@/components/dashboard/AnomalyBadge'
 import ThemeToggle from '@/components/shared/ThemeToggle'
@@ -14,8 +15,14 @@ export default function Navbar() {
       {/* Mobile Branding (visible only when desktop sidebar is hidden) */}
       <div className="flex md:hidden items-center gap-2">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#4A90e2] flex items-center justify-center text-white font-black text-sm shadow-sm">
-            O
+          <div className="w-8 h-8 rounded-lg bg-white/10 dark:bg-white/5 border border-border p-1 flex items-center justify-center shadow-xs">
+            <Image
+              src="/logo.png"
+              alt="Orchestra Logo"
+              width={26}
+              height={26}
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="font-bold text-lg text-foreground tracking-tight">Orchestra</span>
         </Link>

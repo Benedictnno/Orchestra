@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from 'react'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -320,8 +321,14 @@ function SidebarContent() {
         )}>
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition-transform">
-                <span className="text-white font-black text-base">O</span>
+              <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 p-1 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                <Image
+                  src="/logo.png"
+                  alt="Orchestra Logo"
+                  width={26}
+                  height={26}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="min-w-0">
                 <span className="text-white font-black text-xl tracking-tight leading-none block">Orchestra</span>
@@ -331,8 +338,14 @@ function SidebarContent() {
           )}
 
           {collapsed && (
-            <Link href="/dashboard" className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-sm hover:scale-105 transition-transform">
-              <span className="text-white font-black text-base">O</span>
+            <Link href="/dashboard" className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 p-1 flex items-center justify-center shadow-sm hover:scale-105 transition-transform" title="Orchestra">
+              <Image
+                src="/logo.png"
+                alt="Orchestra Logo"
+                width={26}
+                height={26}
+                className="w-full h-full object-contain"
+              />
             </Link>
           )}
 
@@ -444,8 +457,14 @@ function SidebarContent() {
           <div className="relative bg-[#4A90e2] text-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
             <div className="p-5 border-b border-white/15 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-bold">
-                  <span>O</span>
+                <div className="w-8 h-8 rounded-lg bg-white/20 p-1 flex items-center justify-center shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="Orchestra Logo"
+                    width={22}
+                    height={22}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <h3 className="font-bold text-base">Orchestra Menu</h3>

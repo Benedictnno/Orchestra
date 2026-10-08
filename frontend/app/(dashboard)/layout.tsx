@@ -4,6 +4,7 @@ import Navbar from '@/components/shared/Navbar'
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { tokenStorage } from '@/utils/tokenStorage'
 import { useCurrentUser } from '@/hooks/useAuth'
 
@@ -43,8 +44,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
       <div className="flex h-screen bg-background items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center animate-pulse">
-            <span className="text-white font-bold">O</span>
+          <div className="w-12 h-12 rounded-xl bg-card border border-border p-2 flex items-center justify-center animate-pulse shadow-sm">
+            <Image
+              src="/logo.png"
+              alt="Orchestra Logo"
+              width={32}
+              height={32}
+              className="w-full h-full object-contain"
+            />
           </div>
           <p className="text-muted-foreground text-sm">Loading…</p>
         </div>
@@ -59,8 +66,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Mobile Header (md:hidden) */}
         <header className="md:hidden h-14 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 shrink-0 z-30">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#4A90e2] flex items-center justify-center text-white font-black text-xs shadow-xs">
-              O
+            <div className="w-7 h-7 rounded-lg bg-slate-100 border border-slate-200/80 p-0.5 flex items-center justify-center shadow-xs">
+              <Image
+                src="/logo.png"
+                alt="Orchestra Logo"
+                width={22}
+                height={22}
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="font-bold text-base text-slate-900 tracking-tight">Orchestra</span>
           </Link>

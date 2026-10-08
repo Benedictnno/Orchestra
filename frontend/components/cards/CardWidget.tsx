@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { maskPAN, formatExpiry, toNaira, formatCardGroups } from '@/utils/format'
 import { Eye, EyeOff, Settings, ShieldAlert, Trash2, ArrowLeft, Lock, Unlock, ShieldCheck } from 'lucide-react'
@@ -112,8 +113,14 @@ export default function CardWidget({
             <div className="space-y-0.5">
               {card.isUltimate ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-indigo-400" />
+                  <div className="w-5 h-5 rounded-full bg-white/15 border border-white/30 p-0.5 flex items-center justify-center shrink-0">
+                    <Image
+                      src="/logo.png"
+                      alt="Orchestra Logo"
+                      width={14}
+                      height={14}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                   <span className="text-white font-semibold text-xs tracking-tight">Orchestra Ultimate</span>
                 </div>

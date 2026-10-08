@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     'Nigerian banking',
     'corporate expense cards',
   ],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'Orchestra — Programmable ATM Card Orchestration Platform',
     description:

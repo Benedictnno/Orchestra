@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import LoginForm from '@/components/auth/LoginForm'
 import { ShieldCheck } from 'lucide-react'
 
@@ -20,8 +21,15 @@ export default function LoginPage() {
         {/* Brand Header */}
         <Link href="/" className="flex flex-col items-center mb-6">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-              <span className="text-white font-black text-lg">O</span>
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-2 flex items-center justify-center shadow-md">
+              <Image
+                src="/logo.png"
+                alt="Orchestra Logo"
+                width={32}
+                height={32}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <span className="text-white font-black text-2xl tracking-tight">Orchestra</span>
           </div>

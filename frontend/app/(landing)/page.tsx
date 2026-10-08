@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ShieldCheck,
   Zap,
@@ -60,8 +61,14 @@ function HeroCardChip({
     >
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center font-black text-xs">
-            O
+          <div className="w-6 h-6 rounded-md bg-white/20 p-0.5 flex items-center justify-center shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Orchestra Logo"
+              width={20}
+              height={20}
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="font-bold text-sm tracking-tight">Orchestra</span>
         </div>
@@ -137,8 +144,15 @@ export default function LandingPage() {
           {/* Brand Logo & Rails Status */}
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <span className="text-white font-black text-sm">O</span>
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <Image
+                  src="/logo.png"
+                  alt="Orchestra Logo"
+                  width={28}
+                  height={28}
+                  className="w-full h-full object-contain"
+                  priority
+                />
               </div>
               <span className="text-white font-black text-xl tracking-tight">Orchestra</span>
             </Link>
@@ -261,6 +275,16 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full relative z-10 py-10 my-auto">
           {/* Left Column — Value & Copy (7 cols) */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 backdrop-blur-sm">
+              <Image
+                src="/logo.png"
+                alt="Orchestra Logo"
+                width={16}
+                height={16}
+                className="w-4 h-4 object-contain"
+              />
+              <span className="font-medium text-slate-200">The Financial OS for Multi-Card Orchestration</span>
+            </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] tracking-tight">
               One programmable card to orchestrate every account
@@ -406,7 +430,14 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold">
+            <Image
+              src="/logo.png"
+              alt="Orchestra Logo"
+              width={16}
+              height={16}
+              className="w-4 h-4 object-contain"
+            />
             <span>Ready for Deployment</span>
           </div>
 
@@ -447,8 +478,14 @@ export default function LandingPage() {
             {/* Col 1: Brand & Overview */}
             <div className="md:col-span-2 space-y-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center">
-                  <span className="text-white font-black text-sm">O</span>
+                <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 p-1 flex items-center justify-center shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="Orchestra Logo"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <span className="text-white font-bold text-lg tracking-tight">Orchestra</span>
               </div>
