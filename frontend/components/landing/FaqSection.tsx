@@ -14,7 +14,7 @@ const FAQS = [
   },
   {
     q: 'Can I test Orchestra right now without connecting real bank cards?',
-    a: 'Yes. Orchestra includes a comprehensive Sandbox Test Mode pre-loaded with realistic Nigerian bank cards (GTBank, Access Bank, Zenith, Kuda). You can register, test routing algorithms, simulate POS transactions, and create virtual cards immediately.',
+    a: 'Yes. Orchestra includes a comprehensive Sandbox Test Mode pre-loaded with realistic Nigerian bank cards (Union Bank, GTBank, Access Bank, Zenith, Kuda). You can register, test routing algorithms, simulate POS transactions, and create virtual cards immediately.',
   },
   {
     q: 'Which Nigerian banks and card schemes are supported?',
@@ -34,14 +34,17 @@ export default function FaqSection() {
   }
 
   return (
-    <section id="faq" className="bg-slate-900 py-20 sm:py-24 border-b border-slate-800 text-white relative">
-      <div className="max-w-4xl mx-auto px-6">
+    <section id="faq" className="bg-[#080d1a] py-20 sm:py-24 border-b border-white/[0.08] text-white relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto px-6 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Frequently Asked Questions
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Knowledge Base</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Common Inquiries
+            Frequently Asked Questions
           </h2>
           <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
             Everything you need to know about programmable card orchestration, security, and sandbox testing.

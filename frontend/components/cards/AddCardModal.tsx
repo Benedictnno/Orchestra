@@ -10,7 +10,7 @@ interface AddCardModalProps {
   onAdded: () => void
 }
 
-const BANKS = ['GTBank', 'Access Bank', 'UBA', 'First Bank', 'Zenith Bank', 'Stanbic IBTC', 'Polaris Bank', 'Union Bank']
+const BANKS = ['Union Bank', 'GTBank', 'Access Bank', 'UBA', 'First Bank', 'Zenith Bank', 'Stanbic IBTC', 'Polaris Bank']
 const PROGRAMS = ['VERVE', 'VISA', 'MASTERCARD']
 const CARD_COLORS = [
   '#0f172a',
@@ -26,7 +26,7 @@ export default function AddCardModal({ open, onClose, onAdded }: AddCardModalPro
   const [selectedColor, setSelectedColor] = useState(CARD_COLORS[0])
   const [form, setForm] = useState({
     label: '',
-    bank: 'GTBank',
+    bank: 'Union Bank',
     pan: '',
     expiryDate: '',
     cvv: '',

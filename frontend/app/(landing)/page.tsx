@@ -14,239 +14,172 @@ import {
   X,
   ExternalLink,
   ArrowRight,
+  CheckCircle2,
+  Lock,
+  ChevronRight,
+  Wifi,
 } from 'lucide-react'
 
 // Section Components
 import TrustStrip from '@/components/landing/TrustStrip'
 import ProblemSection from '@/components/landing/ProblemSection'
+import CoreFeaturesBento from '@/components/landing/CoreFeaturesBento'
 import InteractiveSimulator from '@/components/landing/InteractiveSimulator'
-import VirtualAndBusinessSection from '@/components/landing/VirtualAndBusinessSection'
-import ArchitectureSection from '@/components/landing/ArchitectureSection'
-import ComparisonSection from '@/components/landing/ComparisonSection'
-import UseCasesSection from '@/components/landing/UseCasesSection'
-import RoadmapSection from '@/components/landing/RoadmapSection'
-import TeamSection from '@/components/landing/TeamSection'
+import HowItWorksSection from '@/components/landing/HowItWorksSection'
+import TestimonialsSection from '@/components/landing/TestimonialsSection'
 import FaqSection from '@/components/landing/FaqSection'
 
-/* ─── intersection observer fade-in hook ───────────────────── */
-function useFadeIn<T extends HTMLElement = HTMLDivElement>(threshold = 0.15) {
-  const ref = useRef<T>(null)
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ob = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true)
-          ob.disconnect()
-        }
-      },
-      { threshold }
-    )
-    ob.observe(el)
-    return () => ob.disconnect()
-  }, [threshold])
-  return [ref, visible] as const
-}
-
-/* ─── floating card chip (preserved) ──────────────────────── */
-function CardChip({
+/* ─── Hero Floating Card Component ─────────────────────────── */
+function HeroCardChip({
   color,
   label,
   bank,
   pan,
+  balance,
+  status,
   delay = '0s',
+  className = '',
 }: {
   color: string
   label: string
   bank: string
   pan: string
+  balance: string
+  status: string
   delay?: string
+  className?: string
 }) {
   return (
     <div
-      className="absolute rounded-2xl p-5 sm:p-6 shadow-2xl w-64 text-white text-xs select-none border border-white/20 backdrop-blur-md"
+      className={`rounded-2xl p-5 sm:p-6 shadow-2xl w-full max-w-[280px] sm:max-w-[310px] text-white select-none border border-white/20 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] ${className}`}
       style={{
         background: color,
-        animation: `floatCard 4s ease-in-out infinite`,
+        animation: `floatHeroCard 5s ease-in-out infinite`,
         animationDelay: delay,
       }}
     >
-      <div className="flex justify-between items-start mb-7">
-        <div className="flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded-md bg-white/20 flex items-center justify-center font-black text-[10px]">
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center font-black text-xs">
             O
           </div>
           <span className="font-bold text-sm tracking-tight">Orchestra</span>
         </div>
-        <span className="opacity-80 uppercase text-[9px] tracking-widest font-mono font-semibold">
-          {bank}
-        </span>
-      </div>
-      <p className="font-mono tracking-[0.2em] text-xs mb-5 opacity-90">{pan}</p>
-      <div className="flex justify-between items-end">
-        <div>
-          <p className="text-[10px] text-white/60 uppercase font-medium">Cardholder</p>
-          <p className="font-semibold text-xs opacity-95">{label}</p>
+        <div className="flex items-center gap-2">
+          <Wifi size={14} className="text-white/70 rotate-90" />
+          <span className="opacity-90 uppercase text-[9px] tracking-widest font-mono font-semibold bg-white/10 px-2 py-0.5 rounded">
+            {bank}
+          </span>
         </div>
-        <div className="w-9 h-5 bg-white/20 rounded border border-white/30 backdrop-blur-sm" />
+      </div>
+
+      <div className="flex items-center gap-3 mb-4">
+        {/* EMV Chip graphic */}
+        <div className="w-8 h-6 rounded bg-gradient-to-br from-amber-200 to-amber-400 border border-amber-300/60 shadow-xs relative overflow-hidden">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-amber-600/40" />
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-amber-600/40" />
+        </div>
+        <p className="font-mono tracking-[0.2em] text-xs opacity-90">{pan}</p>
+      </div>
+
+      <div className="flex justify-between items-end pt-2 border-t border-white/15">
+        <div>
+          <p className="text-[9px] text-white/60 uppercase font-mono">Available Balance</p>
+          <p className="font-mono font-bold text-sm text-white">{balance}</p>
+        </div>
+        <div className="text-right">
+          <span className="text-[9px] font-mono uppercase text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded font-medium">
+            {status}
+          </span>
+        </div>
       </div>
     </div>
   )
 }
 
-/* ─── feature card (preserved) ────────────────────────────── */
-function FeatureCard({
-  icon: Icon,
-  title,
-  desc,
-  delay,
-}: {
-  icon: React.ElementType
-  title: string
-  desc: string
-  delay: string
-}) {
-  const [ref, visible] = useFadeIn()
-  return (
-    <div
-      ref={ref}
-      className="bg-white/10 border border-white/15 rounded-2xl p-6 hover:bg-white/15 hover:border-white/25 transition-all duration-300 hover:-translate-y-0.5 group"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(20px)',
-        transition: `opacity 0.5s ease ${delay}, transform 0.5s ease ${delay}`,
-      }}
-    >
-      <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white mb-4 group-hover:scale-105 transition-transform shadow-xs">
-        <Icon size={18} />
-      </div>
-      <h3 className="font-bold text-white text-base mb-2 tracking-tight">{title}</h3>
-      <p className="text-white/70 text-xs sm:text-sm leading-relaxed">{desc}</p>
-    </div>
-  )
-}
-
-/* ─── step card (preserved & enhanced) ─────────────────────── */
-function StepCard({
-  n,
-  title,
-  desc,
-  delay,
-}: {
-  n: string
-  title: string
-  desc: string
-  delay: number
-}) {
-  const [ref, visible] = useFadeIn(0.15)
-  return (
-    <div
-      ref={ref}
-      className="text-center"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(20px)',
-        transition: `all 0.5s ease ${delay}s`,
-      }}
-    >
-      <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-base font-bold text-white mx-auto mb-4 font-mono shadow-xs">
-        {n}
-      </div>
-      <h3 className="text-white font-bold text-base mb-1.5 tracking-tight">{title}</h3>
-      <p className="text-white/60 text-xs sm:text-sm leading-relaxed">{desc}</p>
-    </div>
-  )
-}
-
-/* ─── main page component ──────────────────────────────────── */
+/* ─── Main Landing Page Component ──────────────────────────── */
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40)
+    const handler = () => setScrolled(window.scrollY > 30)
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  const [featuresRef, featuresVisible] = useFadeIn()
-
   return (
-    <>
+    <div className="min-h-screen bg-[#070b16] text-white selection:bg-blue-500 selection:text-white">
       <style>{`
-        @keyframes floatCard {
+        @keyframes floatHeroCard {
           0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
-          50% { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
+          50% { transform: translateY(-10px) rotate(var(--rot, 0deg)); }
         }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
+        @keyframes heroPulse {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.25; transform: scale(1.05); }
         }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .hero-gradient {
-          background: linear-gradient(135deg, #4A90e2 0%, #1e3a8a 45%, #0f172a 100%);
-          background-size: 200% 200%;
+        .hero-surface {
+          background: radial-gradient(circle at 50% 0%, #102147 0%, #080e1e 50%, #050813 100%);
         }
       `}</style>
 
-      {/* ── NAVIGATION (PRESERVED & EXPANDED) ────────────────── */}
+      {/* ── TOP NAVIGATION BAR ──────────────────────────────── */}
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled || mobileMenuOpen
-            ? 'bg-[#4A90e2]/95 backdrop-blur-md shadow-lg border-b border-white/10'
-            : 'bg-transparent'
+            ? 'bg-[#080d1a]/85 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl py-3'
+            : 'bg-transparent py-5'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-xs">
-              <span className="text-white font-black text-sm">O</span>
-            </div>
-            <span className="text-white font-black text-xl tracking-tight">Orchestra</span>
-          </Link>
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+          {/* Brand Logo & Rails Status */}
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <span className="text-white font-black text-sm">O</span>
+              </div>
+              <span className="text-white font-black text-xl tracking-tight">Orchestra</span>
+            </Link>
+          </div>
 
-          {/* Desktop Links */}
-          <div className="hidden lg:flex items-center gap-7 text-xs font-semibold text-white/80">
+          {/* Desktop Navigation Links — 5 Core Pillars */}
+          <div className="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-300">
             <a href="#features" className="hover:text-white transition-colors">
               Platform Features
             </a>
-            <a href="#how" className="hover:text-white transition-colors">
-              How It Works
+            <a href="#problem" className="hover:text-white transition-colors">
+              The Solution
             </a>
-            <a href="#difference" className="hover:text-white transition-colors">
-              Comparison
+            <a href="#testimonials" className="hover:text-white transition-colors">
+              Testimonials
             </a>
             <a href="#faq" className="hover:text-white transition-colors">
               FAQ
             </a>
           </div>
 
-          {/* Actions */}
+          {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-white/90 text-xs font-semibold hover:text-white px-3 py-1.5 transition-colors hidden sm:block"
+              className="text-slate-300 text-xs font-semibold hover:text-white px-3 py-1.5 transition-colors hidden sm:block"
             >
-              Sign in
+              Sign In
             </Link>
             <Link
               href="/register"
-              className="bg-white text-slate-900 text-xs font-bold px-4 py-2 rounded-lg hover:bg-slate-100 transition shadow-sm"
+              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
             >
-              Get Started
+              Launch Sandbox
             </Link>
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Menu Button */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition"
+              className="lg:hidden p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -256,7 +189,7 @@ export default function LandingPage() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#0f172a] border-b border-white/10 px-6 py-4 space-y-3 text-xs font-semibold text-white/90">
+          <div className="lg:hidden bg-[#080d1a] border-b border-white/10 px-6 py-5 space-y-3 text-xs font-semibold text-slate-200">
             <a
               href="#features"
               onClick={() => setMobileMenuOpen(false)}
@@ -265,25 +198,18 @@ export default function LandingPage() {
               Platform Features
             </a>
             <a
-              href="#how"
+              href="#problem"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1 hover:text-blue-400"
             >
-              How It Works
+              The Solution
             </a>
             <a
-              href="#architecture"
+              href="#testimonials"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1 hover:text-blue-400"
             >
-              System Architecture
-            </a>
-            <a
-              href="#difference"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-blue-400"
-            >
-              Traditional vs Orchestra
+              Testimonials
             </a>
             <a
               href="#faq"
@@ -296,329 +222,264 @@ export default function LandingPage() {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-blue-300"
+                className="text-slate-300 hover:text-white"
               >
-                Sign in
+                Sign In
               </Link>
               <Link
                 href="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="bg-white text-slate-900 px-4 py-1.5 rounded-lg text-xs font-bold"
+                className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold"
               >
-                Create Account
+                Launch Sandbox
               </Link>
             </div>
           </div>
         )}
       </nav>
 
-      {/* ── HERO (PRESERVED EXACT STYLING & CONTENT) ────────── */}
+      {/* ── SECTION 1: HERO & INTEGRATED TRUST STRIP ────────── */}
       <section
+        id="hero"
         ref={heroRef}
-        className="hero-gradient min-h-screen flex items-center relative overflow-hidden"
+        className="hero-surface min-h-[92vh] flex flex-col justify-between relative overflow-hidden pt-28 pb-0"
       >
-        {/* Grid overlay */}
+        {/* Subtle grid pattern overlay */}
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
             backgroundImage:
               'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
+            backgroundSize: '48px 48px',
           }}
         />
 
-        {/* Ambient glows */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-slate-900/40 rounded-full blur-3xl pointer-events-none" />
+        {/* Ambient mesh glows */}
+        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto px-6 pt-28 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
-          {/* Left — copy */}
-          <div>
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full relative z-10 py-10 my-auto">
+          {/* Left Column — Value & Copy (7 cols) */}
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
 
-            <h1
-              className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 tracking-tight"
-              style={{ animation: 'slideUp 0.8s ease 0.1s both' }}
-            >
-              One card to orchestrate them all
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] tracking-tight">
+              One programmable card to orchestrate every account
             </h1>
 
-            <p
-              className="text-white/80 text-sm sm:text-base leading-relaxed mb-8 max-w-lg"
-              style={{ animation: 'slideUp 0.8s ease 0.2s both' }}
-            >
-              Orchestra is an AI-powered financial OS that unifies all your Nigerian bank cards
-              into a single programmable payment layer — intelligently routing, splitting, and
-              optimizing every transaction.
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Orchestra unifies your Nigerian bank cards — including Union Bank, GTBank, Access, and Kuda — into a single intelligent payment layer with sub-second auto-splits, merchant-locked virtual cards, and corporate treasury controls.
             </p>
 
-            <div
-              className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
-              style={{ animation: 'slideUp 0.8s ease 0.3s both' }}
-            >
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
               <Link
                 href="/register"
-                className="bg-white text-slate-900 font-bold px-6 py-3 rounded-xl text-center text-sm hover:bg-slate-100 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-7 py-3.5 rounded-xl text-center text-sm transition-all shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5 flex items-center justify-center gap-2"
               >
-                Start for free
+                <span>Launch Sandbox Console</span>
+                <ArrowRight size={15} />
               </Link>
-              <Link
-                href="/login"
-                className="bg-white/15 border border-white/30 text-white font-semibold px-6 py-3 rounded-xl text-center text-sm hover:bg-white/25 transition backdrop-blur-md"
+              <a
+                href="#simulator"
+                className="w-full sm:w-auto bg-white/[0.05] hover:bg-white/[0.1] border border-white/20 text-white font-semibold px-6 py-3.5 rounded-xl text-center text-sm transition backdrop-blur-md flex items-center justify-center gap-2"
               >
-                Sign in to console
-              </Link>
+                <span>Try Live Simulator</span>
+                <Zap size={14} className="text-blue-400" />
+              </a>
             </div>
 
-            <p
-              className="text-white/50 text-xs mt-5"
-              style={{ animation: 'fadeIn 1s ease 0.4s both' }}
-            >
-              Zero monthly maintenance fees · Sandbox test mode included
-            </p>
+            {/* Trust Points */}
+            <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-5 text-xs text-slate-400 font-mono">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-400" /> Zero Monthly Maintenance
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-400" /> Sandbox Ready
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-400" /> 256-Bit Bank Encryption
+              </span>
+            </div>
           </div>
 
-          {/* Right — floating cards */}
-          <div className="relative h-96 lg:h-[420px] hidden lg:block">
-            <div
-              style={{ '--rot': '-6deg' } as React.CSSProperties}
-              className="absolute top-0 left-20 z-30"
-            >
-              <CardChip
-                color="linear-gradient(135deg,#1e293b,#0f172a)"
-                label="Alex Morgan"
-                bank="Master Orchestrator"
-                pan="5399 •••• •••• 8888"
-                delay="0s"
-              />
+          {/* Right Column — Dual Layer Card Stack & Live POS Telemetry (5 cols) */}
+          <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
+            {/* Aggregated Liquidity Floating Gauge */}
+            <div className="mb-4 w-full max-w-[310px] bg-slate-900/90 border border-white/20 rounded-2xl p-4 backdrop-blur-xl shadow-2xl flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-mono text-slate-400 uppercase block">Combined Liquidity</span>
+                <span className="font-mono font-bold text-lg text-white">₦150,000.00</span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                Auto-Split Armed
+              </span>
             </div>
-            <div
-              style={{ '--rot': '5deg' } as React.CSSProperties}
-              className="absolute top-28 left-48 z-20"
-            >
-              <CardChip
-                color="linear-gradient(135deg,#0284c7,#0369a1)"
-                label="Alex Morgan"
-                bank="GTBank Debit"
-                pan="4111 •••• •••• 1234"
-                delay="0.8s"
-              />
+
+            {/* Card Stack */}
+            <div className="relative w-full flex flex-col items-center space-y-[-110px] sm:space-y-[-125px]">
+              {/* Card 1: Top Master Card */}
+              <div style={{ '--rot': '-3deg' } as React.CSSProperties} className="z-30 w-full flex justify-center">
+                <HeroCardChip
+                  color="linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
+                  label="Alex Morgan"
+                  bank="Master Orchestrator"
+                  pan="5399 •••• •••• 8888"
+                  balance="₦150,000.00"
+                  status="Active Orchestrator"
+                  delay="0s"
+                />
+              </div>
+
+              {/* Card 2: Union Bank */}
+              <div style={{ '--rot': '4deg' } as React.CSSProperties} className="z-20 w-full flex justify-center">
+                <HeroCardChip
+                  color="linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+                  label="Alex Morgan"
+                  bank="Union Bank Salary"
+                  pan="5061 •••• •••• 1234"
+                  balance="₦40,000.00"
+                  status="Primary Card"
+                  delay="0.7s"
+                />
+              </div>
+
+              {/* Card 3: Access */}
+              <div style={{ '--rot': '-2deg' } as React.CSSProperties} className="z-10 w-full flex justify-center">
+                <HeroCardChip
+                  color="linear-gradient(135deg, #0d9488 0%, #115e59 100%)"
+                  label="Alex Morgan"
+                  bank="Access Wallet"
+                  pan="6280 •••• •••• 4567"
+                  balance="₦60,000.00"
+                  status="Reserve 1"
+                  delay="1.4s"
+                />
+              </div>
             </div>
-            <div
-              style={{ '--rot': '-2deg' } as React.CSSProperties}
-              className="absolute top-56 left-24 z-10"
-            >
-              <CardChip
-                color="linear-gradient(135deg,#0d9488,#115e59)"
-                label="Alex Morgan"
-                bank="Access Virtual"
-                pan="6280 •••• •••• 4567"
-                delay="1.6s"
-              />
+
+            {/* Live POS Intercept Card Graphic */}
+            <div className="mt-8 w-full max-w-[310px] bg-black/60 border border-emerald-500/30 rounded-2xl p-3.5 backdrop-blur-md shadow-2xl space-y-2 z-40">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="text-slate-400">POS Intercept (Shoprite):</span>
+                <span className="text-emerald-400 font-bold">₦65,000 APPROVED</span>
+              </div>
+              <div className="bg-white/5 p-2 rounded-lg text-[10px] font-mono text-slate-300 space-y-1">
+                <div className="flex justify-between">
+                  <span>Union Bank:</span>
+                  <span className="text-white font-bold">₦40,000 (Drained)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Access Reserve:</span>
+                  <span className="text-emerald-400 font-bold">₦25,000 (Split)</span>
+                </div>
+              </div>
+              <p className="text-[9px] font-mono text-slate-400 text-center">
+                Latency: 290ms · Zero POS Checkout Declines
+              </p>
             </div>
           </div>
         </div>
+
+        {/* Integrated Trust & Bank Rails Strip */}
+        <TrustStrip />
       </section>
 
-      {/* ── TRUST & VALUE STRIP ───────────────────────────── */}
-      <TrustStrip />
+      {/* ── SECTION 2: THE PROBLEM & OPPORTUNITY ────────────── */}
+      <section id="problem">
+        <ProblemSection />
+      </section>
 
-      {/* ── THE PROBLEM ───────────────────────────────────── */}
-      <ProblemSection />
-
-      {/* ── INTERACTIVE LIVE SIMULATOR ────────────────────── */}
+      {/* ── SECTION 3: INTERACTIVE LIVE AUTO-SPLIT SIMULATOR ─── */}
       <InteractiveSimulator />
 
-      {/* ── CORE FEATURES (PRESERVED EXACT LIST & STYLING) ─── */}
-      <section id="features" className="bg-[#4A90e2] py-20 sm:py-24 border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-6">
-          <div
-            ref={featuresRef}
-            className="text-center mb-14"
-            style={{
-              opacity: featuresVisible ? 1 : 0,
-              transform: featuresVisible ? 'translateY(0)' : 'translateY(24px)',
-              transition: 'all 0.6s ease',
-            }}
-          >
-            <p className="text-white/80 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-              Platform Capabilities
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              The Financial OS for Nigerian Commerce
-            </h2>
-            <p className="text-white/70 mt-3 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
-              Eliminate card declines, fragmented balances, and manual reconciliations with algorithmic payment routing.
-            </p>
+      {/* ── SECTION 4: PLATFORM CAPABILITIES, WORKFLOW & FAQ ─── */}
+      <div id="features" className="space-y-0">
+        <CoreFeaturesBento />
+        {/* <HowItWorksSection /> */}
+        <TestimonialsSection />
+        <FaqSection />
+      </div>
+
+      {/* ── SECTION 5: FINAL CALL TO ACTION ──────────────────── */}
+      <section id="cta" className="bg-gradient-to-b from-[#0b1222] to-[#050811] py-20 sm:py-24 relative overflow-hidden border-t border-white/[0.08]">
+        {/* Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="max-w-3xl mx-auto px-6 text-center relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold">
+            <span>Ready for Deployment</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            <FeatureCard
-              delay="0s"
-              icon={SlidersHorizontal}
-              title="Programmable Routing"
-              desc="Configure sequential auto-split, default primary priority, or balanced proportion rules evaluated at swipe time."
-            />
-            <FeatureCard
-              delay="0.1s"
-              icon={ArrowRightLeft}
-              title="Sub-Second Auto-Split"
-              desc="When a single card has insufficient balance, Orchestra splits the transaction seamlessly across multiple linked wallets."
-            />
-            <FeatureCard
-              delay="0.2s"
-              icon={ShieldCheck}
-              title="Zero-Trust Anomaly Engine"
-              desc="Advanced zero-trust fraud heuristics flag out-of-pattern spending, duplicate attempts, and sudden velocity spikes in real time."
-            />
-            <FeatureCard
-              delay="0.3"
-              icon={CreditCard}
-              title="Merchant-Locked Virtual Cards"
-              desc="Issue instant virtual cards for SaaS subscriptions and vendor bills with configurable spending caps and auto-freeze rules."
-            />
-            <FeatureCard
-              delay="0.4s"
-              icon={Sparkles}
-              title="AI Financial Intelligence"
-              desc="Access conversational spend auditing, automated anomaly investigations, and predictive savings scenario modeling."
-            />
-            <FeatureCard
-              delay="0.5s"
-              icon={Layers}
-              title="Corporate Treasury & Teams"
-              desc="Manage business departmental cards, configure multi-tier approval limits, and consolidate company disbursements in one ledger."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── SPECIALIZED CARDS & CORPORATE EXPENSES ─────────── */}
-      <VirtualAndBusinessSection />
-
-      {/* ── HOW IT WORKS (PRESERVED & EXPANDED) ─────────────── */}
-      <section id="how" className="bg-slate-900 py-20 sm:py-24 border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-              Streamlined Onboarding
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Up and running in four simple steps
-            </h2>
-            <p className="text-slate-400 mt-2 text-xs sm:text-sm">
-              Connect your cards once and let Orchestra handle intelligent allocation.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-            <StepCard
-              n="01"
-              title="Link your cards"
-              desc="Connect debit and prepaid cards from major Nigerian banks via secure tokenization."
-              delay={0}
-            />
-            <StepCard
-              n="02"
-              title="Define routing policy"
-              desc="Select sequential auto-split, default primary, or let our AI optimizer balance cashflow."
-              delay={0.12}
-            />
-            <StepCard
-              n="03"
-              title="Swipe & transact"
-              desc="Use your single Orchestra card anywhere — in-store, online, or for bank transfers."
-              delay={0.24}
-            />
-            <StepCard
-              n="04"
-              title="Real-time settlement & audit"
-              desc="Funds route atomically with sub-second latency while AI monitors anomalies."
-              delay={0.36}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── TECHNICAL ARCHITECTURE & INNOVATION ───────────── */}
-      <ArchitectureSection />
-
-      {/* ── COMPARISON / DIFFERENTIATION ──────────────────── */}
-      <ComparisonSection />
-
-      {/* ── AUDIENCE USE CASES ────────────────────────────── */}
-      <UseCasesSection />
-
-      {/* ── PRODUCT ROADMAP ───────────────────────────────── */}
-      <RoadmapSection />
-
-      {/* ── TEAM & HACKATHON ATTRIBUTION ──────────────────── */}
-      {/* <TeamSection /> */}
-
-      {/* ── FAQ ───────────────────────────────────────────── */}
-      <FaqSection />
-
-      {/* ── FINAL CALL TO ACTION (PRESERVED HERO GRADIENT) ─── */}
-      <section id="cta" className="hero-gradient py-20 sm:py-24 relative overflow-hidden">
-        <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
             Ready to orchestrate your money?
           </h2>
-          <p className="text-white/80 text-xs sm:text-sm mb-8 max-w-md mx-auto leading-relaxed">
-            Experience programmable banking built specifically for modern individuals and growing Nigerian businesses.
+
+          <p className="text-slate-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+            Experience programmable banking built specifically for modern individuals and growing Nigerian businesses. Pre-loaded sandbox mode ready for instant testing.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <Link
               href="/register"
-              className="w-full sm:w-auto bg-white text-slate-900 font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-slate-100 transition shadow-lg"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-8 py-3.5 rounded-xl transition shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
-              Create free account
+              <span>Create Free Account</span>
+              <ArrowRight size={15} />
             </Link>
             <Link
               href="/login"
-              className="w-full sm:w-auto bg-white/15 border border-white/30 text-white font-semibold text-sm px-8 py-3.5 rounded-xl hover:bg-white/25 transition backdrop-blur-md"
+              className="w-full sm:w-auto bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition backdrop-blur-md"
             >
-              Sign in to dashboard
+              Sign In to Dashboard
             </Link>
           </div>
-          <p className="text-white/50 text-xs mt-5">
-            Protected by bank-grade 256-bit encryption · Sandbox test mode ready
+
+          <p className="text-slate-500 text-xs font-mono pt-3">
+            Protected by bank-grade 256-bit AES encryption · Sandbox mode includes simulated Nigerian bank cards
           </p>
         </div>
       </section>
 
-      {/* ── FOOTER (PRESERVED & COMPREHENSIVE) ─────────────── */}
-      <footer className="bg-slate-950 border-t border-slate-800/80 py-12 text-white">
+      {/* ── FOOTER ──────────────────────────────────────────── */}
+      <footer className="bg-[#04060c] border-t border-white/[0.06] py-14 text-white">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-            {/* Col 1: Brand */}
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center">
-                  <span className="text-white font-black text-xs">O</span>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+            {/* Col 1: Brand & Overview */}
+            <div className="md:col-span-2 space-y-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center">
+                  <span className="text-white font-black text-sm">O</span>
                 </div>
-                <span className="text-white font-bold text-base">Orchestra</span>
+                <span className="text-white font-bold text-lg tracking-tight">Orchestra</span>
               </div>
-              <p className="text-slate-400 text-xs leading-relaxed max-w-sm mb-4">
-                The programmable ATM card orchestration platform unifying Nigerian bank cards, smart split routing, and corporate treasury management.
+              <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
+                The programmable ATM card orchestration platform unifying Nigerian bank cards, sub-second split routing, merchant-locked virtual cards, and corporate treasury management.
               </p>
-              <p className="text-slate-500 text-[11px] font-mono">
-                Programmable Card Orchestration &amp; Multi-Account Liquidity Management
-              </p>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Programmable Multi-Card Liquidity Management</span>
+              </div>
             </div>
 
-            {/* Col 2: Navigation */}
+            {/* Col 2: Platform Navigation */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 font-mono">
                 Platform
               </h4>
               <ul className="space-y-2 text-xs text-slate-400">
                 <li>
-                  <a href="#simulator" className="hover:text-white transition-colors">
-                    Live Simulator
+                  <a href="#features" className="hover:text-white transition-colors">
+                    Platform Features
                   </a>
                 </li>
                 <li>
-                  <a href="#features" className="hover:text-white transition-colors">
-                    Core Features
+                  <a href="#problem" className="hover:text-white transition-colors">
+                    The Solution
+                  </a>
+                </li>
+                <li>
+                  <a href="#testimonials" className="hover:text-white transition-colors">
+                    Testimonials
                   </a>
                 </li>
                 <li>
@@ -627,18 +488,8 @@ export default function LandingPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="#architecture" className="hover:text-white transition-colors">
-                    Architecture
-                  </a>
-                </li>
-                <li>
-                  <a href="#difference" className="hover:text-white transition-colors">
-                    Comparison
-                  </a>
-                </li>
-                <li>
-                  <a href="#roadmap" className="hover:text-white transition-colors">
-                    Roadmap
+                  <a href="#faq" className="hover:text-white transition-colors">
+                    FAQ
                   </a>
                 </li>
               </ul>
@@ -652,12 +503,12 @@ export default function LandingPage() {
               <ul className="space-y-2 text-xs text-slate-400">
                 <li>
                   <Link href="/login" className="hover:text-white transition-colors">
-                    Sign In
+                    Sign In to Console
                   </Link>
                 </li>
                 <li>
                   <Link href="/register" className="hover:text-white transition-colors">
-                    Create Account
+                    Create Sandbox Account
                   </Link>
                 </li>
                 <li>
@@ -672,7 +523,7 @@ export default function LandingPage() {
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors flex items-center gap-1.5"
                   >
-                    <span>API Documentation</span>
+                    <span>Deployed API Docs</span>
                     <ExternalLink size={11} />
                   </a>
                 </li>
@@ -680,7 +531,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-xs">
+          <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-xs">
             <p>© 2025 Orchestra. All rights reserved.</p>
             <div className="flex items-center gap-6">
               <a href="#faq" className="hover:text-slate-400 transition-colors">
@@ -689,10 +540,18 @@ export default function LandingPage() {
               <Link href="/login" className="hover:text-slate-400 transition-colors">
                 Sandbox Console
               </Link>
+              <a
+                href="https://orchestra-y8vf.onrender.com/api-docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-slate-400 transition-colors"
+              >
+                OpenAPI Spec
+              </a>
             </div>
           </div>
         </div>
       </footer>
-    </>
+    </div>
   )
 }

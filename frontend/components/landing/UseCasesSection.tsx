@@ -10,7 +10,7 @@ const USE_CASES = [
     roleTag: 'Personal Banking',
     headline: 'Zero POS Embarrassment',
     description:
-      'Keep your salary in GTBank, savings in Kuda, and pocket money in Access. Orchestra unifies them into a single swipe. If a dinner bill exceeds your main card, backup balances cover the rest seamlessly.',
+      'Keep your salary in Union Bank, savings in Kuda, and pocket money in GTBank or Access. Orchestra unifies them into a single swipe. If a dinner bill exceeds your main card, backup balances cover the rest seamlessly.',
     benefit: 'No more frantic banking app transfers while the cashier waits.',
   },
   {
@@ -35,17 +35,20 @@ const USE_CASES = [
 
 export default function UseCasesSection() {
   return (
-    <section className="bg-[#0b1329] py-20 sm:py-24 border-b border-slate-800 text-white relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="use-cases" className="bg-[#0b101f] py-20 sm:py-24 border-b border-white/[0.08] text-white relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 right-1/4 w-[600px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Target Audience
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Tailored Solutions</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Tailored for Nigerian Consumers &amp; Teams
+            Built for Modern Consumers, Freelancers &amp; Growing Teams
           </h2>
           <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
-            Whether you are managing personal cashflow across three banks or allocating company budgets to staff, Orchestra adapts to your workflow.
+            Whether you are managing personal cashflow across three banks or allocating company budgets to staff, Orchestra adapts seamlessly to your workflow.
           </p>
         </div>
 

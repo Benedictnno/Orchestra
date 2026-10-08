@@ -52,17 +52,20 @@ const ROADMAP_PHASES = [
 
 export default function RoadmapSection() {
   return (
-    <section id="roadmap" className="bg-slate-900 py-20 sm:py-24 border-b border-slate-800 text-white relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="roadmap" className="bg-[#080d1a] py-20 sm:py-24 border-b border-white/[0.08] text-white relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Execution Strategy
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Execution Milestones</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Product Evolution &amp; Roadmap
+            Product Evolution &amp; Long-Term Roadmap
           </h2>
           <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
-            Orchestra has a clear path from its hackathon foundation to a full-fledged financial orchestration infrastructure for African commerce.
+            Orchestra has a clear path from its hackathon foundation to full-fledged programmable payment infrastructure for African commerce.
           </p>
         </div>
 

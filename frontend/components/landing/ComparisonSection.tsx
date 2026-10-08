@@ -32,17 +32,20 @@ const COMPARISONS = [
 
 export default function ComparisonSection() {
   return (
-    <section id="difference" className="bg-slate-900 py-20 sm:py-24 border-b border-slate-800 text-white relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="difference" className="bg-[#080d1a] py-20 sm:py-24 border-b border-white/[0.08] text-white relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/3 w-[600px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Direct Comparison
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Direct Comparison</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Traditional Banking vs. Orchestra
+            Traditional Banking Rails vs. Orchestra Orchestration
           </h2>
           <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
-            See how adding an intelligent orchestration layer transforms everyday consumer spending and company treasury management.
+            See how adding an intelligent multi-card routing layer eliminates checkout friction and revolutionizes Nigerian financial workflows.
           </p>
         </div>
 

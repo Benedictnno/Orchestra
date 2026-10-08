@@ -31,17 +31,20 @@ const TEAM = [
 
 export default function TeamSection() {
   return (
-    <section id="team" className="bg-[#0f172a] py-20 sm:py-24 border-b border-slate-800 text-white relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="team" className="bg-[#0b101f] py-20 sm:py-24 border-b border-white/[0.08] text-white relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Hackathon Builders
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Engineering &amp; Architecture</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Meet the Team Behind Orchestra
+            Meet the Builders Behind Orchestra
           </h2>
           <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
-            Built to eliminate point-of-sale card declines and solve multi-card payment fragmentation in Nigeria.
+            Engineered to eliminate point-of-sale card declines and solve multi-card payment fragmentation across Nigerian commerce.
           </p>
         </div>
 

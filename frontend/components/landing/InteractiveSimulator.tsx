@@ -14,8 +14,16 @@ interface MockCard {
 
 const INITIAL_CARDS: MockCard[] = [
   {
+    id: 'union',
+    label: 'Union Bank Salary Debit',
+    bank: 'Union Bank of Nigeria',
+    scheme: 'Mastercard',
+    balance: 50000,
+    color: 'from-blue-700 to-indigo-800',
+  },
+  {
     id: 'gtb',
-    label: 'GTBank Salary Debit',
+    label: 'GTBank Secondary Card',
     bank: 'Guaranty Trust Bank',
     scheme: 'Mastercard',
     balance: 40000,
@@ -109,23 +117,26 @@ export default function InteractiveSimulator() {
   }
 
   return (
-    <section id="simulator" className="bg-[#4A90e2] py-20 sm:py-24 text-white relative border-b border-white/10">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="simulator" className="bg-[#090e1c] py-20 sm:py-24 text-white relative border-b border-white/[0.08] overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-white/80 font-bold text-xs uppercase tracking-widest mb-2 font-mono">
-            Interactive Product Sandbox
-          </p>
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-semibold mb-3">
+            <span>Interactive Sandbox</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
             See Orchestra Auto-Split in Action
           </h2>
-          <p className="text-white/80 mt-3 text-xs sm:text-sm leading-relaxed">
+          <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
             Test how Orchestra intercepts transactions and automatically splits the charge across multiple linked bank cards to guarantee zero POS declines.
           </p>
         </div>
 
         {/* Sandbox Console Container */}
-        <div className="bg-[#0f172a] rounded-3xl border border-white/15 p-6 sm:p-8 lg:p-10 shadow-2xl">
+        <div className="bg-[#0f172a] rounded-3xl border border-white/[0.12] p-6 sm:p-8 lg:p-10 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Controls: Amount & Mode (5 cols) */}
             <div className="lg:col-span-5 space-y-6">
@@ -144,7 +155,7 @@ export default function InteractiveSimulator() {
                     value={amount || ''}
                     onChange={(e) => setAmount(Number(e.target.value))}
                     min={1000}
-                    max={150000}
+                    max={200000}
                     className="w-full bg-white/5 border border-white/20 rounded-xl pl-8 pr-4 py-3 text-white text-base font-bold focus:outline-none focus:border-blue-400 transition"
                     placeholder="Enter amount"
                   />
