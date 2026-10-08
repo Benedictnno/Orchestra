@@ -18,9 +18,10 @@ export interface Transaction {
   status?: string
   reference?: string
   flagged?: boolean
+  fundingSourceName?: string
 }
 
-const CATEGORIES = ['all', 'shopping', 'subscriptions', 'transport', 'income', 'utilities', 'food', 'savings', 'entertainment', 'other']
+const CATEGORIES = ['all', 'shopping', 'subscriptions', 'transport', 'income', 'utilities', 'food', 'savings', 'entertainment', 'other', 'card_payment']
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -169,10 +170,10 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
             <p className="text-xs font-medium text-slate-600">No transactions match your search</p>
             <p className="text-[11px] text-slate-400 mt-1">Try clearing filters or search query</p>
           </div>
-        ) : (
-          paginated.map((t, i) => {
-            const cardName = t.cardLabel || t.card || 'Orchestra Routing'
+        ) : (              paginated.map((t, i) => {
+            const cardName = t.cardLabel || t.card || (t.type === 'card_payment' ? 'Orchestra Card' : 'Orchestra Routing')
             const { formatted, colorClass } = formatTxAmount(t.amount, t)
+            const isCardPayment = t.type === 'card_payment'
             return (
               <div key={t._id || i} className="p-3.5 hover:bg-slate-50/60 transition-colors flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -189,9 +190,15 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                       )}
                     </div>
                     <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
-                      <span className="capitalize">{t.category}</span>
+                      <span className="capitalize">{isCardPayment ? 'Card Payment' : t.category}</span>
                       <span>·</span>
                       <span className="truncate max-w-[120px]">{cardName}</span>
+                      {isCardPayment && t.fundingSourceName && (
+                        <>
+                          <span className="text-slate-300">·</span>
+                          <span className="truncate max-w-[100px]">Funded by: {t.fundingSourceName}</span>
+                        </>
+                      )}
                       <span>·</span>
                       <span className="font-mono">{formatDate(t.transactionDate)}</span>
                     </div>
@@ -250,10 +257,11 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
               </tr>
             ) : (
               paginated.map((t, i) => {
-                const cardName = t.cardLabel || t.card || 'Orchestra Multi-Bank'
+                const cardName = t.cardLabel || t.card || (t.type === 'card_payment' ? 'Orchestra Card' : 'Orchestra Multi-Bank')
                 const { formatted, colorClass } = formatTxAmount(t.amount, t)
                 const isCompleted = (t.status || 'completed').toLowerCase() === 'completed'
                 const isPending = (t.status || '').toLowerCase() === 'pending'
+                const isCardPayment = t.type === 'card_payment'
                 return (
                   <tr
                     key={t._id || i}
@@ -277,7 +285,7 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60 capitalize">
-                              {t.category || 'General'}
+                              {isCardPayment ? 'Card Payment' : (t.category || 'General')}
                             </span>
                             {t.reference && (
                               <span className="text-[10px] font-mono text-slate-400">
@@ -285,6 +293,11 @@ export default function TransactionTable({ onExport }: { onExport?: (txs: Transa
                               </span>
                             )}
                           </div>
+                          {isCardPayment && t.fundingSourceName && (
+                            <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+                              Funded by: {t.fundingSourceName}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </td>

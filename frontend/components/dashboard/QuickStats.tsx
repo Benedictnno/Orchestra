@@ -31,7 +31,7 @@ export default function QuickStats({
     {
       label: "Monthly Spend",
       value: toNaira(monthlySpend),
-      subtext: "Month to date",
+      subtext: "Last 30 days",
       icon: TrendingUp,
     },
     {

@@ -19,6 +19,7 @@ import { cardsRoutes } from './modules/cards/index.js'
 import { routingRoutes } from './modules/routing/index.js'
 import { virtualCardsRoutes } from './modules/virtual-cards/index.js'
 import { businessRoutes } from './modules/business/index.js'
+import { orchestrationRoutes } from './modules/orchestration/index.js'
 import { transactionsRoutes, transfersRoutes, billsRoutes } from './modules/transactions/index.js'
 import { insightsRoutes, chatRoutes, anomaliesRoutes, reportRoutes } from './modules/insights/index.js'
 
@@ -72,6 +73,7 @@ app.use('/api/cards',         cardsRoutes)
 app.use('/api/routing',       routingRoutes)
 app.use('/api/virtual-cards', virtualCardsRoutes)
 app.use('/api/business',      businessRoutes)
+app.use('/api/orchestration', orchestrationRoutes)
 app.use('/api/transactions',  transactionsRoutes)
 app.use('/api/transfers',     transfersRoutes)
 app.use('/api/bills',         billsRoutes)

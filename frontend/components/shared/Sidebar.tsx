@@ -38,6 +38,7 @@ const bankingItems = [
   { href: '/dashboard',     label: 'Overview',      icon: LayoutDashboard },
   { href: '/transactions',  label: 'Transactions',  icon: History },
   { href: '/cards',         label: 'My Cards',      icon: CreditCard },
+  { href: '/orchestration', label: 'Orchestra Card', icon: CreditCard },
   { href: '/virtual-cards', label: 'Virtual Cards', icon: Layers },
   { href: '/transfers',     label: 'Send Money',    icon: Send },
   { href: '/bills',         label: 'Pay Bills',     icon: Zap },

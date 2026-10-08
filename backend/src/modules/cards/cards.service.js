@@ -1,68 +1,82 @@
-import Card from './models/Card.model.js'
-import CardBalance from './models/CardBalance.model.js'
-import { card360 } from './providers/card360.provider.js'
-import { maskPan } from '../../shared/utils/formatters.js'
-import { NotFoundError, BadRequestError, ConflictError } from '../../shared/errors/httpErrors.js'
+import Card from "./models/Card.model.js";
+import CardBalance from "./models/CardBalance.model.js";
+import OrchestraCard from "../orchestration/models/OrchestraCard.model.js";
+import { card360 } from "./providers/card360.provider.js";
+import { maskPan } from "../../shared/utils/formatters.js";
+import {
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+} from "../../shared/errors/httpErrors.js";
 
 /**
  * Fetch all cards owned by a user with cached or live balances attached.
  */
 export async function getUserCards(userId) {
-  const cards = await Card.find({ userId }).lean()
-  if (!cards.length) return []
+  const cards = await Card.find({ userId }).lean();
+  if (!cards.length) return [];
 
-  const pans = cards.map(c => c.pan)
-  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000)
+  const pans = cards.map((c) => c.pan);
+  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
 
   // Batch query cached balances within the 5-minute validity window
   const cachedBalances = await CardBalance.find({
     pan: { $in: pans },
-    fetchedAt: { $gte: fiveMinsAgo }
-  }).sort({ fetchedAt: -1 }).lean()
+    fetchedAt: { $gte: fiveMinsAgo },
+  })
+    .sort({ fetchedAt: -1 })
+    .lean();
 
-  const cachedMap = new Map()
+  const cachedMap = new Map();
   for (const cb of cachedBalances) {
     if (!cachedMap.has(cb.pan)) {
-      cachedMap.set(cb.pan, cb)
+      cachedMap.set(cb.pan, cb);
     }
   }
 
-  return Promise.all(cards.map(async (card) => {
-    const cached = cachedMap.get(card.pan)
+  return Promise.all(
+    cards.map(async (card) => {
+      const cached = cachedMap.get(card.pan);
 
-    const bal = cached ? {
-      availableBalance: cached.availableBalance,
-      ledgerBalance: cached.ledgerBalance,
-      currency: cached.currency
-    } : await card360.getBalance(card.pan, card.cardType).then(async (res) => {
-      if (res.availableBalance !== undefined) {
-        await CardBalance.findOneAndUpdate(
-          { pan: card.pan },
-          {
-            cardId: card._id,
-            availableBalance: res.availableBalance,
-            ledgerBalance: res.ledgerBalance,
-            currency: res.currency || 'NGN',
-            responseCode: res.code || '00',
-            responseDescription: res.description || 'Successful',
-            fetchedAt: new Date()
-          },
-          { upsert: true }
-        )
-      }
-      return res
-    })
+      const bal = cached
+        ? {
+            availableBalance: cached.availableBalance,
+            ledgerBalance: cached.ledgerBalance,
+            currency: cached.currency,
+          }
+        : await card360
+            .getBalance(card.pan, card.cardType)
+            .then(async (res) => {
+              if (res.availableBalance !== undefined) {
+                await CardBalance.findOneAndUpdate(
+                  { pan: card.pan },
+                  {
+                    cardId: card._id,
+                    availableBalance: res.availableBalance,
+                    ledgerBalance: res.ledgerBalance,
+                    currency: res.currency || "NGN",
+                    responseCode: res.code || "00",
+                    responseDescription: res.description || "Successful",
+                    fetchedAt: new Date(),
+                  },
+                  { upsert: true },
+                );
+              }
+              return res;
+            });
 
-    const cardData = typeof card.toObject === 'function' ? card.toObject() : card
-    return {
-      ...cardData,
-      pan:              card.pan,
-      maskedPan:        maskPan(card.pan),
-      availableBalance: bal.availableBalance ?? 0,
-      ledgerBalance:    bal.ledgerBalance ?? 0,
-      currency:         bal.currency ?? 'NGN',
-    }
-  }))
+      const cardData =
+        typeof card.toObject === "function" ? card.toObject() : card;
+      return {
+        ...cardData,
+        pan: card.pan,
+        maskedPan: maskPan(card.pan),
+        availableBalance: bal.availableBalance ?? 0,
+        ledgerBalance: bal.ledgerBalance ?? 0,
+        currency: bal.currency ?? "NGN",
+      };
+    }),
+  );
 }
 
 /**
@@ -71,212 +85,273 @@ export async function getUserCards(userId) {
 export async function getUserCardsWithBalances(userId, cardOrder = []) {
   const cards = cardOrder.length
     ? cardOrder
-    : await Card.find({ userId, cardStatus: '1', cardType: { $ne: 'virtual' } })
+    : await Card.find({
+        userId,
+        cardStatus: "1",
+        cardType: { $ne: "virtual" },
+      });
 
-  return Promise.all(cards.map(async (card) => {
-    const bal = await card360.getBalance(card.pan, card.cardType)
-    const cardData = typeof card.toObject === 'function' ? card.toObject() : card
-    return { ...cardData, available: bal.availableBalance ?? 0 }
-  }))
+  return Promise.all(
+    cards.map(async (card) => {
+      const bal = await card360.getBalance(card.pan, card.cardType);
+      const cardData =
+        typeof card.toObject === "function" ? card.toObject() : card;
+      return { ...cardData, available: bal.availableBalance ?? 0 };
+    }),
+  );
 }
 
 /**
  * Get a specific card by ID.
  */
 export async function getCardById(userId, cardId) {
-  const card = await Card.findOne({ _id: cardId, userId }).lean()
-  if (!card) throw new NotFoundError('Card not found')
+  const card = await Card.findOne({ _id: cardId, userId }).lean();
+  if (!card) throw new NotFoundError("Card not found");
   return {
     ...card,
     pan: card.pan,
     maskedPan: maskPan(card.pan),
-  }
+  };
 }
 
 /**
  * Get raw Card model instance (internal to module or explicit contract helper).
  */
 export async function getRawCardById(userId, cardId) {
-  const card = await Card.findOne({ _id: cardId, userId })
-  if (!card) throw new NotFoundError('Card not found')
-  return card
+  const card = await Card.findOne({ _id: cardId, userId });
+  if (!card) throw new NotFoundError("Card not found");
+  return card;
 }
 
 /**
  * Get the user's default/primary card, or first card.
  */
 export async function getPrimaryOrFirstCard(userId) {
-  let card = await Card.findOne({ userId, isDefault: true })
+  let card = await Card.findOne({ userId, isDefault: true });
   if (!card) {
-    card = await Card.findOne({ userId, cardStatus: '1' })
+    card = await Card.findOne({ userId, cardStatus: "1" });
   }
-  return card
+  return card;
 }
 
 /**
  * Add a new bank card.
  */
 export async function addCard(userId, cardData) {
-  const { pan, expiryDate, label, bank, accountNumber, color, cardType } = cardData
+  const { pan, expiryDate, label, bank, accountNumber, color, cardType } =
+    cardData;
 
   // Verify card exists on Card360 (or mock)
-  const c360 = await card360.fetchCard({ 
-    pan, 
-    expiryDate, 
-    issuerNr: '000001',
-    cardSequenceNr: '01'
-  })
+  const c360 = await card360.fetchCard({
+    pan,
+    expiryDate,
+    issuerNr: "000001",
+    cardSequenceNr: "01",
+  });
 
-  if (c360.code !== '00') {
-    throw new BadRequestError('Card not found or invalid details')
+  if (c360.code !== "00") {
+    throw new BadRequestError("Card not found or invalid details");
   }
 
-  const detail = c360.cardDetails[0]
-  let card
+  const detail = c360.cardDetails[0];
+  let card;
   try {
     card = await Card.create({
-      pan:         detail.pan,
-      expiryDate:  detail.expiryDate,
-      issuerNr:    detail.issuerNr,
-      firstName:   detail.firstName,
-      lastName:    detail.lastName,
-      nameOnCard:  detail.nameOnCard,
+      pan: detail.pan,
+      expiryDate: detail.expiryDate,
+      issuerNr: detail.issuerNr,
+      firstName: detail.firstName,
+      lastName: detail.lastName,
+      nameOnCard: detail.nameOnCard,
       cardProgram: detail.cardProgram,
-      customerId:  detail.customerId,
-      cardStatus:  detail.cardStatus,
-      seqNr:       detail.seqNr,
+      customerId: detail.customerId,
+      cardStatus: detail.cardStatus,
+      seqNr: detail.seqNr,
       userId,
       label,
       bank,
       accountNumber,
       color,
-      cardType:    cardType || 'debit',
-    })
+      cardType: cardType || "debit",
+    });
   } catch (err) {
     if (err.code === 11000) {
-      throw new ConflictError('Card with this PAN is already registered')
+      throw new ConflictError("Card with this PAN is already registered");
     }
-    throw err
+    throw err;
   }
 
   // Ensure balance record exists for demo/mock mode
-  const existingBalance = await CardBalance.findOne({ pan: card.pan })
+  const existingBalance = await CardBalance.findOne({ pan: card.pan });
   if (!existingBalance) {
     await CardBalance.create({
       cardId: card._id,
       pan: card.pan,
       availableBalance: 850_000_00, // NGN 850,000 demo balance
       ledgerBalance: 850_000_00,
-      currency: 'NGN',
-      fetchedAt: new Date()
-    })
+      currency: "NGN",
+      fetchedAt: new Date(),
+    });
   }
 
-  const cardObj = card.toObject()
-  return { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) }
+  const existingOrchestra = await OrchestraCard.findOne({ userId }).lean();
+  if (!existingOrchestra) {
+    await OrchestraCard.create({
+      userId,
+      cardId: card._id,
+      selectedFundingSourceId: card._id,
+      status: "ACTIVE",
+    });
+  }
+
+  const cardObj = card.toObject();
+  return { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) };
 }
 
 /**
  * Update card settings or block/unblock status.
  */
 export async function updateCard(userId, cardId, updateData) {
-  const { action, ...otherUpdates } = updateData
-  const card = await Card.findOne({ _id: cardId, userId })
-  if (!card) throw new NotFoundError('Card not found')
+  const { action, ...otherUpdates } = updateData;
+  const card = await Card.findOne({ _id: cardId, userId });
+  if (!card) throw new NotFoundError("Card not found");
 
   if (!action) {
     const updated = await Card.findOneAndUpdate(
       { _id: cardId, userId },
       otherUpdates,
-      { new: true }
-    )
-    const updatedObj = updated.toObject()
-    return { card: { ...updatedObj, pan: updatedObj.pan, maskedPan: maskPan(updatedObj.pan) } }
+      { new: true },
+    );
+    const updatedObj = updated.toObject();
+    return {
+      card: {
+        ...updatedObj,
+        pan: updatedObj.pan,
+        maskedPan: maskPan(updatedObj.pan),
+      },
+    };
   }
 
-  const result = action === 'block'
-    ? await card360.blockCard(card.pan, card.cardType)
-    : await card360.unblockCard(card.pan, card.cardType)
+  const result =
+    action === "block"
+      ? await card360.blockCard(card.pan, card.cardType)
+      : await card360.unblockCard(card.pan, card.cardType);
 
-  if (result.code === '00') {
-    card.cardStatus = action === 'block' ? '2' : '1'
-    await card.save()
+  if (result.code === "00") {
+    card.cardStatus = action === "block" ? "2" : "1";
+    await card.save();
   }
 
-  const cardObj = card.toObject()
-  return { card: { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) }, ...result }
+  const cardObj = card.toObject();
+  return {
+    card: { ...cardObj, pan: card.pan, maskedPan: maskPan(cardObj.pan) },
+    ...result,
+  };
 }
 
 /**
  * Delete a card.
  */
 export async function deleteCard(userId, cardId) {
-  const card = await Card.findOneAndDelete({ _id: cardId, userId })
-  if (!card) throw new NotFoundError('Card not found')
-  return { message: 'Card removed' }
+  const card = await Card.findOneAndDelete({ _id: cardId, userId });
+  if (!card) throw new NotFoundError("Card not found");
+
+  const orchestra = await OrchestraCard.findOne({ userId }).lean();
+  if (orchestra) {
+    const needsCardIdUpdate = String(orchestra.cardId) === String(cardId);
+    const needsFundingUpdate =
+      String(orchestra.selectedFundingSourceId) === String(cardId);
+
+    if (needsCardIdUpdate || needsFundingUpdate) {
+      const replacement = await Card.findOne({
+        userId,
+        cardStatus: "1",
+        _id: { $ne: cardId },
+      })
+        .sort({ createdAt: 1 })
+        .lean();
+      const updates = {};
+      if (needsCardIdUpdate) updates.cardId = replacement?._id || null;
+      if (needsFundingUpdate)
+        updates.selectedFundingSourceId = replacement?._id || null;
+      if (Object.keys(updates).length) {
+        await OrchestraCard.findByIdAndUpdate(orchestra._id, updates);
+      }
+    }
+  }
+
+  return { message: "Card removed" };
 }
 
 /**
  * Get card balance with cache support.
  */
 export async function getCardBalance(userId, cardId) {
-  const card = await Card.findOne({ _id: cardId, userId })
-  if (!card) throw new NotFoundError('Card not found')
+  const card = await Card.findOne({ _id: cardId, userId });
+  if (!card) throw new NotFoundError("Card not found");
 
   const cached = await CardBalance.findOne({
     pan: card.pan,
-    fetchedAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) }
-  }).sort({ fetchedAt: -1 })
+    fetchedAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) },
+  }).sort({ fetchedAt: -1 });
 
   if (cached) {
-    const balObj = cached.toObject()
-    return { balance: { ...balObj, pan: maskPan(balObj.pan) }, fromCache: true }
+    const balObj = cached.toObject();
+    return {
+      balance: { ...balObj, pan: maskPan(balObj.pan) },
+      fromCache: true,
+    };
   }
 
-  const data = await card360.getBalance(card.pan, card.cardType)
+  const data = await card360.getBalance(card.pan, card.cardType);
   const balance = await CardBalance.findOneAndUpdate(
     { pan: card.pan },
     {
-      cardId:              card._id,
-      availableBalance:    data.availableBalance,
-      ledgerBalance:       data.ledgerBalance,
-      currency:            data.currency   || 'NGN',
-      responseCode:        data.code       || '00',
-      responseDescription: data.description || 'Successful',
-      fetchedAt:           new Date()
+      cardId: card._id,
+      availableBalance: data.availableBalance,
+      ledgerBalance: data.ledgerBalance,
+      currency: data.currency || "NGN",
+      responseCode: data.code || "00",
+      responseDescription: data.description || "Successful",
+      fetchedAt: new Date(),
     },
-    { upsert: true, new: true }
-  )
+    { upsert: true, new: true },
+  );
 
-  const balObj = balance.toObject()
-  return { balance: { ...balObj, pan: maskPan(balObj.pan) }, fromCache: false }
+  const balObj = balance.toObject();
+  return { balance: { ...balObj, pan: maskPan(balObj.pan) }, fromCache: false };
 }
 
 /**
  * Verify card balance and deduct funds atomically in cache/mock.
  */
-export async function verifyAndDeductBalance(userId, cardId, amountKobo, session = null) {
-  const card = await Card.findOne({ _id: cardId, userId })
-  if (!card) throw new NotFoundError('Card not found')
+export async function verifyAndDeductBalance(
+  userId,
+  cardId,
+  amountKobo,
+  session = null,
+) {
+  const card = await Card.findOne({ _id: cardId, userId });
+  if (!card) throw new NotFoundError("Card not found");
 
-  const bal = await card360.getBalance(card.pan, card.cardType)
+  const bal = await card360.getBalance(card.pan, card.cardType);
   if ((bal.availableBalance ?? 0) < amountKobo) {
-    throw new BadRequestError('Insufficient funds on card')
+    throw new BadRequestError("Insufficient funds on card");
   }
 
-  const options = { sort: { fetchedAt: -1 }, upsert: true }
-  if (session) options.session = session
+  const options = { sort: { fetchedAt: -1 }, upsert: true };
+  if (session) options.session = session;
 
   await CardBalance.findOneAndUpdate(
     { pan: card.pan },
     {
       $inc: { availableBalance: -amountKobo, ledgerBalance: -amountKobo },
-      $set: { fetchedAt: new Date() }
+      $set: { fetchedAt: new Date() },
     },
-    options
-  )
+    options,
+  );
 
-  return card
+  return card;
 }
 
 /**
@@ -284,15 +359,15 @@ export async function verifyAndDeductBalance(userId, cardId, amountKobo, session
  * A negative amountKobo credits the balance, enabling compensating rollbacks.
  */
 export async function deductBalanceByPan(pan, amountKobo, session = null) {
-  const options = { sort: { fetchedAt: -1 }, upsert: true }
-  if (session) options.session = session
+  const options = { sort: { fetchedAt: -1 }, upsert: true };
+  if (session) options.session = session;
 
   await CardBalance.findOneAndUpdate(
     { pan },
     {
       $inc: { availableBalance: -amountKobo, ledgerBalance: -amountKobo },
-      $set: { fetchedAt: new Date() }
+      $set: { fetchedAt: new Date() },
     },
-    options
-  )
+    options,
+  );
 }

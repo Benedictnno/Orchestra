@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const stats = {
     totalCards: cardsData?.length || 0,
     virtualCards: vcData?.length || 0,
-    monthlySpend: (summaryData?.summary?.totalSpent ?? 0) / 100,
+    monthlySpend: summaryData?.summary?.totalSpent ?? 0,
     savedThisMonth: 0,
   }
 

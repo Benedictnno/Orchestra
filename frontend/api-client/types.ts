@@ -27,6 +27,7 @@ export interface Card {
   bank?: string;
   accountNumber?: string;
   color?: string;
+  maskedPan?: string;
 }
 
 export interface VirtualCard {

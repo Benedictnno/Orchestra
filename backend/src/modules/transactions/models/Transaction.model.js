@@ -10,13 +10,13 @@ const txSchema = new mongoose.Schema({
   merchantCategory: String,
   type:             {
     type: String,
-    enum: ['debit', 'top_up', 'transfer', 'bill_payment'],
+    enum: ['debit', 'top_up', 'transfer', 'bill_payment', 'card_payment'],
     default: 'debit',
   },
   category:         {
     type: String,
     enum: ['food', 'transport', 'subscriptions', 'utilities',
-           'entertainment', 'shopping', 'transfer', 'bills', 'other'],
+           'entertainment', 'shopping', 'transfer', 'bills', 'other', 'card_payment'],
   },
   narration:        String,
   transactionDate:  { type: Date, default: Date.now },
@@ -25,6 +25,9 @@ const txSchema = new mongoose.Schema({
   isAnomaly:        { type: Boolean, default: false },
   anomalyReason:    String,
   simulatedSplit:   [{ cardId: mongoose.Schema.Types.ObjectId, amount: Number }],
+  orchestraCardId:  { type: mongoose.Schema.Types.ObjectId, ref: 'OrchestraCard' },
+  fundingSourceId:  { type: mongoose.Schema.Types.ObjectId, ref: 'Card' },
+  fundingSourceName: String,
 }, { timestamps: true })
 
 txSchema.index({ userId: 1, transactionDate: -1 })

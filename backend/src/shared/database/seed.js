@@ -19,6 +19,7 @@ import VirtualCard from '../../modules/virtual-cards/models/VirtualCard.model.js
 import BusinessCard from '../../modules/business/models/BusinessCard.model.js'
 import ApprovalRequest from '../../modules/business/models/ApprovalRequest.model.js'
 import Insight from '../../modules/insights/models/Insight.model.js'
+import OrchestraCard from '../../modules/orchestration/models/OrchestraCard.model.js'
 
 await connectDB()
 
@@ -35,6 +36,7 @@ await Promise.all([
   Transfer.deleteMany({}),
   BillPayment.deleteMany({}),
   Insight.deleteMany({}),
+  OrchestraCard.deleteMany({}),
 ])
 
 try {
@@ -53,7 +55,7 @@ const [alice, bob] = await User.create([
 console.log('👤  Users created:', alice.email, bob.email)
 
 // ── Cards ────────────────────────────────────────────────────────────────────
-const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
+const [aliceDebit, alicePrepaid, aliceUnion, aliceEco] = await Card.create([
   {
     pan: '5061984021984419', expiryDate: '2612', issuerNr: '000001',
     firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
@@ -78,16 +80,25 @@ const [aliceDebit, alicePrepaid, aliceUnion] = await Card.create([
     bank: 'UBA', color: '#4A90e2', isDefault: false,
     accountNumber: '0112233445',
   },
+  {
+    pan: '5061438290174526', expiryDate: '2810', issuerNr: '000004',
+    firstName: 'Alice', lastName: 'Okonkwo', nameOnCard: 'ALICE OKONKWO',
+    cardProgram: 'VERVE', customerId: 'CUST001', cardStatus: '1', seqNr: '04',
+    userId: alice._id, cardType: 'debit', label: 'EcoBank Debit',
+    bank: 'EcoBank', color: '#00B894', isDefault: false,
+    accountNumber: '0234567890',
+  },
 ])
 
 // ── Card Balances ────────────────────────────────────────────────────────────
-// Deliberately small, varied balances so the Multi-Source Funding Pool demo can
-// be exercised without touching the database: GTBank ₦1,000 / Access ₦8,000 /
-// UBA ₦1,000. Sending ₦3,000 forces a multi-source waterfall allocation.
+// Well-funded demo balances: GTBank ₦500,000 / Access ₦500,000 / EcoBank
+// ₦500,000, with a deliberately small UBA balance so the Multi-Source Funding
+// Pool demo can still be exercised with a waterfall allocation.
 await CardBalance.create([
-  { pan: aliceDebit.pan,   availableBalance: 1_000_00, ledgerBalance: 1_000_00, cardId: aliceDebit._id },
-  { pan: alicePrepaid.pan, availableBalance: 8_000_00, ledgerBalance: 8_000_00, cardId: alicePrepaid._id },
-  { pan: aliceUnion.pan,   availableBalance: 1_000_00, ledgerBalance: 1_000_00, cardId: aliceUnion._id },
+  { pan: aliceDebit.pan,   availableBalance: 500_000_00, ledgerBalance: 500_000_00, cardId: aliceDebit._id },
+  { pan: alicePrepaid.pan, availableBalance: 500_000_00, ledgerBalance: 500_000_00, cardId: alicePrepaid._id },
+  { pan: aliceUnion.pan,   availableBalance: 1_000_00,   ledgerBalance: 1_000_00,   cardId: aliceUnion._id },
+  { pan: aliceEco.pan,     availableBalance: 500_000_00, ledgerBalance: 500_000_00, cardId: aliceEco._id },
 ])
 
 // ── Routing Rule ─────────────────────────────────────────────────────────────
@@ -290,5 +301,36 @@ await BillPayment.create({
 console.log('✅  Seed complete!')
 console.log('   alice@example.com / Password123!')
 console.log('   bob@example.com   / Password123!')
+
+// ── Orchestra Universal Card ─────────────────────────────────────────────────
+const orchestraCard = await OrchestraCard.create({
+  userId: alice._id,
+  cardId: aliceDebit._id,
+  selectedFundingSourceId: alicePrepaid._id, // Access Bank prepaid = ₦500,000
+  status: 'ACTIVE',
+})
+
+// Seed an initial demo transaction so the ledger is not empty.
+const demoPayTx = await Transaction.create({
+  userId: alice._id,
+  orchestraCardId: orchestraCard._id,
+  fundingSourceId: alicePrepaid._id,
+  fundingSourceName: 'Access Bank',
+  cardId: alicePrepaid._id,
+  pan: alicePrepaid.pan,
+  amount: 500000,
+  currency: 'NGN',
+  merchant: 'Demo Store',
+  type: 'card_payment',
+  category: 'other',
+  narration: 'Orchestra Universal Card demo payment',
+  reference: randomUUID(),
+  responseCode: '00',
+  transactionDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+})
+
+console.log('🎼  Orchestra Universal Card created for', alice.email)
+console.log('   Funding sources: Access Bank, GTBank, UBA, EcoBank')
+console.log('   Demo transaction recorded: ₦5,000 to Demo Store from Access Bank')
 
 await mongoose.disconnect()
