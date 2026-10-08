@@ -63,10 +63,6 @@ export const maskPAN = (pan: string | undefined) => {
   if (!pan) return '•••• •••• •••• ••••'
   if (pan.startsWith('VIRT') || pan.startsWith('BIZ')) return pan
   const clean = pan.replace(/[\s-]/g, '')
-  if (clean.length >= 12) {
-    const first4 = /^\d{4}/.test(clean) ? clean.slice(0, 4) : '••••'
-    return `${first4} •••• •••• ${clean.slice(-4)}`
-  }
   return '•••• •••• •••• ' + clean.slice(-4)
 }
 
@@ -81,19 +77,19 @@ export function formatCardGroups(
 ): [string, string, string, string] {
   if (isUltimate) {
     if (!reveal) {
-      return ['4000', '••••', '••••', '9010']
+      return ['••••', '••••', '••••', '9010']
     }
     return ['4000', '1234', '5678', '9010']
   }
 
   if (!pan) {
     if (cardProgram === 'VISA' || bank?.toLowerCase().includes('access')) {
-      return reveal ? ['4084', '7291', '3048', '7150'] : ['4084', '••••', '••••', '7150']
+      return reveal ? ['4084', '7291', '3048', '7150'] : ['••••', '••••', '••••', '7150']
     }
     if (cardProgram === 'MASTERCARD' || bank?.toLowerCase().includes('union')) {
-      return reveal ? ['5399', '4812', '3901', '8842'] : ['5399', '••••', '••••', '8842']
+      return reveal ? ['5399', '4812', '3901', '8842'] : ['••••', '••••', '••••', '8842']
     }
-    return reveal ? ['5061', '9840', '2198', '4419'] : ['5061', '••••', '••••', '4419']
+    return reveal ? ['5061', '9840', '2198', '4419'] : ['••••', '••••', '••••', '4419']
   }
 
   const clean = pan.replace(/[\s-]/g, '')
@@ -101,7 +97,7 @@ export function formatCardGroups(
   // If clean has full 16 digits
   if (clean.length === 16 && /^\d+$/.test(clean)) {
     if (!reveal) {
-      return [clean.slice(0, 4), '••••', '••••', clean.slice(12, 16)]
+      return ['••••', '••••', '••••', clean.slice(12, 16)]
     }
     return [
       clean.slice(0, 4),
@@ -131,7 +127,7 @@ export function formatCardGroups(
   }
 
   if (!reveal) {
-    return [prefix, '••••', '••••', last4 || '8842']
+    return ['••••', '••••', '••••', last4 || '8842']
   }
   return [prefix, mid1, mid2, last4 || '8842']
 }

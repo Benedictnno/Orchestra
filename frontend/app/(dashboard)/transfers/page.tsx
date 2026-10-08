@@ -74,13 +74,13 @@ interface RecentTransfer extends TransferResult {
 type Step = 'form' | 'review' | 'processing' | 'success'
 
 const BANKS = [
+  { name: 'Union Bank', code: '032' },
   { name: 'GTBank', code: '058' },
   { name: 'Access Bank', code: '044' },
   { name: 'First Bank', code: '011' },
   { name: 'Zenith Bank', code: '057' },
   { name: 'UBA', code: '033' },
   { name: 'Stanbic IBTC', code: '221' },
-  { name: 'Union Bank', code: '032' },
   { name: 'EcoBank', code: '050' },
 ]
 

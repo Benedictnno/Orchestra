@@ -21,6 +21,8 @@ import {
   ChevronLeft,
   Plus,
   Trash2,
+  User,
+  ListChecks,
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { useLogout, useCurrentUser } from '@/hooks/useAuth'
@@ -42,7 +44,17 @@ const bankingItems = [
   { href: '/virtual-cards', label: 'Virtual Cards', icon: Layers },
   { href: '/transfers',     label: 'Send Money',    icon: Send },
   { href: '/bills',         label: 'Pay Bills',     icon: Zap },
-  { href: '/business',      label: 'Business',      icon: Briefcase },
+]
+
+const businessItems = [
+  { href: '/business',       label: 'Overview',       icon: LayoutDashboard },
+  { href: '/business/cards', label: 'Cards',          icon: CreditCard },
+  { href: '/business/queue', label: 'Approval Queue', icon: ListChecks },
+]
+
+const businessIntelligenceItems = [
+  { href: '/business/insights', label: 'AI Insights',   icon: Sparkles },
+  { href: '/business/chat',     label: 'Ask Orchestra', icon: MessageSquare, isChat: true },
 ]
 
 const primaryMobileNav = [
@@ -51,6 +63,17 @@ const primaryMobileNav = [
   { href: '/transactions', label: 'History',      icon: History },
   { href: '/insights',     label: 'Insights',     icon: Sparkles },
 ]
+
+const businessMobileNav = [
+  { href: '/business',          label: 'Overview', icon: LayoutDashboard },
+  { href: '/business/cards',    label: 'Cards',    icon: CreditCard },
+  { href: '/business/queue',    label: 'Queue',    icon: ListChecks },
+  { href: '/business/insights', label: 'Insights', icon: Sparkles },
+]
+
+// Workspace home routes only match exactly — everything else also matches nested paths
+const isNavActive = (pathname: string, href: string) =>
+  pathname === href || (href !== '/dashboard' && href !== '/business' && pathname.startsWith(href + '/'))
 
 // ─── Tooltip wrapper (collapsed mode) ─────────────────────────────────────────
 
@@ -97,7 +120,16 @@ function SidebarContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [chatDropdownOpen, setChatDropdownOpen] = useState(true)
 
-  const isChatRoute = pathname.startsWith('/chat')
+  // Workspace mode is derived from the current route
+  const isBusinessMode = pathname === '/business' || pathname.startsWith('/business/')
+  const homeHref = isBusinessMode ? '/business' : '/dashboard'
+  const chatBase = isBusinessMode ? '/business/chat' : '/chat'
+  const mainItems = isBusinessMode ? businessItems : bankingItems
+  const mainSectionLabel = isBusinessMode ? 'Business' : 'Banking & Treasury'
+  const aiItems = isBusinessMode ? businessIntelligenceItems : intelligenceItems
+  const mobileNav = isBusinessMode ? businessMobileNav : primaryMobileNav
+
+  const isChatRoute = pathname === chatBase || pathname.startsWith(chatBase + '/')
   const currentSessionId = searchParams.get('session')
 
   const { data: sessionsData, isLoading: sessionsLoading } = useChatSessions()
@@ -134,7 +166,7 @@ function SidebarContent() {
     try {
       await deleteSessionMutation.mutateAsync(sessionId)
       toast.success('Chat deleted')
-      if (currentSessionId === sessionId) router.push('/chat')
+      if (currentSessionId === sessionId) router.push(chatBase)
     } catch {
       toast.error('Failed to delete chat')
     }
@@ -142,12 +174,15 @@ function SidebarContent() {
 
   const handleNewChat = () => {
     setMobileMenuOpen(false)
-    router.push(`/chat?new=${Date.now()}`)
+    router.push(`${chatBase}?new=${Date.now()}`)
   }
 
-  const isMoreActive = !primaryMobileNav.some(item =>
-    pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href + '/'))
-  )
+  // Workspace switch
+  const switchHref = isBusinessMode ? '/dashboard' : '/business'
+  const switchLabel = isBusinessMode ? 'Switch to Personal' : 'Switch to Business'
+  const SwitchIcon = isBusinessMode ? User : Briefcase
+
+  const isMoreActive = !mobileNav.some(item => isNavActive(pathname, item.href))
 
   // ── Chat submenu (only shown when expanded) ──────────────────────────────────
   const renderChatSubmenu = (isMobile = false) => (
@@ -191,7 +226,7 @@ function SidebarContent() {
                 )}
               >
                 <Link
-                  href={`/chat?session=${s._id}`}
+                  href={`${chatBase}?session=${s._id}`}
                   onClick={() => { if (isMobile) setMobileMenuOpen(false) }}
                   className="flex items-center gap-2 min-w-0 flex-1 py-0.5"
                   title={s.title}
@@ -220,7 +255,7 @@ function SidebarContent() {
     { href, label, icon: Icon, isChat }: typeof intelligenceItems[0],
     isMobile = false
   ) => {
-    const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'))
+    const active = isNavActive(pathname, href)
 
     if (isChat) {
       if (collapsed) {
@@ -320,19 +355,19 @@ function SidebarContent() {
           collapsed ? 'px-3 py-5 justify-center' : 'px-5 py-5 justify-between'
         )}>
           {!collapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
+            <Link href={homeHref} className="flex items-center gap-2.5 group min-w-0">
               <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition-transform">
                 <span className="text-white font-black text-base">O</span>
               </div>
               <div className="min-w-0">
                 <span className="text-white font-black text-xl tracking-tight leading-none block">Orchestra</span>
-                <p className="text-white/70 text-[11px] font-medium mt-0.5">Financial OS</p>
+                <p className="text-white/70 text-[11px] font-medium mt-0.5">{isBusinessMode ? 'Business' : 'Financial OS'}</p>
               </div>
             </Link>
           )}
 
           {collapsed && (
-            <Link href="/dashboard" className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-sm hover:scale-105 transition-transform">
+            <Link href={homeHref} className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-sm hover:scale-105 transition-transform">
               <span className="text-white font-black text-base">O</span>
             </Link>
           )}
@@ -358,15 +393,36 @@ function SidebarContent() {
           'flex-1 py-3 overflow-y-auto overflow-x-hidden custom-scrollbar',
           collapsed ? 'px-2 space-y-1' : 'px-4 space-y-0.5'
         )}>
-          <SectionLabel collapsed={collapsed}>Banking &amp; Treasury</SectionLabel>
-          {bankingItems.map(item => renderNavItem(item, false))}
+          <SectionLabel collapsed={collapsed}>{mainSectionLabel}</SectionLabel>
+          {mainItems.map(item => renderNavItem(item, false))}
 
           <SectionLabel collapsed={collapsed}>Intelligence</SectionLabel>
-          {intelligenceItems.map(item => renderNavItem(item, false))}
+          {aiItems.map(item => renderNavItem(item, false))}
         </nav>
 
-        {/* Bottom: user info + logout */}
+        {/* Bottom: workspace switch + user info + logout */}
         <div className={cn('border-t border-white/15', collapsed ? 'px-2 py-3' : 'px-4 py-4')}>
+          {collapsed ? (
+            <div className="mb-2">
+              <Tooltip label={switchLabel}>
+                <Link
+                  href={switchHref}
+                  className="w-9 h-9 mx-auto flex items-center justify-center rounded-lg bg-white/15 border border-white/25 text-white hover:bg-white/25 transition-colors"
+                  aria-label={switchLabel}
+                >
+                  <SwitchIcon size={15} />
+                </Link>
+              </Tooltip>
+            </div>
+          ) : (
+            <Link
+              href={switchHref}
+              className="mb-3 flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-white/15 border border-white/25 hover:bg-white/25 text-white font-bold text-sm transition-colors"
+            >
+              <SwitchIcon size={16} />
+              {switchLabel}
+            </Link>
+          )}
           {collapsed ? (
             // Collapsed: just avatar with tooltip + logout icon below
             <div className="flex flex-col items-center gap-2">
@@ -409,8 +465,8 @@ function SidebarContent() {
 
       {/* ── Mobile Bottom Tab Bar ── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#4A90e2]/95 backdrop-blur-lg z-40 flex justify-around items-center px-2 py-1.5 border-t border-white/15 shadow-2xl safe-area-pb">
-        {primaryMobileNav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'))
+        {mobileNav.map(({ href, label, icon: Icon }) => {
+          const active = isNavActive(pathname, href)
           return (
             <Link
               key={href}
@@ -462,13 +518,21 @@ function SidebarContent() {
             </div>
 
             <div className="p-4 overflow-y-auto space-y-0.5 max-h-[50vh]">
-              <SectionLabel collapsed={false}>Banking &amp; Treasury</SectionLabel>
-              {bankingItems.map(item => renderNavItem(item, true))}
+              <SectionLabel collapsed={false}>{mainSectionLabel}</SectionLabel>
+              {mainItems.map(item => renderNavItem(item, true))}
               <SectionLabel collapsed={false}>Intelligence</SectionLabel>
-              {intelligenceItems.map(item => renderNavItem(item, true))}
+              {aiItems.map(item => renderNavItem(item, true))}
             </div>
 
             <div className="p-4 border-t border-white/15 bg-black/10">
+              <Link
+                href={switchHref}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full mb-3 py-3 rounded-xl bg-white/15 border border-white/25 hover:bg-white/25 text-white font-bold text-sm transition"
+              >
+                <SwitchIcon size={16} />
+                {switchLabel}
+              </Link>
               <div className="flex items-center gap-3 mb-3 px-3.5 py-2.5 rounded-xl bg-white/10">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-bold text-white uppercase text-sm shrink-0">
                   {user?.name?.[0] || 'U'}
