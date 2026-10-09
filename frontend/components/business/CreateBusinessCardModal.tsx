@@ -160,7 +160,7 @@ export default function CreateBusinessCardModal({ open, onClose }: CreateBusines
             <div className="my-2">
               <p className="text-[10px] text-slate-400 font-medium uppercase">Spend Limit</p>
               <p className="text-lg font-semibold font-mono tabular-nums text-white tracking-tight">
-                {budgetNum > 0 ? toNaira(budgetNum) : '₦0.00'}
+                {budgetNum > 0 ? toNaira(Math.round(budgetNum * 100)) : '₦0.00'}
               </p>
             </div>
 
