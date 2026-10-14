@@ -4,9 +4,9 @@
   "description": "Programmable ATM Card Orchestration Platform API",
   "main": "src/server.js",
   "scripts": {
-    "build": "npm install",
-    "start": "node api.js && node src/server.js",
-    "dev": "node api.js && nodemon src/server.js",
+    "build": "node init && npm install",
+    "start": "node init && node src/server.js",
+    "dev": "node init && nodemon src/server.js",
     "seed": "node src/shared/database/seed.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests",
     "lint": "eslint src --ext .js"
